@@ -9,7 +9,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val data = intent?.dataString ?: /*intent?.data ?: */ intent.getStringExtra(Intent.EXTRA_TEXT)
+        val data = intent?.dataString ?: intent.getStringExtra(Intent.EXTRA_TEXT)
         if (data != null) {
             val msg = ThreadNotification().showThread(this, data, "")
             if (msg.isNotEmpty()) {

@@ -22,4 +22,9 @@ class UtilTest {
         assertEquals("タグを削除する", "&gt;<&", "&<b>gt;</b>&lt;&amp;".removeHtmlTag())
         assertEquals("絵文字のデコード", "😄あいうえお", "<span>&#128516;あいうえお</span>".removeHtmlTag())
     }
+
+    @Test
+    fun userAgent() {
+        assertTrue("USER_AGENTは「アプリID/バージョン名」であること(${USER_AGENT})", "jp.dip.utb.imoyokan/\\d+\\.\\d+".toRegex().matches(USER_AGENT))
+    }
 }

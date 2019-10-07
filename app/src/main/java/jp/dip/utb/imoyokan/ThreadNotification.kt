@@ -86,7 +86,7 @@ class ThreadNotification {
             .build()
 
         val newMessageNotificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_name)
+            .setSmallIcon(R.drawable.ic_stat_imoyokan)
             .setContentTitle(title?: threadInfo.res)
             .setContentText(text?: threadInfo.text)
             .addAction(action)

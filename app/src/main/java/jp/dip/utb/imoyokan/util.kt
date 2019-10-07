@@ -7,7 +7,7 @@ import java.nio.charset.Charset
 // 通知とextraData
 const val NOTIFY_NAME = "ImoYokan"
 const val NOTIFY_DESCRIPTION = "ImoYokan"
-const val CHANNEL_ID = "imo_yokan_channel"
+const val CHANNEL_ID = "imoyokan_channel"
 const val KEY_EXTRA_REQUEST_CODE = "key_extra_requestCode"
 const val KEY_TEXT_REPLY = "key_text_reply"
 const val KEY_EXTRA_URL = "key_extra_url"
@@ -22,6 +22,7 @@ const val MAX_RES_COUNT = 10
 const val RES_INTERVAL = 36100000u
 const val BOUNDARY= "BOUNDARY_ImoYoukan_BOUNDARY"
 const val URL_CACHEMT = "bin/cachemt7.php"
+const val USER_AGENT = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
 val FUTABA_CHARSET = charset("windows-31j")
 //val jsonUrl = base + "/futaba.php?mode=json&res=" + res + "&start=" + start + "&" + Math.random()
 

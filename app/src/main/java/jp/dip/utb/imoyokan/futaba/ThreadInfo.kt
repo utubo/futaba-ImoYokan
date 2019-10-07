@@ -5,10 +5,7 @@ import android.graphics.BitmapFactory
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import jp.dip.utb.imoyokan.FUTABA_CHARSET
-import jp.dip.utb.imoyokan.around
-import jp.dip.utb.imoyokan.removeHtmlTag
-import jp.dip.utb.imoyokan.toHttps
+import jp.dip.utb.imoyokan.*
 import java.lang.StringBuilder
 
 class ThreadInfo(val url: String, @Suppress("unused") val server: String, @Suppress("unused") val b: String, val res: String, val text: String) {
@@ -55,7 +52,6 @@ class ThreadInfoBuilder {
     fun build(url: String , mail: String? = null): ThreadInfo {
         val (server, b, res) = analyseUrl(url)!!
         val (_, _, result) = url.toHttps().httpGet()
-            .header("Cookie" to "cxyl=15x7x5x0x0; namec=; posttime=; pwdc=; __cfduid=dc0b2f84e19bb8ab0ff47638dc55794881568890219; scat=0")
             .responseString(FUTABA_CHARSET)
         var exception: Exception? = null
         val html = when (result) {

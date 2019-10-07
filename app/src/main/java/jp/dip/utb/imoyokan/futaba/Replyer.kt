@@ -10,7 +10,7 @@ class Replyer {
     @ExperimentalUnsignedTypes
     fun reply(intent : Intent, url: String, text: String, mail: String): Pair<String, String> {
         val (server, b, res) = ThreadInfoBuilder().analyseUrl(url)!!
-        val pthbResult = "${server}/$URL_CACHEMT".toHttps().httpGet().responseString().third.get()
+        val (_, _, pthbResult) = "${server}/$URL_CACHEMT".toHttps().httpGet().responseString()
         val params = HashMap<String, String>()
         params["b"] = b
         params["resto"] = res
@@ -19,7 +19,7 @@ class Replyer {
         params["pwd"] = ""
         params["mode"] = "regist"
         params["ptua"] = intent.getStringExtra(KEY_EXTRA_PTUA) ?: ""
-        params["pthb"] = "return \"(\\d+)\"".toRegex().find(pthbResult)?.groupValues?.get(1) ?: ""
+        params["pthb"] = "return \"(\\d+)\"".toRegex().find(pthbResult.get())?.groupValues?.get(1) ?: ""
         params["pthc"] = if (params["pthb"]!!.isNotEmpty()) (params["pthb"]!!.toULong() - RES_INTERVAL).toString() else ""
         params["baseform"] = ""
         params["js"] = "on"
@@ -36,8 +36,8 @@ class Replyer {
         body.append("--").append(BOUNDARY).append("--").append("\r\n")
         val (_, _, result) = "${server}/${b}/futaba.php?guid=on"
             .toHttps().httpPost()
-            .header("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0")
-            .header("Cookie" to "cxyl=15x7x5x0x0; namec=; posttime=${params["pthc"]}; pwdc=; __cfduid=dc0b2f84e19bb8ab0ff47638dc55794881568890219; scat=0")
+            .header("User-Agent" to USER_AGENT)
+            .header("Cookie" to "posttime=${params["pthc"]};")
             .header("Content-Type" to "multipart/form-data; boundary=$BOUNDARY")
             .body(body.toString(), FUTABA_CHARSET)
             .responseString(FUTABA_CHARSET)
