@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.PRIORITY_LOW
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import jp.dip.utb.imoyokan.futaba.ThreadInfo
@@ -121,7 +122,7 @@ class ThreadNotification {
         }
 
         // 表示するよ！
-        val newMessageNotification = newMessageNotificationBuilder.build()
+        val newMessageNotification = newMessageNotificationBuilder.setPriority(PRIORITY_LOW).build()
         val notificationManager = NotificationManagerCompat.from(context)
         // Android8からはChannelの取得と生成が必要
         if (Build.VERSION.SDK_INT >= VERSION_CODES.O) {
@@ -133,7 +134,7 @@ class ThreadNotification {
     @TargetApi(VERSION_CODES.O)
     private fun setupNotificationManager(notificationManager: NotificationManagerCompat) {
         if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
-            val mChannel = NotificationChannel(CHANNEL_ID, NOTIFY_NAME, NotificationManager.IMPORTANCE_HIGH)
+            val mChannel = NotificationChannel(CHANNEL_ID, NOTIFY_NAME, NotificationManager.IMPORTANCE_LOW)
             mChannel.apply {
                 description = NOTIFY_DESCRIPTION
             }
