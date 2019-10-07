@@ -27,13 +27,16 @@ class ResInfo(val index: Int, val number: String, val text: String) {
         var prevLevel = 0
         text.split("\n").forEach {
             val level = levelRegex.find(it)?.value?.length ?: 0
-            if (prevLevel != level) {
+            if (prevLevel == level) {
+                s.append(it.replace(levelRegex, " "))
+            } else if (prevLevel == 0 || level == 0) {
                 s.append("\n")
-            } else if (level == 0){
+                s.append(it)
+            } else {
                 s.append(" ")
+                s.append(it)
             }
             prevLevel = level
-            s.append(it)
         }
         return s.toString().trim()
     }
