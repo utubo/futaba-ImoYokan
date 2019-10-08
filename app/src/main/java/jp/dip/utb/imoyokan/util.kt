@@ -18,14 +18,6 @@ const val REQUEST_CODE_SHARE = 2
 const val REQUEST_CODE_REPLY = 10
 const val MAX_RES_COUNT = 10
 
-// ふたばの設定
-const val RES_INTERVAL = 36100000u
-const val BOUNDARY= "BOUNDARY_ImoYoukan_BOUNDARY"
-const val URL_CACHEMT = "bin/cachemt7.php"
-const val USER_AGENT = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
-val FUTABA_CHARSET = charset("windows-31j")
-//val jsonUrl = base + "/futaba.php?mode=json&res=" + res + "&start=" + start + "&" + Math.random()
-
 // 記号
 const val STR_MAILADDRESS = "✉"
 const val STR_HEART = "❤"

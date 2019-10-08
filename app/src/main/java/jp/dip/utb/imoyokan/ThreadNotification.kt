@@ -8,15 +8,19 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_LOW
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import jp.dip.utb.imoyokan.futaba.ThreadInfo
 import jp.dip.utb.imoyokan.futaba.ThreadInfoBuilder
+import jp.dip.utb.imoyokan.futaba.toColoredText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -86,7 +90,7 @@ class ThreadNotification {
             )
             .build()
 
-        val newMessageNotificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_imoyokan)
             .setContentTitle(title?: threadInfo.res)
             .setContentText(text?: threadInfo.text)
@@ -96,7 +100,7 @@ class ThreadNotification {
 
         // スレ画像
         if (threadInfo.catalogImage != null) {
-            newMessageNotificationBuilder.setLargeIcon(threadInfo.catalogImage)
+            notificationBuilder.setLargeIcon(threadInfo.catalogImage)
         }
 
         // レス一覧
@@ -112,23 +116,24 @@ class ThreadNotification {
                     // メールアドレス
                     (threadInfo.mails[it.number]?.around("[", "]") ?: "")
                 @Suppress("DEPRECATION")
-                messages.addMessage(it.compressText, Date().time, user)
+                messages.addMessage(it.compressText.toColoredText(), Date().time, user)
             }
             if (title != null || text != null) {
                 @Suppress("DEPRECATION")
                 messages.addMessage(text, Date().time, title)
             }
-            newMessageNotificationBuilder.setStyle(messages)
+            notificationBuilder.setStyle(messages)
         }
 
-        // 表示するよ！
-        val newMessageNotification = newMessageNotificationBuilder.setPriority(PRIORITY_LOW).build()
+        // 音がならないようにする
+        notificationBuilder.setPriority(PRIORITY_LOW).build()
         val notificationManager = NotificationManagerCompat.from(context)
-        // Android8からはChannelの取得と生成が必要
         if (Build.VERSION.SDK_INT >= VERSION_CODES.O) {
             setupNotificationManager(notificationManager)
         }
-        notificationManager.notify(0, newMessageNotification)
+
+        // 表示するよ！
+        notificationManager.notify(0, notificationBuilder.build())
     }
 
     @TargetApi(VERSION_CODES.O)
