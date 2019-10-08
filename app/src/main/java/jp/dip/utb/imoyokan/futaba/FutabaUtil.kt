@@ -12,7 +12,7 @@ const val BOUNDARY= "BOUNDARY_ImoYoukan_BOUNDARY"
 const val URL_CACHEMT = "bin/cachemt7.php"
 const val USER_AGENT = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
 val FUTABA_CHARSET = charset("windows-31j")
-val QUOTE_COLOR = Color.parseColor("#789922")
+val QUOTE_COLOR = Color.parseColor("#8A789922") // TODO: "8A"はAndroidのSecondary textの不透明度なのでカスタムビューにしたら削除する
 //val jsonUrl = base + "/futaba.php?mode=json&res=" + res + "&start=" + start + "&" + Math.random()
 
 fun String.toColoredText(br:String = "\n"): SpannableStringBuilder {
