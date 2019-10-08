@@ -33,3 +33,11 @@ fun String.toColoredText(br:String = "\n"): SpannableStringBuilder {
     }
     return sb
 }
+
+fun analyseUrl(url: String): Triple<String, String, String>? {
+    val urlMatches = "(https?://.*\\.2chan\\.net)/([^/]+)/res/(\\d+).htm".toRegex().find(url)?.groupValues ?: return null
+    val server = urlMatches[1]
+    val b: String = urlMatches[2]
+    val res = urlMatches[3]
+    return Triple(server, b, res)
+}

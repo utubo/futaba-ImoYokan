@@ -14,10 +14,12 @@ class ThreadInfo(val url: String, @Suppress("unused") val server: String, @Suppr
     var mails = HashMap<String, String>()
     var form = FromParams()
 }
+
 class FromParams {
     var ptua = ""
     var mail = ""
 }
+
 class ResInfo(val index: Int, val number: String, val text: String) {
     /** 通知領域は狭いので適当に改行を抜く */
     val compressText: String
@@ -44,15 +46,11 @@ class ResInfo(val index: Int, val number: String, val text: String) {
 }
 
 class ThreadInfoBuilder {
-    fun analyseUrl(url: String): Triple<String, String, String>? {
-        val urlMatches = "(https?://.*\\.2chan\\.net)/([^/]+)/res/(\\d+).htm".toRegex().find(url)?.groupValues ?: return null
-        val server = urlMatches[1]
-        val b: String = urlMatches[2]
-        val res = urlMatches[3]
-        return Triple(server, b, res)
-    }
+    var url: String = ""
+    var mail: String = ""
+    var cacheImg: Bitmap? = null
 
-    fun build(url: String , mail: String? = null): ThreadInfo {
+    fun build(): ThreadInfo {
         val (server, b, res) = analyseUrl(url)!!
         val (_, _, result) = url.toHttps().httpGet()
             .responseString(FUTABA_CHARSET)
@@ -68,15 +66,19 @@ class ThreadInfoBuilder {
         // 必須情報ここまで
 
         // サムネ
-        val thumbUrl= "/thumb/(\\d+s\\.jpg)".toRegex().find(html)?.groupValues?.get(1)
-        if (thumbUrl != null) {
-            val jpegBinary = Fuel.download("${server}/${b}/cat/${thumbUrl}").response().second.data
-            threadInfo.catalogImage = BitmapFactory.decodeByteArray(jpegBinary, 0, jpegBinary.size)
+        if (cacheImg != null) {
+            threadInfo.catalogImage = cacheImg
+        } else {
+            val thumbUrl = "/thumb/(\\d+s\\.jpg)".toRegex().find(html)?.groupValues?.get(1)
+            if (thumbUrl != null) {
+                val jpegBinary =
+                    Fuel.download("${server}/${b}/cat/${thumbUrl}").response().second.data
+                threadInfo.catalogImage =
+                    BitmapFactory.decodeByteArray(jpegBinary, 0, jpegBinary.size)
+            }
         }
         // フォームデータ
-        if (mail != null) {
-            threadInfo.form.mail = mail
-        }
+        threadInfo.form.mail = mail
         threadInfo.form.ptua = "name=\"ptua\" value=\"(\\d+)\"".toRegex().find(html)?.groupValues?.get(1) ?: ""
         // レス
         var index = 0

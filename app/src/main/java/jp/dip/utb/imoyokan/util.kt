@@ -13,6 +13,7 @@ const val KEY_TEXT_REPLY = "key_text_reply"
 const val KEY_EXTRA_URL = "key_extra_url"
 const val KEY_EXTRA_MAIL = "key_extra_mail"
 const val KEY_EXTRA_PTUA = "key_extra_ptua"
+const val KEY_EXTRA_CACHE_IMG = "key_extra_cache_img"
 const val REQUEST_CODE_RELOAD = 1
 const val REQUEST_CODE_SHARE = 2
 const val REQUEST_CODE_REPLY = 10

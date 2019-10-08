@@ -8,18 +8,16 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_LOW
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import jp.dip.utb.imoyokan.futaba.ThreadInfo
 import jp.dip.utb.imoyokan.futaba.ThreadInfoBuilder
+import jp.dip.utb.imoyokan.futaba.analyseUrl
 import jp.dip.utb.imoyokan.futaba.toColoredText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -28,11 +26,15 @@ import java.util.*
 
 class ThreadNotification {
 
-    fun showThread(context: Context, url: String, mail: String, title: String? = null, text: String? = null): String {
-        val builder = ThreadInfoBuilder()
-        if (builder.analyseUrl(url) == null) return "スレッド取得失敗(URLが変！)\n${url}"
+    fun showThread(context: Context, intent: Intent, title: String? = null, text: String? = null): String {
+        val builder = ThreadInfoBuilder().apply {
+            url = intent.getStringExtra(KEY_EXTRA_URL) ?: ""
+            mail = intent.getStringExtra(KEY_EXTRA_MAIL) ?: ""
+            cacheImg = intent.getParcelableExtra(KEY_EXTRA_CACHE_IMG)
+        }
+        if (analyseUrl(builder.url) == null) return "スレッド取得失敗(URLが変！)\n${builder.url}"
         GlobalScope.launch {
-            val threadInfo = builder.build(url, mail)
+            val threadInfo = builder.build()
             showNotification(
                 context,
                 threadInfo,
@@ -48,6 +50,7 @@ class ThreadNotification {
             .putExtra(KEY_EXTRA_URL, threadInfo.url)
             .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua)
             .putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
+            .putExtra(KEY_EXTRA_CACHE_IMG, threadInfo.catalogImage)
     }
 
     @SuppressLint("SimpleDateFormat")

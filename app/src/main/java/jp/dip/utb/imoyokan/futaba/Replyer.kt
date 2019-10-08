@@ -8,8 +8,8 @@ import jp.dip.utb.imoyokan.*
 
 class Replyer {
     @ExperimentalUnsignedTypes
-    fun reply(intent : Intent, url: String, text: String, mail: String): Pair<String, String> {
-        val (server, b, res) = ThreadInfoBuilder().analyseUrl(url)!!
+    fun reply(url: String, text: String, mail: String, ptua: String): Pair<String, String> {
+        val (server, b, res) = analyseUrl(url)!!
         val (_, _, pthbResult) = "${server}/$URL_CACHEMT".toHttps().httpGet().responseString()
         val params = HashMap<String, String>()
         params["b"] = b
@@ -18,7 +18,7 @@ class Replyer {
         params["email"] = mail.replaceForPost(FUTABA_CHARSET)
         params["pwd"] = ""
         params["mode"] = "regist"
-        params["ptua"] = intent.getStringExtra(KEY_EXTRA_PTUA) ?: ""
+        params["ptua"] = ptua
         params["pthb"] = "return \"(\\d+)\"".toRegex().find(pthbResult.get())?.groupValues?.get(1) ?: ""
         params["pthc"] = if (params["pthb"]!!.isNotEmpty()) (params["pthb"]!!.toULong() - RES_INTERVAL).toString() else ""
         params["baseform"] = ""
