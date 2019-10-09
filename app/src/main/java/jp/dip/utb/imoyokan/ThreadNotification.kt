@@ -8,9 +8,15 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_LOW
 import androidx.core.app.NotificationManagerCompat
@@ -101,32 +107,36 @@ class ThreadNotification {
             .addAction(reloadAction)
             .addAction(shareAction)
 
+        // ここからカスタムView
+        val view = RemoteViews(context.packageName, R.layout.notification_thread)
+
         // スレ画像
         if (threadInfo.catalogImage != null) {
-            notificationBuilder.setLargeIcon(threadInfo.catalogImage)
+            view.setImageViewBitmap(R.id.right_icon, threadInfo.catalogImage)
         }
 
+        // テキスト
+        val sb = SpannableStringBuilder()
         // レス一覧
-        if (threadInfo.replies.size != 0) {
-            @Suppress("DEPRECATION")
-            val messages = NotificationCompat.MessagingStyle(threadInfo.res)
-            @Suppress("DEPRECATION")
-            messages.addMessage(text, Date().time, "")
-            threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
-                val user =
-                    // レス番
-                    (if (it.index == 0) threadInfo.res else it.index.toString()) +
-                    // メールアドレス
-                    (threadInfo.mails[it.number]?.around("[", "]") ?: "")
-                @Suppress("DEPRECATION")
-                messages.addMessage(it.compressText.toColoredText(), Date().time, user)
-            }
-            if (title != null || text != null) {
-                @Suppress("DEPRECATION")
-                messages.addMessage(text, Date().time, title)
-            }
-            notificationBuilder.setStyle(messages)
+        threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
+            val user =
+                // レス番
+                (if (it.index == 0) threadInfo.res else it.index.toString()) +
+                // メールアドレス
+                (threadInfo.mails[it.number]?.around("[", "]") ?: "")
+
+            sb.addResponse(user, it.compressText)
         }
+        // メッセージ
+        val messageTitle = title ?: threadInfo.res ?: ""
+        val messageText = text ?: threadInfo.text ?: ""
+        if (messageTitle.isNotEmpty() || messageText.isNotEmpty()) {
+            sb.addResponse(messageTitle, messageText)
+        }
+        view.setTextViewText(R.id.text, sb)
+        notificationBuilder.setCustomBigContentView(view)
+        notificationBuilder.setCustomContentView(view)
+        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
         // 音がならないようにする
         notificationBuilder.setPriority(PRIORITY_LOW).build()
@@ -148,5 +158,20 @@ class ThreadNotification {
             }
             notificationManager.createNotificationChannel(mChannel)
         }
+    }
+
+    @SuppressLint("NewApi")
+    private fun SpannableStringBuilder.addResponse(user: String, text: String): SpannableStringBuilder {
+        if (this.isNotEmpty()) {
+            val responseDelimiter = SpannableStringBuilder("\n\n")
+            responseDelimiter.setSpan(RelativeSizeSpan(0.5f), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            this.append(responseDelimiter)
+        }
+        val userSpan = SpannableStringBuilder(user)
+        userSpan.setSpan(ForegroundColorSpan(Color.BLACK), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        this.append(userSpan)
+        this.append(" ")
+        this.append(text.toColoredText())
+        return this
     }
 }
