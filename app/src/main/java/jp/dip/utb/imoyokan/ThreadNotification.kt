@@ -119,7 +119,7 @@ class ThreadNotification {
         val sb = SpannableStringBuilder()
         // レス一覧
         if (threadInfo.replies.isEmpty()) {
-            sb.addResponse(threadInfo.res, threadInfo.text)
+            sb.addResponse(threadInfo.res, threadInfo.text, "\n")
         } else {
             threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
                 val user =
@@ -128,12 +128,12 @@ class ThreadNotification {
                             // メールアドレス
                             (threadInfo.mails[it.number]?.around("[", "]") ?: "")
 
-                sb.addResponse(user, it.compressText)
+                sb.addResponse(user, it.compressText, if (it.index == 0) "\n" else " ")
             }
         }
         // メッセージ
         if (title != null || text != null) {
-            sb.addResponse(title ?: "", text ?: "")
+            sb.addResponse(title ?: "", text ?: "", "\n")
         }
         view.setTextViewText(R.id.text, sb)
         notificationBuilder.setCustomBigContentView(view)
@@ -163,7 +163,7 @@ class ThreadNotification {
     }
 
     @SuppressLint("NewApi")
-    private fun SpannableStringBuilder.addResponse(user: String, text: String): SpannableStringBuilder {
+    private fun SpannableStringBuilder.addResponse(user: String, text: String, delimiter: String = " "): SpannableStringBuilder {
         if (this.isNotEmpty()) {
             val responseDelimiter = SpannableStringBuilder("\n\n")
             responseDelimiter.setSpan(RelativeSizeSpan(0.5f), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -172,7 +172,7 @@ class ThreadNotification {
         val userSpan = SpannableStringBuilder(user)
         userSpan.setSpan(ForegroundColorSpan(Color.BLACK), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         this.append(userSpan)
-        this.append(" ")
+        this.append(delimiter)
         this.append(text.toColoredText())
         return this
     }

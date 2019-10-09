@@ -30,7 +30,7 @@ fun String.removeHtmlTag(): String {
         .replace("<[^>]+>".toRegex(), "&#0;")
         .replace("&gt;", ">", true)
         .replace("&lt;", "<", true)
-        .replace("&heart;", STR_HEART)
+        .replace("&hearts;", STR_HEART)
     s = "&#(\\d{4,});".toRegex().replace(s) { String(Character.toChars(it.groupValues[1].toInt())) }
     return s
         .replace("&#0;", "")
