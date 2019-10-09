@@ -133,7 +133,7 @@ class ThreadNotification {
         }
         // メッセージ
         if (title != null || text != null) {
-            sb.addResponse(title ?: "", text ?: "", "\n")
+            sb.addResponse(title ?: "", text ?: "")
         }
         view.setTextViewText(R.id.text, sb)
         notificationBuilder.setCustomBigContentView(view)
