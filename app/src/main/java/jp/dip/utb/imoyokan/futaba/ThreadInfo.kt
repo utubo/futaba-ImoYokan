@@ -64,22 +64,21 @@ class ThreadInfoBuilder {
     var cacheImg: Bitmap? = null
 
     fun build(): ThreadInfo {
-        val (_, _, result) = url.toHttps().httpGet()
-            .responseString(FUTABA_CHARSET)
+        val threadInfo = ThreadInfo(url, mail)
+
+        // HTML読み込み
+        val (_, _, result) = url.toHttps().httpGet().responseString(FUTABA_CHARSET)
         var exception: Exception? = null
         val html = when (result) {
             is Result.Success -> result.get()
             is Result.Failure -> {  exception = result.getException(); "" }
         }
-        val threadInfo = ThreadInfo(url, mail)
-        // 必須情報ここまで
-
         if (exception != null) {
-            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty(" ", exception.message, "")}"))
+            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", exception.message, "")}"))
             return threadInfo
         }
 
-        // サムネ
+        // スレ画読み込み
         if (cacheImg != null) {
             threadInfo.catalogImage = cacheImg
         } else {
@@ -91,12 +90,15 @@ class ThreadInfoBuilder {
                     BitmapFactory.decodeByteArray(jpegBinary, 0, jpegBinary.size)
             }
         }
+
         // フォームデータ
         threadInfo.form.ptua = "name=\"ptua\" value=\"(\\d+)\"".toRegex().find(html)?.groupValues?.get(1) ?: ""
+
         // スレ本文(スレ本文はblockquoteの前に改行がある)
         var index = 0
         val text: String = "<blockquote>([^\\n]+)</blockquote>".toRegex().find(html)?.groupValues?.get(1)?.removeHtmlTag() ?: ""
         threadInfo.replies.add(ResInfo(index, threadInfo.res, text))
+
         // レス
         "id=sd(\\d+)>.*</a><blockquote[^>]*>([^\\n]+)</blockquote>".toRegex().findAll(html).forEach {
             index ++
@@ -108,6 +110,7 @@ class ThreadInfoBuilder {
                 )
             )
         }
+
         // メールアドレス
         "id=delcheck(\\d+)><a href=\"mailto:([^\"]+)\">".toRegex().findAll(html).forEach {
             threadInfo.mails[it.groupValues[1]] = it.groupValues[2].removeHtmlTag()
