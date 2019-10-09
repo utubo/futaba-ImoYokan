@@ -102,7 +102,6 @@ class ThreadNotification {
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_imoyokan)
             .setContentTitle(title?: threadInfo.res)
-            .setContentText(text?: threadInfo.text)
             .addAction(action)
             .addAction(reloadAction)
             .addAction(shareAction)
@@ -115,26 +114,21 @@ class ThreadNotification {
             view.setImageViewBitmap(R.id.right_icon, threadInfo.catalogImage)
         }
 
-        // テキスト
+        // レス
         val sb = SpannableStringBuilder()
-        // レス一覧
-        if (threadInfo.replies.isEmpty()) {
-            sb.addResponse(threadInfo.res, threadInfo.text, "\n")
-        } else {
-            threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
-                val user =
-                    // レス番
-                    (if (it.index == 0) threadInfo.res else it.index.toString()) +
-                            // メールアドレス
-                            (threadInfo.mails[it.number]?.around("[", "]") ?: "")
-
-                sb.addResponse(user, it.compressText, if (it.index == 0) "\n" else " ")
+        threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
+            val mail = aroundWhenIsNotEmpty("[", threadInfo.mails[it.number], "]") // メールは[]で囲う
+            if (it.index == 0) {
+                sb.addResponse("${it.number}${mail}", it.compressText, "\n")
+            } else {
+                sb.addResponse("${it.index}${mail}", it.compressText)
             }
         }
         // メッセージ
         if (title != null || text != null) {
             sb.addResponse(title ?: "", text ?: "")
         }
+
         view.setTextViewText(R.id.text, sb)
         notificationBuilder.setCustomBigContentView(view)
         notificationBuilder.setCustomContentView(view)

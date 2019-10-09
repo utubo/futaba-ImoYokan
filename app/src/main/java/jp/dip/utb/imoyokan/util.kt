@@ -59,8 +59,8 @@ fun String.replaceForPost(charset: Charset): String {
     return s
 }
 
-fun String.around(head: String, tail: String): String {
-    return head + this + tail
+fun aroundWhenIsNotEmpty(head: String, text: String?, tail: String): String {
+    return if (text?.isNotBlank() == true) (head + text + tail) else ""
 }
 
 fun String.toHttps(): String {

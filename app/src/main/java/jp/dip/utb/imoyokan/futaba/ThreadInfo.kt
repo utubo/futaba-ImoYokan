@@ -8,11 +8,24 @@ import com.github.kittinunf.result.Result
 import jp.dip.utb.imoyokan.*
 import java.lang.StringBuilder
 
-class ThreadInfo(val url: String, @Suppress("unused") val server: String, @Suppress("unused") val b: String, val res: String, val text: String) {
+class ThreadInfo(val url: String, mail: String) {
+    @Suppress("MemberVisibilityCanBePrivate")
+    val server: String
+    @Suppress("MemberVisibilityCanBePrivate")
+    val b: String
+    val res: String
+    var form = FromParams()
     var catalogImage: Bitmap? = null
     var replies = ArrayList<ResInfo>()
     var mails = HashMap<String, String>()
-    var form = FromParams()
+
+    init {
+        val (server, b, res) = analyseUrl(url)!!
+        this.server = server
+        this.b = b
+        this.res = res
+        this.form.mail = mail
+    }
 }
 
 class FromParams {
@@ -51,7 +64,6 @@ class ThreadInfoBuilder {
     var cacheImg: Bitmap? = null
 
     fun build(): ThreadInfo {
-        val (server, b, res) = analyseUrl(url)!!
         val (_, _, result) = url.toHttps().httpGet()
             .responseString(FUTABA_CHARSET)
         var exception: Exception? = null
@@ -59,11 +71,13 @@ class ThreadInfoBuilder {
             is Result.Success -> result.get()
             is Result.Failure -> {  exception = result.getException(); "" }
         }
-
-        val text: String? = "<blockquote>([^\\n]+)</blockquote>".toRegex().find(html)?.groupValues?.get(1)?.removeHtmlTag()
-        val threadInfo =
-            ThreadInfo(url, server, b, res, text ?: "スレッド取得失敗${exception?.message?.around(" ", "") ?: ""}")
+        val threadInfo = ThreadInfo(url, mail)
         // 必須情報ここまで
+
+        if (exception != null) {
+            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty(" ", exception.message, "")}"))
+            return threadInfo
+        }
 
         // サムネ
         if (cacheImg != null) {
@@ -72,19 +86,18 @@ class ThreadInfoBuilder {
             val thumbUrl = "/thumb/(\\d+s\\.jpg)".toRegex().find(html)?.groupValues?.get(1)
             if (thumbUrl != null) {
                 val jpegBinary =
-                    Fuel.download("${server}/${b}/cat/${thumbUrl}").response().second.data
+                    Fuel.download("${threadInfo.server}/${threadInfo.b}/cat/${thumbUrl}".toHttps()).response().second.data
                 threadInfo.catalogImage =
                     BitmapFactory.decodeByteArray(jpegBinary, 0, jpegBinary.size)
             }
         }
         // フォームデータ
-        threadInfo.form.mail = mail
         threadInfo.form.ptua = "name=\"ptua\" value=\"(\\d+)\"".toRegex().find(html)?.groupValues?.get(1) ?: ""
-        // レス
+        // スレ本文(スレ本文はblockquoteの前に改行がある)
         var index = 0
-        if (text != null) {
-            threadInfo.replies.add(ResInfo(index, res, text))
-        }
+        val text: String = "<blockquote>([^\\n]+)</blockquote>".toRegex().find(html)?.groupValues?.get(1)?.removeHtmlTag() ?: ""
+        threadInfo.replies.add(ResInfo(index, threadInfo.res, text))
+        // レス
         "id=sd(\\d+)>.*</a><blockquote[^>]*>([^\\n]+)</blockquote>".toRegex().findAll(html).forEach {
             index ++
             threadInfo.replies.add(
