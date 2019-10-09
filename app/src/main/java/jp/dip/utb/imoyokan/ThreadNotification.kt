@@ -118,20 +118,22 @@ class ThreadNotification {
         // テキスト
         val sb = SpannableStringBuilder()
         // レス一覧
-        threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
-            val user =
-                // レス番
-                (if (it.index == 0) threadInfo.res else it.index.toString()) +
-                // メールアドレス
-                (threadInfo.mails[it.number]?.around("[", "]") ?: "")
+        if (threadInfo.replies.isEmpty()) {
+            sb.addResponse(threadInfo.res, threadInfo.text)
+        } else {
+            threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
+                val user =
+                    // レス番
+                    (if (it.index == 0) threadInfo.res else it.index.toString()) +
+                            // メールアドレス
+                            (threadInfo.mails[it.number]?.around("[", "]") ?: "")
 
-            sb.addResponse(user, it.compressText)
+                sb.addResponse(user, it.compressText)
+            }
         }
         // メッセージ
-        val messageTitle = title ?: threadInfo.res ?: ""
-        val messageText = text ?: threadInfo.text ?: ""
-        if (messageTitle.isNotEmpty() || messageText.isNotEmpty()) {
-            sb.addResponse(messageTitle, messageText)
+        if (title != null || text != null) {
+            sb.addResponse(title ?: "", text ?: "")
         }
         view.setTextViewText(R.id.text, sb)
         notificationBuilder.setCustomBigContentView(view)
