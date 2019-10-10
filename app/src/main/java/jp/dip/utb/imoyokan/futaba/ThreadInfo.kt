@@ -55,7 +55,6 @@ class ResInfo(val index: Int, val number: String, val text: String) {
         }
         return s.toString().trim()
     }
-
 }
 
 class ThreadInfoBuilder {
@@ -68,15 +67,11 @@ class ThreadInfoBuilder {
 
         // HTML読み込み
         val (_, _, result) = url.toHttps().httpGet().responseString(FUTABA_CHARSET)
-        var exception: Exception? = null
-        val html = when (result) {
-            is Result.Success -> result.get()
-            is Result.Failure -> {  exception = result.getException(); "" }
-        }
-        if (exception != null) {
-            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", exception.message, "")}"))
+        if (result is Result.Failure) {
+            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", result.getException().message, "")}"))
             return threadInfo
         }
+        val html = result.get()
 
         // スレ画読み込み
         if (cacheImg != null) {

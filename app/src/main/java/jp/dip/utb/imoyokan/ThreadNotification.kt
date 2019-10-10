@@ -16,6 +16,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
+import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_LOW
@@ -52,7 +53,7 @@ class ThreadNotification {
     }
 
     private fun createIntent(context: Context, threadInfo: ThreadInfo): Intent {
-        return Intent(context,  NotificationReceiver::class.java)
+        return Intent(context, NotificationReceiver::class.java)
             .putExtra(KEY_EXTRA_URL, threadInfo.url)
             .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua)
             .putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
@@ -111,7 +112,9 @@ class ThreadNotification {
 
         // スレ画像
         if (threadInfo.catalogImage != null) {
-            view.setImageViewBitmap(R.id.right_icon, threadInfo.catalogImage)
+            view.setImageViewBitmap(R.id.large_icon, threadInfo.catalogImage)
+        } else {
+            view.setInt(R.id.large_icon, "setVisibility", View.GONE)
         }
 
         // レス
