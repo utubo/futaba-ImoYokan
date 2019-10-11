@@ -19,7 +19,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
 
     companion object {
         const val COLS = 7
-        const val ROWS = 3
+        const val ROWS = 4
         fun notify(catalogNotification: CatalogNotification) {
             GlobalScope.launch {
                 catalogNotification.notifyAsync(catalogNotification.intent.str(Intent.EXTRA_TEXT))

@@ -36,4 +36,13 @@
         <ImageView android:id="@+id/cat_5_2" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
         <ImageView android:id="@+id/cat_6_2" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
     </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+        <ImageView android:id="@+id/cat_0_3" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
+        <ImageView android:id="@+id/cat_1_3" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
+        <ImageView android:id="@+id/cat_2_3" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
+        <ImageView android:id="@+id/cat_3_3" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
+        <ImageView android:id="@+id/cat_4_3" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
+        <ImageView android:id="@+id/cat_5_3" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
+        <ImageView android:id="@+id/cat_6_3" android:layout_width="38dp" android:layout_height="38dp" android:visibility="gone" android:layout_margin="2dp" />
+    </LinearLayout>
 </LinearLayout>
