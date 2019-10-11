@@ -55,7 +55,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         // まずはプログレスバーを表示する
         val notificationManager = NotificationManagerCompat.from(context)
         notificationBuilder
-            .setProgress(COLS * ROWS, 0, true)
+            .setProgress(COLS * ROWS, 0, true /* = ずっとぐるぐるまわるスタイル */ )
             .notifySilent(context, CHANNEL_ID)
 
         // HTML読み込みと解析
@@ -89,9 +89,10 @@ class CatalogNotification(private val context: Context, private val intent: Inte
             }
             view.setViewVisibility(id, View.VISIBLE)
 
-            // プログレスバー更新
-            notificationBuilder.setProgress(COLS * ROWS, index, false)
-            notificationManager.notify(0, notificationBuilder.build())
+            // プログレスバー更新はやらない
+            // (notifyしすぎるとAndroidが完了時のnotifyを捨てちゃうのでやめた)
+            //notificationBuilder.setProgress(COLS * ROWS, index, false)
+            //notificationManager.notify(0, notificationBuilder.build())
 
             // 次の位置へ
             x ++
