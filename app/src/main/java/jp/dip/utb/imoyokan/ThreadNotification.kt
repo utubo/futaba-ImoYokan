@@ -46,10 +46,11 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             .setContentTitle(title?: threadInfo.res)
 
         // 入力されたテキストを受け取るPendingIntent
+        val replyRequestCode = REQUEST_CODE_REPLY + Random().nextInt(1000) // 返信のrequestCodeはかぶらないようにする！
         val replyPendingIntent = PendingIntent.getBroadcast(
             context,
-            REQUEST_CODE_REPLY + Random().nextInt(1000), // 返信のrequestCodeはかぶらないようにする！
-            createIntent(threadInfo),
+            replyRequestCode,
+            createIntent(threadInfo).putExtra(KEY_EXTRA_REQUEST_CODE, replyRequestCode) ,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val replyTitle = if (threadInfo.form.mail.isNotEmpty()) "返信 ${STR_MAILADDRESS}${threadInfo.form.mail}" else "返信"
@@ -106,7 +107,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // レス
         val sb = SpannableStringBuilder()
         threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
-            val mail = aroundWhenIsNotEmpty("[", threadInfo.mails[it.number], "]") // メールは[]で囲う
+            val mail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
             if (it.index == 0) {
                 sb.addResponse("${it.number}${mail}", it.getCompressText(), "\n")
             } else {

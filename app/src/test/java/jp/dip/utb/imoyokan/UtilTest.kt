@@ -31,4 +31,10 @@ class UtilTest {
         assertEquals("", aroundWhenIsNotEmpty("[", null, "]"))
         assertEquals("", aroundWhenIsNotEmpty("[", "", "]"))
     }
+
+    @Test
+    fun pick() {
+        assertEquals("abc", "<b>abc</b>".pick(">([^<]+)<".toRegex()))
+        assertEquals("", "".pick(">([^<]+)<".toRegex()))
+    }
 }

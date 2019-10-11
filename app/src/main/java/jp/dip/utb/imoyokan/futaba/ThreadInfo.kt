@@ -4,9 +4,7 @@ import android.graphics.Bitmap
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.squareup.picasso.Picasso
-import jp.dip.utb.imoyokan.aroundWhenIsNotEmpty
-import jp.dip.utb.imoyokan.removeHtmlTag
-import jp.dip.utb.imoyokan.toHttps
+import jp.dip.utb.imoyokan.*
 
 class ThreadInfo(val url: String, mail: String) {
     @Suppress("MemberVisibilityCanBePrivate")
@@ -17,7 +15,6 @@ class ThreadInfo(val url: String, mail: String) {
     var form = FromParams()
     var catalogImage: Bitmap? = null
     var replies = ArrayList<ResInfo>()
-    var mails = HashMap<String, String>()
     var exception: Exception? = null
     val isFailed: Boolean
         get() { return exception != null}
@@ -46,7 +43,7 @@ class FromParams {
     var mail = ""
 }
 
-class ResInfo(val index: Int, val number: String, val text: String) {
+class ResInfo(val index: Int, val number: String, val text: String, val mail: String = "") {
     /** 通知領域は狭いので適当に改行を抜く */
     fun getCompressText(): String {
         val levelRegex = "^(>*)".toRegex()
@@ -87,36 +84,48 @@ class ThreadInfoBuilder {
         }
         val html = result.get()
 
-        // スレ画読み込み
-        val thumbUrl = "/thumb/(\\d+s\\.jpg)".toRegex().find(html)?.groupValues?.get(1)
-        if (thumbUrl != null) {
-            threadInfo.catalogImage = Picasso.get().load("${threadInfo.server}/${threadInfo.b}/cat/${thumbUrl}".toHttps()).get()
-        }
-
-        // フォームデータ
-        threadInfo.form.ptua = "name=\"ptua\" value=\"(\\d+)\"".toRegex().find(html)?.groupValues?.get(1) ?: ""
-
-        // スレ本文(スレ本文はblockquoteの前に改行がある)
         var index = 0
-        val text: String = "<blockquote>([^\\n]+)</blockquote>".toRegex().find(html)?.groupValues?.get(1)?.removeHtmlTag() ?: ""
-        threadInfo.replies.add(ResInfo(index, threadInfo.res, text))
-
-        // レス
-        "id=sd(\\d+)>.*</a><blockquote[^>]*>([^\\n]+)</blockquote>".toRegex().findAll(html).forEach {
-            index ++
-            threadInfo.replies.add(
-                ResInfo(
-                    index,
-                    it.groupValues[1],
-                    it.groupValues[2].removeHtmlTag()
-                )
-            )
+        var resNumber = ""
+        var resMail = ""
+        var isPre = true
+        val threadMarker = "<input type=checkbox name=\"${threadInfo.res}\""
+        val numberRegex =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
+        val mailRegex =  "<a href=\"mailto:([^\"]+)\">".toRegex()
+        val textRegex =  "<blockquote[^>]*>([^\n]+)</blockquote>".toRegex()
+        for (line in html.split("\n")) {
+            if (isPre) {
+                // フォームデータ
+                if (line.contains("name=\"ptua\"")) {
+                    threadInfo.form.ptua = line.pick("name=\"ptua\" value=\"(\\d+)\"".toRegex())
+                    continue
+                }
+                if (line.contains(threadMarker)) {
+                    // スレ画読み込み
+                    val thumbUrl = "/thumb/(\\d+s\\.jpg)".toRegex().find(line)?.groupValues?.get(1)
+                    if (thumbUrl != null) {
+                        threadInfo.catalogImage = Picasso.get().load("${threadInfo.server}/${threadInfo.b}/cat/${thumbUrl}".toHttps()).get()
+                    }
+                    resNumber = threadInfo.res
+                    resMail = line.pick(mailRegex)
+                    isPre = false
+                    continue
+                }
+            }
+            // レス
+            if (line.contains("<blockquote")) {
+                val resText = line.pick(textRegex)
+                threadInfo.replies.add(ResInfo(index, resNumber, resText.removeHtmlTag(), resMail))
+                index ++
+                continue
+            }
+            // 番号とメール
+            if (line.startsWith("<input type=checkbox")) {
+                resNumber = line.pick(numberRegex)
+                resMail = line.pick(mailRegex)
+                continue
+            }
         }
 
-        // メールアドレス
-        "id=delcheck(\\d+)><a href=\"mailto:([^\"]+)\">".toRegex().findAll(html).forEach {
-            threadInfo.mails[it.groupValues[1]] = it.groupValues[2].removeHtmlTag()
-        }
         return threadInfo
     }
 }

@@ -69,6 +69,10 @@ fun String.toHttps(): String {
     return this.replace("http://", "https://")
 }
 
+fun String.pick(regex: Regex, g: Int = 1): String {
+    return regex.find(this)?.groupValues?.get(g) ?: ""
+}
+
 fun Intent.str(key: String): String {
     return this.getStringExtra(key) ?: ""
 }

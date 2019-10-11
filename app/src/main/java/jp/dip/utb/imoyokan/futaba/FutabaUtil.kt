@@ -5,6 +5,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import jp.dip.utb.imoyokan.BuildConfig
+import jp.dip.utb.imoyokan.pick
 
 @Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
 const val RES_INTERVAL = 36100000u
@@ -48,6 +49,6 @@ fun analyseCatalogUrl(url: String): Triple<String, String, String>? {
     val urlMatches = "(https?://.*\\.2chan\\.net)/([^/]+)/futaba.php\\?mode=cat(.*)".toRegex().find(url)?.groupValues ?: return null
     val server = urlMatches[1]
     val b: String = urlMatches[2]
-    val sort: String = "&sort=([^&]+)".toRegex().find(urlMatches[3])?.groupValues?.get(1) ?: ""
+    val sort: String = urlMatches[3].pick("&sort=([^&]+)".toRegex())
     return Triple(server, b, sort)
 }

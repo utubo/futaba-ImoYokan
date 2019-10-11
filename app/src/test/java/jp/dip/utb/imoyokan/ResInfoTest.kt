@@ -23,6 +23,6 @@ class ResInfoTest {
             1234567 890
             >ZZZ
             zzz
-        """.trimIndent(), target.compressText)
+        """.trimIndent(), target.getCompressText())
     }
 }

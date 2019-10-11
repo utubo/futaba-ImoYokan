@@ -18,7 +18,7 @@ class Replyer {
         params["pwd"] = ""
         params["mode"] = "regist"
         params["ptua"] = ptua
-        params["pthb"] = "return \"(\\d+)\"".toRegex().find(pthbResult.get())?.groupValues?.get(1) ?: ""
+        params["pthb"] = pthbResult.get().pick("return \"(\\d+)\"".toRegex())
         params["pthc"] = if (params["pthb"]!!.isNotEmpty()) (params["pthb"]!!.toULong() - RES_INTERVAL).toString() else ""
         params["baseform"] = ""
         params["js"] = "on"
