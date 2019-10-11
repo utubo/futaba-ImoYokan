@@ -1,6 +1,5 @@
 package jp.dip.utb.imoyokan.futaba
 
-import android.content.Intent
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result

@@ -4,6 +4,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:ignore="ContentDescription"
     >
     <TextView
         android:id="@+id/text"
@@ -19,13 +20,27 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="end"
         >
+
         <ImageView
             android:id="@+id/large_icon"
             android:layout_width="38dp"
             android:layout_height="38dp"
-            android:layout_gravity="end"
             android:scaleType="fitCenter"
-            tools:ignore="ContentDescription" />
+            />
+        <LinearLayout
+            android:layout_width="38dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:ignore="UselessLeaf" />
+        <ImageView
+            android:id="@+id/share"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom|end"
+            android:src="@android:drawable/ic_menu_share"
+            />
     </LinearLayout>
 </LinearLayout>

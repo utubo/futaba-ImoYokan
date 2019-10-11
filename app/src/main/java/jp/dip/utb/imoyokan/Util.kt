@@ -2,6 +2,7 @@
 
 package jp.dip.utb.imoyokan
 
+import android.content.Intent
 import java.nio.charset.Charset
 
 // 通知とextraData
@@ -10,13 +11,14 @@ const val NOTIFY_DESCRIPTION = "ImoYokan"
 const val CHANNEL_ID = "imoyokan_channel"
 const val KEY_EXTRA_REQUEST_CODE = "key_extra_requestCode"
 const val KEY_TEXT_REPLY = "key_text_reply"
-const val KEY_EXTRA_URL = "key_extra_url"
 const val KEY_EXTRA_MAIL = "key_extra_mail"
 const val KEY_EXTRA_PTUA = "key_extra_ptua"
-const val KEY_EXTRA_CACHE_IMG = "key_extra_cache_img"
-const val REQUEST_CODE_RELOAD = 1
-const val REQUEST_CODE_SHARE = 2
-const val REQUEST_CODE_REPLY = 10
+const val KEY_EXTRA_SORT = "key_extra_sort"
+const val REQUEST_CODE_SHARE = 99
+const val REQUEST_CODE_RELOAD = 100
+const val REQUEST_CODE_REPLY = 300
+
+// 表示設定
 const val MAX_RES_COUNT = 10
 
 // 記号
@@ -65,4 +67,8 @@ fun aroundWhenIsNotEmpty(head: String, text: String?, tail: String): String {
 
 fun String.toHttps(): String {
     return this.replace("http://", "https://")
+}
+
+fun Intent.str(key: String): String {
+    return this.getStringExtra(key) ?: ""
 }

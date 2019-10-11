@@ -1,72 +1,55 @@
 package jp.dip.utb.imoyokan
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.graphics.Color
-import android.net.Uri
-import android.os.Build
-import android.os.Build.VERSION_CODES
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.format.DateFormat
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationCompat.PRIORITY_LOW
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
-import jp.dip.utb.imoyokan.futaba.ThreadInfo
-import jp.dip.utb.imoyokan.futaba.ThreadInfoBuilder
-import jp.dip.utb.imoyokan.futaba.analyseUrl
-import jp.dip.utb.imoyokan.futaba.toColoredText
+import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 
-class ThreadNotification {
+class ThreadNotification(private val context: Context, private val intent: Intent) {
 
-    fun showThread(context: Context, intent: Intent, title: String? = null, text: String? = null): String {
-        val builder = ThreadInfoBuilder().apply {
-            url = intent.getStringExtra(KEY_EXTRA_URL) ?: ""
-            mail = intent.getStringExtra(KEY_EXTRA_MAIL) ?: ""
-            cacheImg = intent.getParcelableExtra(KEY_EXTRA_CACHE_IMG)
-        }
-        if (analyseUrl(builder.url) == null) return "スレッド取得失敗(URLが変！)\n${builder.url}"
+    fun notify(title: String? = null, text: String? = null) {
         GlobalScope.launch {
+            val builder = ThreadInfoBuilder().apply {
+                this.url = intent.str(Intent.EXTRA_TEXT)
+                this.mail = intent.str(KEY_EXTRA_MAIL)
+            }
             val threadInfo = builder.build()
-            showNotification(
-                context,
-                threadInfo,
-                title,
-                text
-            )
+            notifyAsync(threadInfo, title,  text)
         }
-        return "通知領域に表示しました"
     }
 
-    private fun createIntent(context: Context, threadInfo: ThreadInfo): Intent {
+    private fun createIntent(threadInfo: ThreadInfo): Intent {
         return Intent(context, NotificationReceiver::class.java)
-            .putExtra(KEY_EXTRA_URL, threadInfo.url)
+            .putExtra(Intent.EXTRA_TEXT, threadInfo.url)
             .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua)
             .putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
-            .putExtra(KEY_EXTRA_CACHE_IMG, threadInfo.catalogImage)
+            .putExtra(KEY_EXTRA_SORT, intent.str(KEY_EXTRA_SORT))
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun showNotification(context: Context, threadInfo: ThreadInfo, title: String? = null, text: String? = null) {
+    private fun notifyAsync(threadInfo: ThreadInfo, title: String? = null, text: String? = null) {
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_imoyokan)
+            .setContentTitle(title?: threadInfo.res)
+
         // 入力されたテキストを受け取るPendingIntent
         val replyPendingIntent = PendingIntent.getBroadcast(
             context,
             REQUEST_CODE_REPLY + Random().nextInt(1000), // 返信のrequestCodeはかぶらないようにする！
-            createIntent(context, threadInfo),
+            createIntent(threadInfo),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val replyTitle = if (threadInfo.form.mail.isNotEmpty()) "返信 ${STR_MAILADDRESS}${threadInfo.form.mail}" else "返信"
@@ -81,31 +64,34 @@ class ThreadNotification {
             .build()
 
         // リロードボタン
+        var requestCode = REQUEST_CODE_RELOAD
         val reloadAction = NotificationCompat
             .Action.Builder(
                 R.drawable.ic_action_reload,
-                SimpleDateFormat("更新(HH:mm:ss)").format(Date()),
-                PendingIntent.getBroadcast(context, REQUEST_CODE_RELOAD, createIntent(context, threadInfo).putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD) , PendingIntent.FLAG_CANCEL_CURRENT)
+                DateFormat.format("更新(HH:mm:ss)", Date()),
+                PendingIntent.getBroadcast(context, ++requestCode, createIntent(threadInfo).putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD) , PendingIntent.FLAG_CANCEL_CURRENT)
             )
             .build()
 
-        //共有ボタン
-        val share = Intent(Intent.ACTION_VIEW, Uri.parse(threadInfo.url))
-            .setFlags(FLAG_ACTIVITY_SINGLE_TOP) // としあき(仮)対策
-        val shareAction = NotificationCompat
+        // カタログボタン
+        val catalogIntent = Intent(context, NotificationReceiver::class.java)
+            .putExtra(Intent.EXTRA_TEXT, threadInfo.getCatalogUrl(intent.str(KEY_EXTRA_SORT)))
+        val catalogAction = NotificationCompat
             .Action.Builder(
-                android.R.drawable.ic_menu_share,
-                "共有",
-                PendingIntent.getActivity(context, REQUEST_CODE_SHARE, Intent.createChooser(share, threadInfo.url), PendingIntent.FLAG_UPDATE_CURRENT)
-            )
-            .build()
+            android.R.drawable.ic_menu_gallery,
+            DateFormat.format("カタログ", Date()),
+            PendingIntent.getBroadcast(context, ++requestCode, catalogIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+        ).build()
 
-        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_imoyokan)
-            .setContentTitle(title?: threadInfo.res)
+        notificationBuilder
             .addAction(action)
             .addAction(reloadAction)
-            .addAction(shareAction)
+            .addAction(catalogAction)
+
+        // 読み込みに失敗していた場合
+        if (threadInfo.isFailed) {
+            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", threadInfo.message, "")}"))
+        }
 
         // ここからカスタムView
         val view = RemoteViews(context.packageName, R.layout.notification_thread)
@@ -114,7 +100,7 @@ class ThreadNotification {
         if (threadInfo.catalogImage != null) {
             view.setImageViewBitmap(R.id.large_icon, threadInfo.catalogImage)
         } else {
-            view.setInt(R.id.large_icon, "setVisibility", View.GONE)
+            view.setViewVisibility(R.id.large_icon, View.GONE)
         }
 
         // レス
@@ -122,9 +108,9 @@ class ThreadNotification {
         threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
             val mail = aroundWhenIsNotEmpty("[", threadInfo.mails[it.number], "]") // メールは[]で囲う
             if (it.index == 0) {
-                sb.addResponse("${it.number}${mail}", it.compressText, "\n")
+                sb.addResponse("${it.number}${mail}", it.getCompressText(), "\n")
             } else {
-                sb.addResponse("${it.index}${mail}", it.compressText)
+                sb.addResponse("${it.index}${mail}", it.getCompressText())
             }
         }
         // メッセージ
@@ -133,30 +119,15 @@ class ThreadNotification {
         }
 
         view.setTextViewText(R.id.text, sb)
+
+        //共有ボタン
+        view.setOnClickPendingIntent(R.id.share, createShareUrlIntent(context, threadInfo.url))
+
+        // 表示するよ！
         notificationBuilder.setCustomBigContentView(view)
         notificationBuilder.setCustomContentView(view)
         notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
-
-        // 音がならないようにする
-        notificationBuilder.setPriority(PRIORITY_LOW).build()
-        val notificationManager = NotificationManagerCompat.from(context)
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.O) {
-            setupNotificationManager(notificationManager)
-        }
-
-        // 表示するよ！
-        notificationManager.notify(0, notificationBuilder.build())
-    }
-
-    @TargetApi(VERSION_CODES.O)
-    private fun setupNotificationManager(notificationManager: NotificationManagerCompat) {
-        if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
-            val mChannel = NotificationChannel(CHANNEL_ID, NOTIFY_NAME, NotificationManager.IMPORTANCE_LOW)
-            mChannel.apply {
-                description = NOTIFY_DESCRIPTION
-            }
-            notificationManager.createNotificationChannel(mChannel)
-        }
+        notificationBuilder.notifySilent(context, CHANNEL_ID)
     }
 
     @SuppressLint("NewApi")

@@ -1,12 +1,12 @@
 package jp.dip.utb.imoyokan.futaba
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import jp.dip.utb.imoyokan.*
-import java.lang.StringBuilder
+import com.squareup.picasso.Picasso
+import jp.dip.utb.imoyokan.aroundWhenIsNotEmpty
+import jp.dip.utb.imoyokan.removeHtmlTag
+import jp.dip.utb.imoyokan.toHttps
 
 class ThreadInfo(val url: String, mail: String) {
     @Suppress("MemberVisibilityCanBePrivate")
@@ -18,13 +18,26 @@ class ThreadInfo(val url: String, mail: String) {
     var catalogImage: Bitmap? = null
     var replies = ArrayList<ResInfo>()
     var mails = HashMap<String, String>()
+    var exception: Exception? = null
+    val isFailed: Boolean
+        get() { return exception != null}
+    val message: String
+        get() { return exception?.message ?: ""}
+    //val jsonUrl = base + "/futaba.php?mode=json&res=" + res + "&start=" + start + "&" + Math.random()
 
     init {
-        val (server, b, res) = analyseUrl(url)!!
-        this.server = server
-        this.b = b
-        this.res = res
+        val m = analyseUrl(url)
+        this.server = m?.first ?: ""
+        this.b = m?.second ?: ""
+        this.res = m?.third ?: ""
         this.form.mail = mail
+        if (m == null) {
+            exception = Exception("URLが変！")
+        }
+    }
+
+    fun getCatalogUrl(sort:String = ""): String {
+        return "$server/$b/futaba.php?mode=cat${aroundWhenIsNotEmpty("&sort=", sort, "")}"
     }
 }
 
@@ -35,8 +48,7 @@ class FromParams {
 
 class ResInfo(val index: Int, val number: String, val text: String) {
     /** 通知領域は狭いので適当に改行を抜く */
-    val compressText: String
-    get() {
+    fun getCompressText(): String {
         val levelRegex = "^(>*)".toRegex()
         val s = StringBuilder()
         var prevLevel = 0
@@ -60,30 +72,25 @@ class ResInfo(val index: Int, val number: String, val text: String) {
 class ThreadInfoBuilder {
     var url: String = ""
     var mail: String = ""
-    var cacheImg: Bitmap? = null
 
     fun build(): ThreadInfo {
         val threadInfo = ThreadInfo(url, mail)
+        if (threadInfo.isFailed) {
+            return threadInfo
+        }
 
         // HTML読み込み
         val (_, _, result) = url.toHttps().httpGet().responseString(FUTABA_CHARSET)
         if (result is Result.Failure) {
-            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", result.getException().message, "")}"))
+            threadInfo.exception = result.getException()
             return threadInfo
         }
         val html = result.get()
 
         // スレ画読み込み
-        if (cacheImg != null) {
-            threadInfo.catalogImage = cacheImg
-        } else {
-            val thumbUrl = "/thumb/(\\d+s\\.jpg)".toRegex().find(html)?.groupValues?.get(1)
-            if (thumbUrl != null) {
-                val jpegBinary =
-                    Fuel.download("${threadInfo.server}/${threadInfo.b}/cat/${thumbUrl}".toHttps()).response().second.data
-                threadInfo.catalogImage =
-                    BitmapFactory.decodeByteArray(jpegBinary, 0, jpegBinary.size)
-            }
+        val thumbUrl = "/thumb/(\\d+s\\.jpg)".toRegex().find(html)?.groupValues?.get(1)
+        if (thumbUrl != null) {
+            threadInfo.catalogImage = Picasso.get().load("${threadInfo.server}/${threadInfo.b}/cat/${thumbUrl}".toHttps()).get()
         }
 
         // フォームデータ
