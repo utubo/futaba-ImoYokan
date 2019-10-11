@@ -33,7 +33,13 @@ fun String.removeHtmlTag(): String {
         .replace("&gt;", ">", true)
         .replace("&lt;", "<", true)
         .replace("&hearts;", STR_HEART)
-    s = "&#(\\d{4,});".toRegex().replace(s) { String(Character.toChars(it.groupValues[1].toInt())) }
+    s = "&#(\\d{2,});".toRegex().replace(s) {
+        val code = it.groupValues[1].toInt()
+        if (code < 32)
+            ""
+        else
+            String(Character.toChars(code))
+    }
     return s
         .replace("&#0;", "")
         .replace("&amp;", "&")
