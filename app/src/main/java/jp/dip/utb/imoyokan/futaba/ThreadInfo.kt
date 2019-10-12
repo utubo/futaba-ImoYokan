@@ -14,6 +14,8 @@ class ThreadInfo(val url: String, mail: String) {
     val res: String
     var form = FromParams()
     var catalogImage: Bitmap? = null
+    var thumbUrl: String = ""
+    var imageUrl: String = ""
     var replies = ArrayList<ResInfo>()
     var exception: Exception? = null
     val isFailed: Boolean
@@ -101,9 +103,11 @@ class ThreadInfoBuilder {
                 }
                 if (line.contains(threadMarker)) {
                     // スレ画読み込み
-                    val thumbUrl = "/thumb/(\\d+s\\.jpg)".toRegex().find(line)?.groupValues?.get(1)
-                    if (thumbUrl != null) {
-                        threadInfo.catalogImage = Picasso.get().load("${threadInfo.server}/${threadInfo.b}/cat/${thumbUrl}".toHttps()).get()
+                    val m = "<a href=\"/(${threadInfo.b}/src/[^\"]+)\" target=\"_blank\"><img src=\"/(${threadInfo.b}/thumb/\\d+s\\.jpg)".toRegex().find(line)
+                    if (m != null) {
+                        threadInfo.imageUrl = "${threadInfo.server}/${m.groupValues[1]}"
+                        threadInfo.thumbUrl = "${threadInfo.server}/${m.groupValues[2]}"
+                        threadInfo.catalogImage = Picasso.get().load(threadInfo.thumbUrl.replace("/thumb/", "/cat/").toHttps()).get()
                     }
                     resNumber = threadInfo.res
                     resMail = line.pick(mailRegex)

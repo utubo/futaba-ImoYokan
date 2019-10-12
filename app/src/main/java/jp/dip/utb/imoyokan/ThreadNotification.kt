@@ -66,16 +66,19 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
         // リロードボタン
         var requestCode = REQUEST_CODE_RELOAD
+        val reloadIntent = createIntent(threadInfo)
+            .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
         val reloadAction = NotificationCompat
             .Action.Builder(
                 R.drawable.ic_action_reload,
                 DateFormat.format("更新(HH:mm:ss)", Date()),
-                PendingIntent.getBroadcast(context, ++requestCode, createIntent(threadInfo).putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD) , PendingIntent.FLAG_CANCEL_CURRENT)
+                PendingIntent.getBroadcast(context, ++requestCode, reloadIntent, PendingIntent.FLAG_CANCEL_CURRENT)
             )
             .build()
 
         // カタログボタン
         val catalogIntent = Intent(context, NotificationReceiver::class.java)
+            .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
             .putExtra(Intent.EXTRA_TEXT, threadInfo.getCatalogUrl(intent.str(KEY_EXTRA_SORT)))
         val catalogAction = NotificationCompat
             .Action.Builder(
@@ -100,6 +103,13 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // スレ画像
         if (threadInfo.catalogImage != null) {
             view.setImageViewBitmap(R.id.large_icon, threadInfo.catalogImage)
+            val imageIntent = createIntent(threadInfo)
+                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
+                .putExtra(Intent.EXTRA_TEXT, threadInfo.thumbUrl)
+                .putExtra(KEY_EXTRA_IMAGE_SRC_URL, threadInfo.imageUrl)
+                .putExtra(KEY_EXTRA_BACK_URL, threadInfo.url)
+            view.setOnClickPendingIntent(R.id.large_icon, PendingIntent.getBroadcast(context, ++requestCode, imageIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+
         } else {
             view.setViewVisibility(R.id.large_icon, View.GONE)
         }

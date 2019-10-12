@@ -20,10 +20,11 @@ class CatalogNotification(private val context: Context, private val intent: Inte
     companion object {
         const val COLS = 7
         const val ROWS = 4
-        fun notify(catalogNotification: CatalogNotification) {
-            GlobalScope.launch {
-                catalogNotification.notifyAsync(catalogNotification.intent.str(Intent.EXTRA_TEXT))
-            }
+    }
+
+    fun notifyThis() {
+        GlobalScope.launch {
+            notifyAsync(intent.str(Intent.EXTRA_TEXT))
         }
     }
 
@@ -47,13 +48,12 @@ class CatalogNotification(private val context: Context, private val intent: Inte
 
         // URLが取れたならボタンも作れる
         notificationBuilder
-            .setProgress(COLS * ROWS, 0, true)
             .addAction(createCatalogAction(context, ++requestCode, "カタログ", catalogInfo, SORT_DEFAULT))
             .addAction(createCatalogAction(context, ++requestCode, "新順", catalogInfo, SORT_NEWER))
             .addAction(createCatalogAction(context, ++requestCode, "多順", catalogInfo, SORT_REPLY))
 
         // まずはプログレスバーを表示する
-        val notificationManager = NotificationManagerCompat.from(context)
+        val notificationManager = NotificationManagerCompat.from(context) // こいつで表示を更新する
         notificationBuilder
             .setProgress(COLS * ROWS, 0, true /* = ずっとぐるぐるまわるスタイル */ )
             .notifySilent(context, CHANNEL_ID)

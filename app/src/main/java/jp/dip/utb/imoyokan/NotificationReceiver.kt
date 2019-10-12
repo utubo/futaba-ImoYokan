@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.RemoteInput
 import jp.dip.utb.imoyokan.futaba.Replyer
+import jp.dip.utb.imoyokan.futaba.analyseCatalogUrl
+import jp.dip.utb.imoyokan.futaba.analyseImageUrl
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -18,10 +20,10 @@ class NotificationReceiver : BroadcastReceiver() {
         // 更新
         if (requestCode < REQUEST_CODE_REPLY) {
             val url = intent.str(Intent.EXTRA_TEXT)
-            if (url.indexOf("mode=cat") != - 1) {
-                CatalogNotification.notify(CatalogNotification(context, intent))
-            } else {
-                ThreadNotification(context, intent).notify()
+            when {
+                analyseCatalogUrl(url) != null -> CatalogNotification(context, intent).notifyThis()
+                analyseImageUrl(url) != null -> ImageNotification(context, intent).notifyThis()
+                else -> ThreadNotification(context, intent).notify()
             }
             return
         }

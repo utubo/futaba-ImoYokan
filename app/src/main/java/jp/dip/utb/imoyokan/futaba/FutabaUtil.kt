@@ -52,3 +52,8 @@ fun analyseCatalogUrl(url: String): Triple<String, String, String>? {
     val sort: String = urlMatches[3].pick("&sort=([^&]+)".toRegex())
     return Triple(server, b, sort)
 }
+
+fun analyseImageUrl(url: String): Triple<String, String, String>? {
+    val urlMatches = "(https?://.+)/([^/]+)\\.(jpe?g|png)([#?][^/]*)?".toRegex().find(url)?.groupValues ?: return null
+    return Triple(urlMatches[1], urlMatches[2], urlMatches[3])
+}
