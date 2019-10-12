@@ -109,14 +109,14 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         notificationBuilder
             .removeProgress()
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setContent(view)
             .setCustomBigContentView(view)
+            .setContent(view)
         notificationManager.notify(0, notificationBuilder.build())
     }
 
     private fun createCatalogAction(context: Context, requestCode: Int, text: String, catalogInfo: CatalogInfo, sort: String): NotificationCompat.Action {
         val intent = Intent(context, NotificationReceiver::class.java)
-        intent.putExtra(Intent.EXTRA_TEXT, catalogInfo.getLinkUrl(sort))
+        intent.putExtra(Intent.EXTRA_TEXT, getCatalogUrl(catalogInfo.url, sort))
         intent.putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
         val sb = StringBuilder(text)
         if (catalogInfo.sort == sort) {

@@ -5,6 +5,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import jp.dip.utb.imoyokan.BuildConfig
+import jp.dip.utb.imoyokan.aroundWhenIsNotEmpty
 import jp.dip.utb.imoyokan.pick
 
 @Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
@@ -57,3 +58,9 @@ fun analyseImageUrl(url: String): Triple<String, String, String>? {
     val urlMatches = "(https?://.+)/([^/]+)\\.(jpe?g|png)([#?][^/]*)?".toRegex().find(url)?.groupValues ?: return null
     return Triple(urlMatches[1], urlMatches[2], urlMatches[3])
 }
+
+fun getCatalogUrl(url: String, sort:String = ""): String {
+    val root = url.pick("(^https?://.*\\.2chan\\.net/[^/]+)".toRegex())
+    return "$root/futaba.php?mode=cat${aroundWhenIsNotEmpty("&sort=", sort, "")}"
+}
+

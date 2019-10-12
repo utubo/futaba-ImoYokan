@@ -34,10 +34,6 @@ class ThreadInfo(val url: String, mail: String) {
             exception = Exception("URLが変！")
         }
     }
-
-    fun getCatalogUrl(sort:String = ""): String {
-        return "$server/$b/futaba.php?mode=cat${aroundWhenIsNotEmpty("&sort=", sort, "")}"
-    }
 }
 
 class FromParams {

@@ -22,7 +22,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_imoyokan)
 
-        // アクションボタン
+        // スレッドボタン
         var requestCode = REQUEST_CODE_RELOAD
         val threadUrl = intent.str(KEY_EXTRA_BACK_URL)
         if (threadUrl.isNotEmpty()) {
@@ -36,6 +36,10 @@ class ImageNotification(private val context: Context, private val intent: Intent
                 PendingIntent.getBroadcast(context, ++requestCode, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT)
             )
         }
+
+        // カタログボタン
+        val catalogAction = createCatalogAction(context, intent, ++requestCode)
+        notificationBuilder.addAction(catalogAction)
 
         // まずはプログレスバーを表示する
         val notificationManager = NotificationManagerCompat.from(context)
@@ -55,8 +59,8 @@ class ImageNotification(private val context: Context, private val intent: Intent
         notificationBuilder
             .removeProgress()
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setContent(view)
             .setCustomBigContentView(view)
+            .setContent(view)
         notificationManager.notify(0, notificationBuilder.build())
     }
 

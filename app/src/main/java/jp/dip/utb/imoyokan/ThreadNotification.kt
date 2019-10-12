@@ -77,15 +77,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             .build()
 
         // カタログボタン
-        val catalogIntent = Intent(context, NotificationReceiver::class.java)
-            .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
-            .putExtra(Intent.EXTRA_TEXT, threadInfo.getCatalogUrl(intent.str(KEY_EXTRA_SORT)))
-        val catalogAction = NotificationCompat
-            .Action.Builder(
-            android.R.drawable.ic_menu_gallery,
-            DateFormat.format("カタログ", Date()),
-            PendingIntent.getBroadcast(context, ++requestCode, catalogIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-        ).build()
+        val catalogAction = createCatalogAction(context, intent, ++requestCode)
 
         notificationBuilder
             .addAction(action)
@@ -135,10 +127,11 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickPendingIntent(R.id.share, createShareUrlIntent(context, threadInfo.url))
 
         // 表示するよ！
-        notificationBuilder.setCustomBigContentView(view)
-        notificationBuilder.setCustomContentView(view)
-        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
-        notificationBuilder.notifySilent(context, CHANNEL_ID)
+        notificationBuilder
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomBigContentView(view)
+            .setCustomContentView(view)
+            .notifySilent(context, CHANNEL_ID)
     }
 
     @SuppressLint("NewApi")

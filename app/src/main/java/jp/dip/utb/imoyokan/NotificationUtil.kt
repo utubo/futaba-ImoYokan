@@ -8,8 +8,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.text.format.DateFormat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import jp.dip.utb.imoyokan.futaba.getCatalogUrl
+import java.util.*
 
 /**
  * 音を鳴らさず通知する
@@ -56,5 +59,20 @@ fun createShareUrlIntent(context: Context, url: String, target: Class<*>? = null
         Intent.createChooser(share, url),
         PendingIntent.FLAG_UPDATE_CURRENT
     )
+}
+
+/**
+ * カタログ
+ */
+fun createCatalogAction(context: Context, intent: Intent, requestCode: Int): NotificationCompat.Action {
+    // カタログボタン
+    val catalogIntent = Intent(context, NotificationReceiver::class.java)
+        .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
+        .putExtra(Intent.EXTRA_TEXT, getCatalogUrl(intent.str(Intent.EXTRA_TEXT) , intent.str(KEY_EXTRA_SORT)))
+    return NotificationCompat.Action.Builder(
+        android.R.drawable.ic_menu_gallery,
+        DateFormat.format("カタログ", Date()),
+        PendingIntent.getBroadcast(context, requestCode, catalogIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+    ).build()
 }
 

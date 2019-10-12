@@ -2,11 +2,10 @@ package jp.dip.utb.imoyokan.futaba
 
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import jp.dip.utb.imoyokan.aroundWhenIsNotEmpty
 import jp.dip.utb.imoyokan.removeHtmlTag
 import jp.dip.utb.imoyokan.toHttps
 
-class CatalogInfo(url: String) {
+class CatalogInfo(val url: String) {
     val items: ArrayList<CatalogItem> = ArrayList()
     val server: String
     val b: String
@@ -25,10 +24,6 @@ class CatalogInfo(url: String) {
         if (m == null) {
             exception = Exception("URLが変！")
         }
-    }
-
-    fun getLinkUrl(sort: String): String {
-        return "${server}/${b}/futaba.php?mode=cat${aroundWhenIsNotEmpty("&sort=", sort, "")}"
     }
 }
 
