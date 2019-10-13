@@ -65,7 +65,7 @@ fun createImoyokanIntent(context: Context, intent: Intent?): Intent {
     val result = Intent(context, NotificationReceiver::class.java)
         .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
     if (intent != null) {
-        result.putExtra(KEY_EXTRA_MAIL, intent.getStringExtra("KEY_EXTRA_MAIL"))
+        result.putExtra(KEY_EXTRA_MAIL, intent.getStringExtra(KEY_EXTRA_MAIL))
     }
     return result
 }
