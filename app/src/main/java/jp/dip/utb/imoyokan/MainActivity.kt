@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        pref.cache.remove(key)
         refresh()
     }
 
@@ -52,14 +53,27 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun refresh() {
-        if (pref.lastCatalogUrl.isNotEmpty()) {
-            findViewById<TextView>(R.id.message).visibility = View.GONE
-            findViewById<TextView>(R.id.catalog).visibility = View.VISIBLE
-        }
-        if (pref.lastCatalogUrl.isNotEmpty()) {
-            findViewById<TextView>(R.id.message).visibility = View.GONE
-            findViewById<TextView>(R.id.thread).visibility = View.VISIBLE
-        }
+        findViewById<TextView>(R.id.message).visibility =
+            if (pref.lastCatalogUrl.isEmpty() && pref.lastThreadUrl.isEmpty()) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+        findViewById<TextView>(R.id.catalog).visibility =
+            if (pref.lastCatalogUrl.isNotEmpty()) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+        findViewById<TextView>(R.id.thread).visibility =
+            if (pref.lastThreadUrl.isNotEmpty()) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
         findViewById<TextView>(R.id.catalog_cols).text = pref.catalog.cols.toString()
         findViewById<TextView>(R.id.catalog_rows).text = pref.catalog.rows.toString()
     }

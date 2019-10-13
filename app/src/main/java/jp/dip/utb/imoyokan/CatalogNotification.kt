@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.preference.PreferenceManager
 import com.squareup.picasso.Picasso
 import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope

@@ -50,7 +50,7 @@
             android:id="@+id/setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@android:drawable/ic_menu_preferences"
+            android:drawableStart="@drawable/ic_action_settings"
             android:drawablePadding="4dp"
             android:gravity="start|center_vertical"
             android:text="設定"/>
