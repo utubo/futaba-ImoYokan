@@ -17,9 +17,9 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val requestCode = intent.getIntExtra(KEY_EXTRA_REQUEST_CODE, 0)
 
-        // 更新
+        // URL表示
         if (requestCode < REQUEST_CODE_REPLY) {
-            val url = intent.str(Intent.EXTRA_TEXT)
+            val url = intent.str(KEY_EXTRA_URL)
             when {
                 analyseCatalogUrl(url) != null -> CatalogNotification(context, intent).notifyThis()
                 analyseImageUrl(url) != null -> ImageNotification(context, intent).notifyThis()
@@ -53,7 +53,7 @@ class NotificationReceiver : BroadcastReceiver() {
             return
         }
         GlobalScope.launch {
-            val url = intent.str(Intent.EXTRA_TEXT)
+            val url = intent.str(KEY_EXTRA_URL)
             val ptua = intent.str(KEY_EXTRA_PTUA)
             val (title, msg) = Replyer().reply(url, text, mail, ptua)
             //val title = "テスト"; val msg = "mail=${mail},text=${text}"

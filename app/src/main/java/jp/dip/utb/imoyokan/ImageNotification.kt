@@ -23,13 +23,12 @@ class ImageNotification(private val context: Context, private val intent: Intent
             .setSmallIcon(R.drawable.ic_stat_imoyokan)
 
         // スレッドボタン
-        var requestCode = REQUEST_CODE_RELOAD
+        var requestCode = REQUEST_CODE_RELOAD_URL
         val threadUrl = intent.str(KEY_EXTRA_BACK_URL)
         if (threadUrl.isNotEmpty()) {
             val clickIntent = Intent(context, NotificationReceiver::class.java)
-                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
-                .putExtra(KEY_EXTRA_SORT, intent.str(KEY_EXTRA_SORT))
-                .putExtra(Intent.EXTRA_TEXT, threadUrl)
+                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
+                .putExtra(KEY_EXTRA_URL, threadUrl)
             notificationBuilder.addAction(
                 android.R.drawable.ic_menu_close_clear_cancel,
                 "スレッド",
@@ -49,7 +48,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
 
         // 画像をダウンロードしてセット
         val view = RemoteViews(context.packageName, R.layout.notification_image)
-        val bitmap = Picasso.get().load(intent.str(Intent.EXTRA_TEXT)).get()
+        val bitmap = Picasso.get().load(intent.str(KEY_EXTRA_URL)).get()
         view.setImageViewBitmap(R.id.image, bitmap)
 
         // 共有ボタン

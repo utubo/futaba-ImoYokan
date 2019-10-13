@@ -24,7 +24,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
     fun notify(title: String? = null, text: String? = null) {
         GlobalScope.launch {
             val builder = ThreadInfoBuilder().apply {
-                this.url = intent.str(Intent.EXTRA_TEXT)
+                this.url = intent.str(KEY_EXTRA_URL)
                 this.mail = intent.str(KEY_EXTRA_MAIL)
             }
             val threadInfo = builder.build()
@@ -34,10 +34,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
     private fun createIntent(threadInfo: ThreadInfo): Intent {
         return Intent(context, NotificationReceiver::class.java)
-            .putExtra(Intent.EXTRA_TEXT, threadInfo.url)
+            .putExtra(KEY_EXTRA_URL, threadInfo.url)
             .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua)
             .putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
-            .putExtra(KEY_EXTRA_SORT, intent.str(KEY_EXTRA_SORT))
     }
 
     private fun notifyAsync(threadInfo: ThreadInfo, title: String? = null, text: String? = null) {
@@ -65,9 +64,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             .build()
 
         // リロードボタン
-        var requestCode = REQUEST_CODE_RELOAD
+        var requestCode = REQUEST_CODE_RELOAD_URL
         val reloadIntent = createIntent(threadInfo)
-            .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
+            .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
         val reloadAction = NotificationCompat
             .Action.Builder(
                 R.drawable.ic_action_reload,
@@ -96,8 +95,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         if (threadInfo.catalogImage != null) {
             view.setImageViewBitmap(R.id.large_icon, threadInfo.catalogImage)
             val imageIntent = createIntent(threadInfo)
-                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
-                .putExtra(Intent.EXTRA_TEXT, threadInfo.thumbUrl)
+                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
+                .putExtra(KEY_EXTRA_URL, threadInfo.thumbUrl)
                 .putExtra(KEY_EXTRA_IMAGE_SRC_URL, threadInfo.imageUrl)
                 .putExtra(KEY_EXTRA_BACK_URL, threadInfo.url)
             view.setOnClickPendingIntent(R.id.large_icon, PendingIntent.getBroadcast(context, ++requestCode, imageIntent, PendingIntent.FLAG_CANCEL_CURRENT))
@@ -132,6 +131,11 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             .setCustomBigContentView(view)
             .setCustomContentView(view)
             .notifySilent(context, CHANNEL_ID)
+
+        // このURLを保存
+        val pref = Pref(context)
+        pref.lastThreadUrl = threadInfo.url
+        pref.apply()
     }
 
     @SuppressLint("NewApi")

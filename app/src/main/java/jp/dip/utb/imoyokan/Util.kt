@@ -11,13 +11,13 @@ const val NOTIFY_DESCRIPTION = "ImoYokan"
 const val CHANNEL_ID = "imoyokan_channel"
 const val KEY_EXTRA_REQUEST_CODE = "key_extra_requestCode"
 const val KEY_TEXT_REPLY = "key_text_reply"
+const val KEY_EXTRA_URL = "key_extra_mail"
 const val KEY_EXTRA_MAIL = "key_extra_mail"
 const val KEY_EXTRA_PTUA = "key_extra_ptua"
-const val KEY_EXTRA_SORT = "key_extra_sort"
 const val KEY_EXTRA_BACK_URL = "key_extra_back_url"
 const val KEY_EXTRA_IMAGE_SRC_URL = "key_extra_src_url"
 const val REQUEST_CODE_SHARE = 99
-const val REQUEST_CODE_RELOAD = 100
+const val REQUEST_CODE_RELOAD_URL = 100
 const val REQUEST_CODE_REPLY = 300
 
 // 表示設定
@@ -79,6 +79,13 @@ fun String.toHttps(): String {
 
 fun String.pick(regex: Regex, g: Int = 1): String {
     return regex.find(this)?.groupValues?.get(g) ?: ""
+}
+
+fun nvl(vararg values: String?): String {
+    for (v in values) {
+        if (v != null && v.isNotEmpty()) return v
+    }
+    return ""
 }
 
 fun Intent.str(key: String): String {

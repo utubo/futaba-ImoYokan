@@ -61,18 +61,48 @@ fun createShareUrlIntent(context: Context, url: String, target: Class<*>? = null
     )
 }
 
+fun createImoyokanIntent(context: Context, intent: Intent?): Intent {
+    val result = Intent(context, NotificationReceiver::class.java)
+        .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
+    if (intent != null) {
+        result.putExtra(KEY_EXTRA_MAIL, intent.getStringExtra("KEY_EXTRA_MAIL"))
+    }
+    return result
+}
+
+/** URL指定で再通知するIntent */
+fun createNextPageIntent(context: Context, intent: Intent, requestCode: Int, url: String, vararg extras: Pair<String, Any>): PendingIntent {
+    val newIntent = createImoyokanIntent(context, intent)
+        .putExtra(KEY_EXTRA_URL, url)
+        .putExtra(KEY_EXTRA_REQUEST_CODE, requestCode)
+    extras.forEach {
+        when (it.second) {
+            is Int -> newIntent.putExtra(it.first, it.second as Int)
+            is String -> newIntent.putExtra(it.first, it.second as String)
+        }
+    }
+    return PendingIntent.getBroadcast(context, requestCode, newIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+}
+
+/** URL指定で再通知するAction */
+fun createNextPageAction(context: Context, intent: Intent, requestCode: Int, icon: Int, label: String, url: String): NotificationCompat.Action {
+    return NotificationCompat.Action.Builder(
+        icon,
+        label,
+        createNextPageIntent(context, intent, requestCode, url)
+    ).build()
+}
+
 /**
  * カタログ
  */
 fun createCatalogAction(context: Context, intent: Intent, requestCode: Int): NotificationCompat.Action {
     // カタログボタン
-    val catalogIntent = Intent(context, NotificationReceiver::class.java)
-        .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD)
-        .putExtra(Intent.EXTRA_TEXT, getCatalogUrl(intent.str(Intent.EXTRA_TEXT) , intent.str(KEY_EXTRA_SORT)))
+    val catalogIntent = createNextPageIntent(context, intent, requestCode, getCatalogUrl(intent.str(KEY_EXTRA_URL), Pref(context).catalog.sort))
     return NotificationCompat.Action.Builder(
         android.R.drawable.ic_menu_gallery,
         DateFormat.format("カタログ", Date()),
-        PendingIntent.getBroadcast(context, requestCode, catalogIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+        catalogIntent
     ).build()
 }
 
