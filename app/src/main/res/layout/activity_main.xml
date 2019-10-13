@@ -66,7 +66,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="カタログサイズ(横)="/>
+                    android:text="@string/catalog_cols"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="="/>
                 <TextView
                     android:id="@+id/catalog_cols"
                     android:layout_width="wrap_content"
@@ -80,7 +84,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="カタログサイズ(縦)="/>
+                    android:text="@string/catalog_rows"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="="/>
                 <TextView
                     android:id="@+id/catalog_rows"
                     android:layout_width="wrap_content"

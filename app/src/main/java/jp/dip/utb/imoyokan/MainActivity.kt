@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     fun onClickCatalogCols(@Suppress("UNUSED_PARAMETER") view: View) {
         val items = arrayOf("3", "4", "5", "6", "7", "8", "9")
         AlertDialog.Builder(this)
-            .setTitle("Selector")
+            .setTitle(getString(R.string.catalog_cols))
             .setItems(items) { _, which ->
                 pref.catalog.cols = items[which].toInt()
                 pref.apply()
@@ -90,9 +90,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     fun onClickCatalogRows(@Suppress("UNUSED_PARAMETER") view: View) {
-        val items = arrayOf("1", "2", "3", "4")
+        val items = arrayOf("1", "2", "3", "4", "5")
         AlertDialog.Builder(this)
-            .setTitle("Selector")
+            .setTitle(getString(R.string.catalog_rows))
             .setItems(items) { _, which ->
                 pref.catalog.rows = items[which].toInt()
                 pref.apply()
