@@ -33,7 +33,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
     }
 
     private fun createIntent(threadInfo: ThreadInfo): Intent {
-        return Intent(context, NotificationReceiver::class.java)
+        return createImoyokanIntent(context, intent)
             .putExtra(KEY_EXTRA_URL, threadInfo.url)
             .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua)
             .putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
@@ -44,12 +44,16 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             .setSmallIcon(R.drawable.ic_stat_imoyokan)
             .setContentTitle(title?: threadInfo.res)
 
+        // このURLを保存
+        val pref = Pref.getInstance(context)
+        pref.lastThreadUrl = threadInfo.url
+        pref.apply()
+
         // 入力されたテキストを受け取るPendingIntent
-        val replyRequestCode = REQUEST_CODE_REPLY + Random().nextInt(1000) // 返信のrequestCodeはかぶらないようにする！
         val replyPendingIntent = PendingIntent.getBroadcast(
             context,
-            replyRequestCode,
-            createIntent(threadInfo).putExtra(KEY_EXTRA_REQUEST_CODE, replyRequestCode) ,
+            REQUEST_CODE_REPLY + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
+            createIntent(threadInfo).putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_REPLY) ,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val replyTitle = if (threadInfo.form.mail.isNotEmpty()) "返信 ${STR_MAILADDRESS}${threadInfo.form.mail}" else "返信"
@@ -66,7 +70,6 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // リロードボタン
         var requestCode = REQUEST_CODE_RELOAD_URL
         val reloadIntent = createIntent(threadInfo)
-            .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
         val reloadAction = NotificationCompat
             .Action.Builder(
                 R.drawable.ic_action_reload,
@@ -95,10 +98,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         if (threadInfo.catalogImage != null) {
             view.setImageViewBitmap(R.id.large_icon, threadInfo.catalogImage)
             val imageIntent = createIntent(threadInfo)
-                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
                 .putExtra(KEY_EXTRA_URL, threadInfo.thumbUrl)
                 .putExtra(KEY_EXTRA_IMAGE_SRC_URL, threadInfo.imageUrl)
-                .putExtra(KEY_EXTRA_BACK_URL, threadInfo.url)
             view.setOnClickPendingIntent(R.id.large_icon, PendingIntent.getBroadcast(context, ++requestCode, imageIntent, PendingIntent.FLAG_CANCEL_CURRENT))
 
         } else {
@@ -127,15 +128,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
         // 表示するよ！
         notificationBuilder
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setCustomBigContentView(view)
-            .setCustomContentView(view)
+            .setRemoteViews(view)
             .notifySilent(context, CHANNEL_ID)
-
-        // このURLを保存
-        val pref = Pref.getInstance(context)
-        pref.lastThreadUrl = threadInfo.url
-        pref.apply()
     }
 
     @SuppressLint("NewApi")

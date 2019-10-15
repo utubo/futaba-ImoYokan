@@ -14,7 +14,6 @@ const val KEY_TEXT_REPLY = "key_text_reply"
 const val KEY_EXTRA_URL = "key_extra_url"
 const val KEY_EXTRA_MAIL = "key_extra_mail"
 const val KEY_EXTRA_PTUA = "key_extra_ptua"
-const val KEY_EXTRA_BACK_URL = "key_extra_back_url"
 const val KEY_EXTRA_IMAGE_SRC_URL = "key_extra_src_url"
 const val REQUEST_CODE_SHARE = 99
 const val REQUEST_CODE_RELOAD_URL = 100
@@ -79,6 +78,10 @@ fun String.toHttps(): String {
 
 fun String.pick(regex: Regex, g: Int = 1): String {
     return regex.find(this)?.groupValues?.get(g) ?: ""
+}
+
+fun String.blankToNull(): String? {
+    return if (this.isBlank()) null else this
 }
 
 fun Intent.str(key: String): String {

@@ -110,9 +110,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         // 表示するよ！
         notificationBuilder
             .removeProgress()
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setCustomBigContentView(view)
-            .setContent(view)
+            .setRemoteViews(view)
         notificationManager.notify(0, notificationBuilder.build())
     }
 

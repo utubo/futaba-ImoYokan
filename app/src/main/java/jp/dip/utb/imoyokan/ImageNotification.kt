@@ -1,6 +1,5 @@
 package jp.dip.utb.imoyokan
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
@@ -22,23 +21,10 @@ class ImageNotification(private val context: Context, private val intent: Intent
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_imoyokan)
 
-        // スレッドボタン
+        // スレッドボタンとカタログボタン
         var requestCode = REQUEST_CODE_RELOAD_URL
-        val threadUrl = intent.str(KEY_EXTRA_BACK_URL)
-        if (threadUrl.isNotEmpty()) {
-            val clickIntent = Intent(context, NotificationReceiver::class.java)
-                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
-                .putExtra(KEY_EXTRA_URL, threadUrl)
-            notificationBuilder.addAction(
-                android.R.drawable.ic_menu_close_clear_cancel,
-                "スレッド",
-                PendingIntent.getBroadcast(context, ++requestCode, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-            )
-        }
-
-        // カタログボタン
-        val catalogAction = createCatalogAction(context, intent, ++requestCode)
-        notificationBuilder.addAction(catalogAction)
+        notificationBuilder.addAction(createThreadAction(context, intent, ++requestCode))
+        notificationBuilder.addAction(createCatalogAction(context, intent, ++requestCode))
 
         // まずはプログレスバーを表示する
         val notificationManager = NotificationManagerCompat.from(context)
@@ -57,9 +43,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
         // 表示するよ！
         notificationBuilder
             .removeProgress()
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setCustomBigContentView(view)
-            .setContent(view)
+            .setRemoteViews(view)
         notificationManager.notify(0, notificationBuilder.build())
     }
 

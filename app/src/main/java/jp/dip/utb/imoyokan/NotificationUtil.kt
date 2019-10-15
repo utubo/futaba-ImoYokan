@@ -8,11 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.text.format.DateFormat
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import jp.dip.utb.imoyokan.futaba.getCatalogUrl
-import java.util.*
 
 /**
  * 音を鳴らさず通知する
@@ -27,6 +26,13 @@ fun NotificationCompat.Builder.notifySilent(context: Context, channelId: String)
     }
     // 表示するよ!
     notificationManager.notify(0, this.build())
+}
+
+fun NotificationCompat.Builder.setRemoteViews(contentView: RemoteViews, bigContentView: RemoteViews? = null): NotificationCompat.Builder {
+   this.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+        .setCustomBigContentView(contentView)
+        .setCustomContentView(bigContentView ?: contentView)
+    return this
 }
 
 @TargetApi(Build.VERSION_CODES.O)
@@ -61,6 +67,9 @@ fun createShareUrlIntent(context: Context, url: String, target: Class<*>? = null
     )
 }
 
+/**
+ * Intentで引きずり回すパラメータをセットしたIntent
+ */
 fun createImoyokanIntent(context: Context, intent: Intent?): Intent {
     val result = Intent(context, NotificationReceiver::class.java)
         .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
@@ -93,15 +102,24 @@ fun createNextPageAction(context: Context, intent: Intent, requestCode: Int, ico
     ).build()
 }
 
-/**
- * カタログ
- */
+/** スレッドボタン */
+fun createThreadAction(context: Context, intent: Intent, requestCode: Int): NotificationCompat.Action {
+    val catalogIntent = createNextPageIntent(context, intent, requestCode, Pref.getInstance(context).lastThreadUrl)
+    return NotificationCompat.Action.Builder(
+        android.R.drawable.ic_menu_close_clear_cancel,
+        "スレッド",
+        catalogIntent
+    ).build()
+}
+
+/** カタログボタン */
 fun createCatalogAction(context: Context, intent: Intent, requestCode: Int): NotificationCompat.Action {
-    // カタログボタン
-    val catalogIntent = createNextPageIntent(context, intent, requestCode, getCatalogUrl(intent.str(KEY_EXTRA_URL), Pref.getInstance(context).catalog.sort))
+    val pref = Pref.getInstance(context)
+    val url = Pref.getInstance(context).lastCatalogUrl.blankToNull() ?: getCatalogUrl(pref.lastThreadUrl)
+    val catalogIntent = createNextPageIntent(context, intent, requestCode, url)
     return NotificationCompat.Action.Builder(
         android.R.drawable.ic_menu_gallery,
-        DateFormat.format("カタログ", Date()),
+        "カタログ",
         catalogIntent
     ).build()
 }
