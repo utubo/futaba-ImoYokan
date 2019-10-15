@@ -29,7 +29,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_imoyokan)
 
-        val pref = Pref(context)
+        val pref = Pref.getInstance(context)
         val cols = pref.catalog.cols
         val rows = pref.catalog.rows
         val catalogInfoBuilder = CatalogInfoBuilder(url, cols, rows)

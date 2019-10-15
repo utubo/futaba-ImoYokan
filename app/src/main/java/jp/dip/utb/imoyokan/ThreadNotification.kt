@@ -133,7 +133,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             .notifySilent(context, CHANNEL_ID)
 
         // このURLを保存
-        val pref = Pref(context)
+        val pref = Pref.getInstance(context)
         pref.lastThreadUrl = threadInfo.url
         pref.apply()
     }

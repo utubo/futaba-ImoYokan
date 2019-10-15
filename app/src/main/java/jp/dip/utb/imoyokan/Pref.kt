@@ -5,7 +5,15 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 
 
-class Pref(context: Context) {
+class Pref private constructor(context: Context) {
+
+    companion object {
+        private var instance: Pref? = null
+        fun getInstance(context: Context) = instance ?: synchronized(this) {
+            instance ?: Pref(context).also { instance = it }
+
+        }
+    }
 
     var lastCatalogUrl: String
         get() = getX("last_catalog_url", "")
@@ -34,7 +42,7 @@ class Pref(context: Context) {
     val cache = mutableMapOf<String, Any>()
     private val modified = mutableMapOf<String, Any>()
 
-    inline fun <reified T> getX(id: String, default: T): T {
+    private inline fun <reified T> getX(id: String, default: T): T {
         val v = cache[id]
         if (v != null && v is T) return v
         @Suppress("IMPLICIT_CAST_TO_ANY")
@@ -47,13 +55,14 @@ class Pref(context: Context) {
         return v1 as T
     }
 
-    fun putX(id: String, value: Any) {
+    private fun putX(id: String, value: Any) {
         if (cache[id] != value) {
+            cache[id] = value
             modified[id] = value
         }
-        cache[id] = value
     }
 
+    /** 設定を保存する */
     fun apply() {
         if (modified.isEmpty()) {
             return

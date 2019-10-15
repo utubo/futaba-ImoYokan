@@ -98,7 +98,7 @@ fun createNextPageAction(context: Context, intent: Intent, requestCode: Int, ico
  */
 fun createCatalogAction(context: Context, intent: Intent, requestCode: Int): NotificationCompat.Action {
     // カタログボタン
-    val catalogIntent = createNextPageIntent(context, intent, requestCode, getCatalogUrl(intent.str(KEY_EXTRA_URL), Pref(context).catalog.sort))
+    val catalogIntent = createNextPageIntent(context, intent, requestCode, getCatalogUrl(intent.str(KEY_EXTRA_URL), Pref.getInstance(context).catalog.sort))
     return NotificationCompat.Action.Builder(
         android.R.drawable.ic_menu_gallery,
         DateFormat.format("カタログ", Date()),
