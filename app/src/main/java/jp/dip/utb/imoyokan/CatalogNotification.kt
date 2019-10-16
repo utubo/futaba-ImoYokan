@@ -1,13 +1,10 @@
 package jp.dip.utb.imoyokan
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.text.format.DateFormat
 import android.view.View
 import android.widget.RemoteViews
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.squareup.picasso.Picasso
 import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope
@@ -25,9 +22,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
 
     private fun notifyAsync(url: String) {
 
-        var requestCode = REQUEST_CODE_RELOAD_URL
-        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_imoyokan)
+        val builder = ImoyokanNotificationBuilder(context, intent)
 
         val pref = Pref.getInstance(context)
         val cols = pref.catalog.cols
@@ -37,10 +32,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
 
         // URLさえ取れない場合
         if (catalogInfo.isFailed) {
-            notificationBuilder
-                .setContentTitle("カタログ取得失敗")
-                .setContentText(catalogInfo.message)
-            notificationBuilder.notifySilent(context, CHANNEL_ID)
+            builder.notifyMessage("カタログ取得失敗", catalogInfo.message)
             return
         }
 
@@ -50,25 +42,20 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         pref.apply()
 
         // URLが取れたならボタンも作れる
-        notificationBuilder
-            .addAction(createCatalogAction(context, ++requestCode, "カタログ", catalogInfo, SORT_DEFAULT))
-            .addAction(createCatalogAction(context, ++requestCode, "新順", catalogInfo, SORT_NEWER))
-            .addAction(createCatalogAction(context, ++requestCode, "多順", catalogInfo, SORT_REPLY))
+        builder
+            .addCatalogAction("カタログ", catalogInfo, SORT_DEFAULT)
+            .addCatalogAction("新順", catalogInfo, SORT_NEWER)
+            .addCatalogAction("多順", catalogInfo, SORT_REPLY)
 
         // まずはプログレスバーを表示する
-        val notificationManager = NotificationManagerCompat.from(context) // こいつで表示を更新する
-        notificationBuilder
-            .setProgress(0, 0, true /* = ずっとぐるぐるまわるスタイル */ )
-            .notifySilent(context, CHANNEL_ID)
+        builder
+            .setProgress()
+            .notifyThis()
 
         // HTML読み込みと解析
         catalogInfoBuilder.reload()
         if (catalogInfo.isFailed) {
-            notificationBuilder
-                .removeProgress()
-                .setContentTitle("カタログ取得失敗")
-                .setContentText(catalogInfo.message)
-            notificationManager.notify(0, notificationBuilder.build())
+            builder.notifyMessage("カタログ取得失敗", catalogInfo.message)
             return
         }
 
@@ -79,12 +66,10 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         var y = 1
         run loop@ { catalogInfo.items.forEach {
             index++
-            // 画像をセット
+            // URLをセット
             val id = context.resources.getIdentifier("cat_${x}_${y}", "id", context.packageName)
-            val clickIntent = Intent(context, NotificationReceiver::class.java)
-                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
-                .putExtra(KEY_EXTRA_URL, it.href)
-            view.setOnClickPendingIntent(id, PendingIntent.getBroadcast(context, ++requestCode, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+            view.setOnClickPendingIntent(id, builder.createNextPageIntent(it.href))
+            // 画像をセット
             if (it.img != null) {
                 val bitmap = Picasso.get().load(it.img).get()
                 view.setImageViewBitmap(id, bitmap)
@@ -108,17 +93,18 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         }}
 
         // 表示するよ！
-        notificationBuilder
+        builder
             .removeProgress()
             .setRemoteViews(view)
-        notificationManager.notify(0, notificationBuilder.build())
+            .notifyThis()
     }
 
-    private fun createCatalogAction(context: Context, requestCode: Int, text: String, catalogInfo: CatalogInfo, sort: String): NotificationCompat.Action {
+    private fun ImoyokanNotificationBuilder.addCatalogAction(text: String, catalogInfo: CatalogInfo, sort: String): ImoyokanNotificationBuilder {
         val sb = StringBuilder(text)
         if (catalogInfo.sort == sort) {
             sb.append(DateFormat.format("(HH:mm:ss)", Date()))
         }
-        return createNextPageAction(context, intent, requestCode, android.R.drawable.ic_menu_sort_by_size, sb.toString(), getCatalogUrl(catalogInfo.url, sort))
+        this.addNextPageAction(android.R.drawable.ic_menu_sort_by_size, sb.toString(), getCatalogUrl(catalogInfo.url, sort))
+        return this
     }
 }

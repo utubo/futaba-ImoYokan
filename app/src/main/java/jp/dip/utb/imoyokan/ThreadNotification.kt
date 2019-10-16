@@ -32,59 +32,41 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         }
     }
 
-    private fun createIntent(threadInfo: ThreadInfo): Intent {
-        return createImoyokanIntent(context, intent)
-            .putExtra(KEY_EXTRA_URL, threadInfo.url)
-            .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua)
-            .putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
-    }
-
     private fun notifyAsync(threadInfo: ThreadInfo, title: String? = null, text: String? = null) {
-        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_imoyokan)
-            .setContentTitle(title?: threadInfo.res)
-
         // このURLを保存
         val pref = Pref.getInstance(context)
         pref.lastThreadUrl = threadInfo.url
         pref.apply()
 
-        // 入力されたテキストを受け取るPendingIntent
+        // フォームデータを上書き
+        intent.putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
+
+        // 通知作成開始
+        val builder = ImoyokanNotificationBuilder(context, intent)
+
+        // レス入力欄
         val replyPendingIntent = PendingIntent.getBroadcast(
             context,
             REQUEST_CODE_REPLY + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
-            createIntent(threadInfo).putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_REPLY) ,
+            builder.createImoyokanIntent(context, intent)
+                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_REPLY)
+                .putExtra(KEY_EXTRA_URL, threadInfo.url)
+                .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val replyTitle = if (threadInfo.form.mail.isNotEmpty()) "返信 ${STR_MAILADDRESS}${threadInfo.form.mail}" else "返信"
         val replyLabel = if (threadInfo.form.mail.isNotEmpty()) "${STR_MAILADDRESS}${threadInfo.form.mail}" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
-        // 入力を受け取るやつ
         val remoteInput = RemoteInput.Builder(KEY_TEXT_REPLY)
             .setLabel(replyLabel)
             .build()
-        val action = NotificationCompat
-            .Action.Builder(android.R.drawable.ic_menu_send, replyTitle, replyPendingIntent)
+        val replyAction = NotificationCompat.Action.Builder(android.R.drawable.ic_menu_send, replyTitle, replyPendingIntent)
             .addRemoteInput(remoteInput)
             .build()
 
-        // リロードボタン
-        var requestCode = REQUEST_CODE_RELOAD_URL
-        val reloadIntent = createIntent(threadInfo)
-        val reloadAction = NotificationCompat
-            .Action.Builder(
-                R.drawable.ic_action_reload,
-                DateFormat.format("更新(HH:mm:ss)", Date()),
-                PendingIntent.getBroadcast(context, ++requestCode, reloadIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-            )
-            .build()
-
-        // カタログボタン
-        val catalogAction = createCatalogAction(context, intent, ++requestCode)
-
-        notificationBuilder
-            .addAction(action)
-            .addAction(reloadAction)
-            .addAction(catalogAction)
+        builder
+            .addAction(replyAction)
+            .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", Date()), threadInfo.url)
+            .addCatalogAction()
 
         // 読み込みに失敗していた場合
         if (threadInfo.isFailed) {
@@ -97,10 +79,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // スレ画像
         if (threadInfo.catalogImage != null) {
             view.setImageViewBitmap(R.id.large_icon, threadInfo.catalogImage)
-            val imageIntent = createIntent(threadInfo)
-                .putExtra(KEY_EXTRA_URL, threadInfo.thumbUrl)
-                .putExtra(KEY_EXTRA_IMAGE_SRC_URL, threadInfo.imageUrl)
-            view.setOnClickPendingIntent(R.id.large_icon, PendingIntent.getBroadcast(context, ++requestCode, imageIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+            val imageIntent = builder.createNextPageIntent(threadInfo.thumbUrl, KEY_EXTRA_IMAGE_SRC_URL to threadInfo.imageUrl)
+            view.setOnClickPendingIntent(R.id.large_icon, imageIntent)
 
         } else {
             view.setViewVisibility(R.id.large_icon, View.GONE)
@@ -124,12 +104,12 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setTextViewText(R.id.text, sb)
 
         //共有ボタン
-        view.setOnClickPendingIntent(R.id.share, createShareUrlIntent(context, threadInfo.url))
+        view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
 
         // 表示するよ！
-        notificationBuilder
+        builder
             .setRemoteViews(view)
-            .notifySilent(context, CHANNEL_ID)
+            .notifyThis()
     }
 
     @SuppressLint("NewApi")
