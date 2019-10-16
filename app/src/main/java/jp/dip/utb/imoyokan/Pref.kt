@@ -1,8 +1,9 @@
 package jp.dip.utb.imoyokan
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 
 class Pref private constructor(context: Context) {
@@ -11,54 +12,46 @@ class Pref private constructor(context: Context) {
         private var instance: Pref? = null
         fun getInstance(context: Context) = instance ?: synchronized(this) {
             instance ?: Pref(context).also { instance = it }
-
         }
     }
 
-    var lastCatalogUrl: String
-        get() = getX("last_catalog_url", "")
-        set(v) { putX("last_catalog_url", v)}
+    var lastCatalogUrl: String by prefValue("last_catalog_url", "")
 
-    var lastThreadUrl: String
-        get() = getX("last_thread_url", "")
-        set(v) { putX("last_thread_url", v)}
+    var lastThreadUrl: String by prefValue("last_thread_url", "")
 
     val catalog = Catalog(this)
 
-    class Catalog(private val pref: Pref) {
-        var cols: Int
-            get() = pref.getX("catalog_cols", 7)
-            set(v) { pref.putX("catalog_cols", v)}
-        var rows: Int
-            get() = pref.getX("catalog_rows", 4)
-            set(v) { pref.putX("catalog_rows", v)}
-        var sort: String
-            get() = pref.getX("catalog_sort", "")
-            set(v) { pref.putX("catalog_sort", v)}
+    class Catalog(pref: Pref) {
+        var cols: Int by pref.prefValue("catalog_cols", 7)
+        var rows: Int by pref.prefValue("catalog_rows", 4)
+        var sort: String by pref.prefValue("catalog_sort", "")
     }
 
     // Utils
-    val pref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    val pref = PreferenceManager.getDefaultSharedPreferences(context)!!
     val cache = mutableMapOf<String, Any>()
     private val modified = mutableMapOf<String, Any>()
 
-    private inline fun <reified T> getX(id: String, default: T): T {
-        val v = cache[id]
-        if (v != null && v is T) return v
-        @Suppress("IMPLICIT_CAST_TO_ANY")
-        val v1 = when (default) {
-            is Int -> pref.getString(id, default.toString())?.toInt() // getIntは使い物にならないのでStringで保存するしかない
-            is String -> pref.getString(id, default)
-            else -> default
+    private fun <T: Any> prefValue(id: String, default: T) = object : ReadWriteProperty<Any, T> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): T {
+            @Suppress("UNCHECKED_CAST")
+            (cache[id] as? T)?.also { return it }
+            @Suppress("IMPLICIT_CAST_TO_ANY")
+            val value = when (default) {
+                is Int -> pref.getString(id, default.toString())?.toInt() // getIntは使い物にならないのでStringで保存するしかない
+                is String -> pref.getString(id, default)
+                else -> default
+            }
+            cache[id] = value as Any
+            @Suppress("UNCHECKED_CAST")
+            return value as T
         }
-        cache[id] = v1 as Any
-        return v1 as T
-    }
 
-    private fun putX(id: String, value: Any) {
-        if (cache[id] != value) {
-            cache[id] = value
-            modified[id] = value
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+            if (cache[id] != value) {
+                cache[id] = value
+                modified[id] = value
+            }
         }
     }
 
