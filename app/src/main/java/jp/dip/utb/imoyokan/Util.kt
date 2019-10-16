@@ -9,22 +9,24 @@ import java.nio.charset.Charset
 const val NOTIFY_NAME = "ImoYokan"
 const val NOTIFY_DESCRIPTION = "ImoYokan"
 const val CHANNEL_ID = "imoyokan_channel"
-const val KEY_EXTRA_REQUEST_CODE = "key_extra_requestCode"
-const val KEY_TEXT_REPLY = "key_text_reply"
+const val KEY_EXTRA_ACTION = "key_extra_action"
 const val KEY_EXTRA_URL = "key_extra_url"
 const val KEY_EXTRA_MAIL = "key_extra_mail"
 const val KEY_EXTRA_PTUA = "key_extra_ptua"
 const val KEY_EXTRA_IMAGE_SRC_URL = "key_extra_src_url"
+const val KEY_EXTRA_REPLY_TEXT = "key_extra_reply_text"
+const val INTENT_ACTION_REPLY = 100
+const val INTENT_ACTION_RELOAD_URL = 15000
 const val REQUEST_CODE_SHARE = 99
-const val REQUEST_CODE_RELOAD_URL = 100
-const val REQUEST_CODE_REPLY = 300
+const val REQUEST_CODE_REPLY_MIN = 100
+const val REQUEST_CODE_RELOAD_URL_MIN = 15000
 
 // 表示設定
 const val MAX_RES_COUNT = 10
 
 // 記号
-const val STR_MAILADDRESS = "✉"
-const val STR_HEART = "❤"
+const val STR_MAIL_LABEL = "✉"
+const val STR_HEARTS = "❤"
 
 // ユーティリティ
 fun String.removeHtmlTag(): String {
@@ -33,7 +35,7 @@ fun String.removeHtmlTag(): String {
         .replace("<[^>]+>".toRegex(), "&#0;")
         .replace("&gt;", ">", true)
         .replace("&lt;", "<", true)
-        .replace("&hearts;", STR_HEART)
+        .replace("&hearts;", STR_HEARTS)
     s = "&#(\\d{2,});".toRegex().replace(s) {
         val code = it.groupValues[1].toInt()
         if (code < 32)

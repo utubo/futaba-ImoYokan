@@ -13,16 +13,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import jp.dip.utb.imoyokan.futaba.getCatalogUrl
 
-class ImoyokanNotificationBuilder(private val context: Context, val intent: Intent) {
-
-    companion object {
-        const val MIN_REQUEST_CODE = 10000
-    }
+class ImoyokanNotificationBuilder(private val context: Context, private val intent: Intent) {
 
     private val pref = Pref.getInstance(context)
     private val builder = NotificationCompat.Builder(context, CHANNEL_ID)
     private val manager = NotificationManagerCompat.from(context)
-    var requestCode = MIN_REQUEST_CODE
+    private var requestCode = REQUEST_CODE_RELOAD_URL_MIN
     private var isChannelReady = false
 
     init {
@@ -110,7 +106,7 @@ class ImoyokanNotificationBuilder(private val context: Context, val intent: Inte
     /** URLを通知で開くIntent */
     fun createNextPageIntent(url: String, vararg extras: Pair<String, Any>): PendingIntent {
         val newIntent = createImoyokanIntent(context, intent)
-            .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_RELOAD_URL)
+            .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_RELOAD_URL)
             .putExtra(KEY_EXTRA_URL, url)
         extras.forEach {
             when (it.second) {

@@ -8,6 +8,7 @@ import kotlin.reflect.KProperty
 
 class Pref private constructor(context: Context) {
 
+    // シングルトン
     companion object {
         private var instance: Pref? = null
         fun getInstance(context: Context) = instance ?: synchronized(this) {
@@ -15,10 +16,9 @@ class Pref private constructor(context: Context) {
         }
     }
 
+    // プロパティ
     var lastCatalogUrl: String by prefValue("last_catalog_url", "")
-
     var lastThreadUrl: String by prefValue("last_thread_url", "")
-
     val catalog = Catalog(this)
 
     class Catalog(pref: Pref) {

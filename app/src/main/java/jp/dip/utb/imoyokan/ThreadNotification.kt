@@ -47,16 +47,16 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // レス入力欄
         val replyPendingIntent = PendingIntent.getBroadcast(
             context,
-            REQUEST_CODE_REPLY + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
+            REQUEST_CODE_REPLY_MIN + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
             builder.createImoyokanIntent(context, intent)
-                .putExtra(KEY_EXTRA_REQUEST_CODE, REQUEST_CODE_REPLY)
+                .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_REPLY)
                 .putExtra(KEY_EXTRA_URL, threadInfo.url)
                 .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val replyTitle = if (threadInfo.form.mail.isNotEmpty()) "返信 ${STR_MAILADDRESS}${threadInfo.form.mail}" else "返信"
-        val replyLabel = if (threadInfo.form.mail.isNotEmpty()) "${STR_MAILADDRESS}${threadInfo.form.mail}" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
-        val remoteInput = RemoteInput.Builder(KEY_TEXT_REPLY)
+        val replyTitle = if (threadInfo.form.mail.isNotEmpty()) "返信 ${STR_MAIL_LABEL}${threadInfo.form.mail}" else "返信"
+        val replyLabel = if (threadInfo.form.mail.isNotEmpty()) "${STR_MAIL_LABEL}${threadInfo.form.mail}" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
+        val remoteInput = RemoteInput.Builder(KEY_EXTRA_REPLY_TEXT)
             .setLabel(replyLabel)
             .build()
         val replyAction = NotificationCompat.Action.Builder(android.R.drawable.ic_menu_send, replyTitle, replyPendingIntent)

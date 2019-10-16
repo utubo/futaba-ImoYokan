@@ -15,10 +15,10 @@ class NotificationReceiver : BroadcastReceiver() {
 
     @ExperimentalUnsignedTypes
     override fun onReceive(context: Context, intent: Intent) {
-        val requestCode = intent.getIntExtra(KEY_EXTRA_REQUEST_CODE, 0)
+        val action = intent.getIntExtra(KEY_EXTRA_ACTION, INTENT_ACTION_RELOAD_URL)
 
         // URL表示
-        if (requestCode < REQUEST_CODE_REPLY) {
+        if (action == INTENT_ACTION_RELOAD_URL) {
             val url = intent.str(KEY_EXTRA_URL)
             when {
                 analyseCatalogUrl(url) != null -> CatalogNotification(context, intent).notifyThis()
@@ -30,7 +30,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
         // 返信
         val remoteInput = RemoteInput.getResultsFromIntent(intent)
-        var text = remoteInput.getString(KEY_TEXT_REPLY) ?: ""
+        var text = remoteInput.getString(KEY_EXTRA_REPLY_TEXT) ?: ""
         var mail = intent.str(KEY_EXTRA_MAIL)
         val oldMail = mail
         val m = "^@(\\S*)\\s+(.+)".toRegex().find(text)
@@ -45,7 +45,7 @@ class NotificationReceiver : BroadcastReceiver() {
         val threadNotification = ThreadNotification(context, intent)
 
         if (oldMail.isNotEmpty() && mail.isEmpty() && text.isEmpty()) {
-            threadNotification.notify("返信キャンセル", "${STR_MAILADDRESS}をクリアしました")
+            threadNotification.notify("返信キャンセル", "${STR_MAIL_LABEL}をクリアしました")
             return
         }
         if (text.isEmpty()) {
