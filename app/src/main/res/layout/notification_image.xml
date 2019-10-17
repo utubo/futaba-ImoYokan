@@ -15,11 +15,5 @@
         android:scaleType="fitCenter"
         >
     </ImageView>
-    <ImageView
-        android:id="@+id/share"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="bottom|end"
-        android:src="@android:drawable/ic_menu_share"
-        />
+    <ImageView android:id="@+id/share" style="@style/share_button" />
 </FrameLayout>

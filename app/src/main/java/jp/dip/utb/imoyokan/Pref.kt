@@ -19,6 +19,7 @@ class Pref private constructor(context: Context) {
     // プロパティ
     var lastCatalogUrl: String by prefValue("last_catalog_url", "")
     var lastThreadUrl: String by prefValue("last_thread_url", "")
+    var lastThreadModified: String by prefValue("last_thread_last_modified", "")
     val catalog = Catalog(this)
 
     class Catalog(pref: Pref) {

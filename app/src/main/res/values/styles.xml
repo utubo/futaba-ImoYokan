@@ -8,4 +8,25 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="share_button">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_gravity">end|bottom</item>
+        <item name="android:src">@android:drawable/ic_menu_share</item>
+    </style>
+
+    <style name="scroll_button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="catalog_item">
+        <item name="android:layout_width">38dp</item>
+        <item name="android:layout_height">38dp</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_margin">1dp</item>
+    </style>
+
 </resources>

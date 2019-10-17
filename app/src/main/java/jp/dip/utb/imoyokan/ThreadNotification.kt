@@ -10,33 +10,58 @@ import android.text.SpannableStringBuilder
 import android.text.format.DateFormat
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
+import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
-import jp.dip.utb.imoyokan.futaba.*
+import com.squareup.picasso.Picasso
+import jp.dip.utb.imoyokan.futaba.ResInfo
+import jp.dip.utb.imoyokan.futaba.ThreadInfo
+import jp.dip.utb.imoyokan.futaba.ThreadInfoBuilder
+import jp.dip.utb.imoyokan.futaba.toColoredText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.*
 import java.util.*
+import kotlin.math.max
+
 
 class ThreadNotification(private val context: Context, private val intent: Intent) {
 
-    fun notify(title: String? = null, text: String? = null) {
+    fun notify(title: String = "", text: String = "") {
         GlobalScope.launch {
+            notifyAsync(getThreadInfo(), title,  text)
+        }
+    }
+
+    private fun getThreadInfo(): ThreadInfo {
+        var threadInfo: ThreadInfo? = null
+        // まずはキャッシュから
+        val useCache = intent.getIntExtra(KEY_EXTRA_POSITION, RELOAD_THREAD) != RELOAD_THREAD
+        if (useCache) {
+            threadInfo = loadFromCache()
+        }
+        // キャッシュを使わない or キャッシュが見つからないならインターネットから読み込む
+        val pref = Pref.getInstance(context)
+        if (threadInfo == null) {
             val builder = ThreadInfoBuilder().apply {
                 this.url = intent.str(KEY_EXTRA_URL)
                 this.mail = intent.str(KEY_EXTRA_MAIL)
             }
-            val threadInfo = builder.build()
-            notifyAsync(threadInfo, title,  text)
+            threadInfo = builder.build()
+            if (threadInfo.lastModified != pref.lastThreadModified || threadInfo.url != pref.lastThreadUrl) {
+                saveToCache(threadInfo)
+            }
         }
+        // 読み込んだ情報を保存
+        pref.lastThreadUrl = threadInfo.url
+        pref.lastThreadModified = threadInfo.lastModified
+        pref.apply()
+        return threadInfo
     }
 
-    private fun notifyAsync(threadInfo: ThreadInfo, title: String? = null, text: String? = null) {
-        // このURLを保存
-        val pref = Pref.getInstance(context)
-        pref.lastThreadUrl = threadInfo.url
-        pref.apply()
+    private fun notifyAsync(threadInfo: ThreadInfo, title: String, text: String) {
 
         // フォームデータを上書き
         intent.putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
@@ -59,36 +84,29 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val remoteInput = RemoteInput.Builder(KEY_EXTRA_REPLY_TEXT)
             .setLabel(replyLabel)
             .build()
-        val replyAction = NotificationCompat.Action.Builder(android.R.drawable.ic_menu_send, replyTitle, replyPendingIntent)
+        val replyAction = NotificationCompat.Action
+            .Builder(android.R.drawable.ic_menu_send, replyTitle, replyPendingIntent)
             .addRemoteInput(remoteInput)
             .build()
-
+        // アクションボタンを登録
         builder
             .addAction(replyAction)
-            .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", Date()), threadInfo.url)
+            .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url)
             .addCatalogAction()
 
         // 読み込みに失敗していた場合
-        if (threadInfo.isFailed) {
-            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", threadInfo.message, "")}"))
+        if (threadInfo.isFailed()) {
+            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", threadInfo.failedMessage, "")}"))
         }
 
         // ここからカスタムView
         val view = RemoteViews(context.packageName, R.layout.notification_thread)
 
-        // スレ画像
-        if (threadInfo.catalogImage != null) {
-            view.setImageViewBitmap(R.id.large_icon, threadInfo.catalogImage)
-            val imageIntent = builder.createNextPageIntent(threadInfo.thumbUrl, KEY_EXTRA_IMAGE_SRC_URL to threadInfo.imageUrl)
-            view.setOnClickPendingIntent(R.id.large_icon, imageIntent)
-
-        } else {
-            view.setViewVisibility(R.id.large_icon, View.GONE)
-        }
-
         // レス
         val sb = SpannableStringBuilder()
-        threadInfo.replies.takeLast(MAX_RES_COUNT).forEach {
+        val position  = max(0, intent.getIntExtra(KEY_EXTRA_POSITION, threadInfo.replies.last().index))
+        val hasNext = position < threadInfo.replies.last().index
+        threadInfo.replies.filter{ it.index <= position }.takeLast(MAX_RES_COUNT).forEach {
             val mail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
             if (it.index == 0) {
                 sb.addResponse("${it.number}${mail}", it.getCompressText(), "\n")
@@ -97,13 +115,35 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             }
         }
         // メッセージ
-        if (title != null || text != null) {
-            sb.addResponse(title ?: "", text ?: "")
+        if (title.isNotBlank() || text.isNotBlank()) {
+            sb.addResponse(title, text)
         }
-
+        // 文字表示するところできたよ
         view.setTextViewText(R.id.text, sb)
 
-        //共有ボタン
+        // スレ画像
+        if (threadInfo.thumbUrl.isNotEmpty()) {
+            val bitmap = Picasso.get().load(threadInfo.thumbUrl.replace("/thumb/", "/cat/").toHttps()).get()
+            view.setImageViewBitmap(R.id.large_icon, bitmap)
+            val imageIntent = builder.createNextPageIntent(
+                threadInfo.thumbUrl,
+                KEY_EXTRA_IMAGE_SRC_URL to threadInfo.imageUrl,
+                KEY_EXTRA_POSITION to if (hasNext) position else RELOAD_THREAD
+            )
+            view.setOnClickPendingIntent(R.id.large_icon, imageIntent)
+        } else {
+            view.setViewVisibility(R.id.large_icon, View.GONE)
+        }
+
+        // いろんなボタン
+        if (0 < position) {
+            view.setViewVisibility(R.id.prev, View.VISIBLE)
+            view.setOnClickPendingIntent(R.id.prev, builder.createThreadIntent(position - 1))
+        }
+        if (hasNext) {
+            view.setViewVisibility(R.id.next, View.VISIBLE)
+            view.setOnClickPendingIntent(R.id.next, builder.createThreadIntent(position + 1))
+        }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
 
         // 表示するよ！
@@ -125,5 +165,30 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         this.append(delimiter)
         this.append(text.toColoredText())
         return this
+    }
+
+    companion object {
+        const val CACHE_FILENAME = "thread_cache.dat"
+    }
+
+    private fun saveToCache(threadInfo: ThreadInfo) {
+        try {
+            val file = File(context.cacheDir, CACHE_FILENAME)
+            ObjectOutputStream(FileOutputStream(file)).use{ it.writeObject(threadInfo) }
+        } catch (e: Throwable) {
+            Log.d(NOTIFY_NAME, "Failed to save thread cache.", e)
+        }
+    }
+
+    private fun loadFromCache(): ThreadInfo? {
+        try {
+            val file = File(context.cacheDir, CACHE_FILENAME)
+            ObjectInputStream(FileInputStream(file)).use {
+                (it.readObject() as? ThreadInfo)?.also { result -> return result }
+            }
+        } catch (e: Throwable) {
+            Log.d(NOTIFY_NAME, "Failed to load thread cache.", e)
+        }
+        return null
     }
 }

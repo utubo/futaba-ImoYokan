@@ -76,8 +76,20 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         return this
     }
 
-    fun addThreadAction(): ImoyokanNotificationBuilder {
-        addNextPageAction(android.R.drawable.ic_menu_close_clear_cancel, "スレッド", pref.lastThreadUrl)
+    fun createThreadIntent(position: Int): PendingIntent {
+        return when (position) {
+            RELOAD_THREAD -> createNextPageIntent(pref.lastThreadUrl)
+            POSITION_KEEP -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_POSITION to intent.getIntExtra(KEY_EXTRA_POSITION, -1))
+            else -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_POSITION to position)
+        }
+    }
+
+    fun addThreadAction(position: Int): ImoyokanNotificationBuilder {
+        val action = NotificationCompat.Action.Builder(
+            android.R.drawable.ic_menu_close_clear_cancel,
+            "スレッド",
+            createThreadIntent(position)).build()
+        builder.addAction(action)
         return this
     }
 

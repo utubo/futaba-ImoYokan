@@ -18,9 +18,9 @@ class ImageNotification(private val context: Context, private val intent: Intent
     private fun notifyAsync() {
         val builder = ImoyokanNotificationBuilder(context, intent)
 
-        // まずはプログレスバーを表示する
+        // まずはボタンとプログレスバーを表示する
         builder
-            .addThreadAction()
+            .addThreadAction(POSITION_KEEP)
             .addCatalogAction()
             .setProgress()
             .notifyThis()

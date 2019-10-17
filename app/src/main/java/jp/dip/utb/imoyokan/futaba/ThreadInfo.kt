@@ -1,27 +1,27 @@
+@file:Suppress("PLUGIN_WARNING")
+
 package jp.dip.utb.imoyokan.futaba
 
-import android.graphics.Bitmap
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import com.squareup.picasso.Picasso
 import jp.dip.utb.imoyokan.*
+import java.util.*
+import kotlin.collections.ArrayList
+import java.io.Serializable
 
-class ThreadInfo(val url: String, mail: String) {
+data class ThreadInfo(val url: String) : Serializable {
     @Suppress("MemberVisibilityCanBePrivate")
     val server: String
     @Suppress("MemberVisibilityCanBePrivate")
     val b: String
     val res: String
-    var form = FromParams()
-    var catalogImage: Bitmap? = null
-    var thumbUrl: String = ""
-    var imageUrl: String = ""
+    var form = FromParams("", "")
+    var thumbUrl = ""
+    var imageUrl = ""
     var replies = ArrayList<ResInfo>()
-    var exception: Exception? = null
-    val isFailed: Boolean
-        get() { return exception != null}
-    val message: String
-        get() { return exception?.message ?: ""}
+    var timestamp = Date()
+    var lastModified = ""
+    var failedMessage = ""
     //val jsonUrl = base + "/futaba.php?mode=json&res=" + res + "&start=" + start + "&" + Math.random()
 
     init {
@@ -29,19 +29,20 @@ class ThreadInfo(val url: String, mail: String) {
         this.server = m?.first ?: ""
         this.b = m?.second ?: ""
         this.res = m?.third ?: ""
-        this.form.mail = mail
         if (m == null) {
-            exception = Exception("URLが変！")
+            failedMessage = "URLが変！"
         }
     }
+
+    fun isFailed(): Boolean {
+        return failedMessage.isNotBlank()
+    }
+
 }
 
-class FromParams {
-    var ptua = ""
-    var mail = ""
-}
+data class FromParams(var ptua: String, var mail: String) : Serializable
 
-class ResInfo(val index: Int, val number: String, val text: String, val mail: String = "") {
+data class ResInfo(val index: Int, val number: String, val text: String, val mail: String = "") : Serializable {
     /** 通知領域は狭いので適当に改行を抜く */
     fun getCompressText(): String {
         val levelRegex = "^(>*)".toRegex()
@@ -69,18 +70,19 @@ class ThreadInfoBuilder {
     var mail: String = ""
 
     fun build(): ThreadInfo {
-        val threadInfo = ThreadInfo(url, mail)
-        if (threadInfo.isFailed) {
+        val threadInfo = ThreadInfo(url).apply { this.form.mail = mail }
+        if (threadInfo.isFailed()) {
             return threadInfo
         }
 
         // HTML読み込み
-        val (_, _, result) = url.toHttps().httpGet().responseString(FUTABA_CHARSET)
+        val (_, response, result) = url.toHttps().httpGet().responseString(FUTABA_CHARSET)
         if (result is Result.Failure) {
-            threadInfo.exception = result.getException()
+            threadInfo.failedMessage = result.getException().message.toString()
             return threadInfo
         }
         val html = result.get()
+        threadInfo.lastModified = response.header("last-modified").toString()
 
         var index = 0
         var resNumber = ""
@@ -103,7 +105,6 @@ class ThreadInfoBuilder {
                     if (m != null) {
                         threadInfo.imageUrl = "${threadInfo.server}/${m.groupValues[1]}"
                         threadInfo.thumbUrl = "${threadInfo.server}/${m.groupValues[2]}"
-                        threadInfo.catalogImage = Picasso.get().load(threadInfo.thumbUrl.replace("/thumb/", "/cat/").toHttps()).get()
                     }
                     resNumber = threadInfo.res
                     resMail = line.pick(mailRegex)
