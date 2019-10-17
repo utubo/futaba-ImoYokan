@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import java.io.*
 import java.util.*
 import kotlin.math.max
+import kotlin.math.min
 
 
 class ThreadNotification(private val context: Context, private val intent: Intent) {
@@ -104,7 +105,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
         // レス
         val sb = SpannableStringBuilder()
-        val position  = max(0, intent.getIntExtra(KEY_EXTRA_POSITION, threadInfo.replies.last().index))
+        val position  = min(intent.getIntExtra(KEY_EXTRA_POSITION, RELOAD_THREAD), threadInfo.replies.last().index)
         val hasNext = position < threadInfo.replies.last().index
         threadInfo.replies.filter{ it.index <= position }.takeLast(MAX_RES_COUNT).forEach {
             val mail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う

@@ -21,8 +21,8 @@ const val INTENT_ACTION_RELOAD_URL = 15000
 const val REQUEST_CODE_SHARE = 99
 const val REQUEST_CODE_REPLY_MIN = 100
 const val REQUEST_CODE_RELOAD_URL_MIN = 15000
-const val POSITION_KEEP = -2
-const val RELOAD_THREAD = -1
+const val POSITION_KEEP = 10000
+const val RELOAD_THREAD = 20000
 
 // 表示設定
 const val MAX_RES_COUNT = 10
