@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -39,10 +40,10 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         manager.notify(0, builder.build())
     }
 
-    fun notifyMessage(title: String, message: String) {
+    fun notifyMessage(title: String, message: String?) {
         builder
             .setContentTitle(title)
-            .setContentText(message)
+            .setContentText(message ?: "")
         removeProgress()
         notifyThis()
     }
@@ -70,16 +71,15 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         return this
     }
 
-    fun addNextPageAction(icon: Int, label: CharSequence, url: String): ImoyokanNotificationBuilder {
-        val action = NotificationCompat.Action.Builder(icon, label, createNextPageIntent(url)).build()
+    fun addNextPageAction(icon: Int, label: CharSequence, url: String, vararg extras: Pair<String, Any>): ImoyokanNotificationBuilder {
+        val action = NotificationCompat.Action.Builder(icon, label, createNextPageIntent(url, *extras)).build()
         builder.addAction(action)
         return this
     }
 
     fun createThreadIntent(position: Int): PendingIntent {
         return when (position) {
-            RELOAD_THREAD -> createNextPageIntent(pref.lastThreadUrl)
-            POSITION_KEEP -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_POSITION to intent.getIntExtra(KEY_EXTRA_POSITION, -1))
+            POSITION_KEEP -> createNextPageIntent(pref.lastThreadUrl)
             else -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_POSITION to position)
         }
     }
@@ -110,22 +110,28 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     }
 
     /** 設定に保存するまでもないIntentで引きずり回すパラメータをセットしたIntent */
-    fun createImoyokanIntent(context: Context, intent: Intent): Intent {
+    fun createImoyokanIntent(): Intent {
         return Intent(context, NotificationReceiver::class.java)
-            .putExtra(KEY_EXTRA_MAIL, intent.getStringExtra(KEY_EXTRA_MAIL)) // 今の所メアドくらいか…
+            .putExtra(KEY_EXTRA_MAIL, intent.getStringExtra(KEY_EXTRA_MAIL))
+            .putExtra(KEY_EXTRA_POSITION, intent.getIntExtra(KEY_EXTRA_POSITION, RELOAD_THREAD))
+            .putExtra(KEY_EXTRA_IMAGE_INDEX, intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0))
+    }
+
+    fun createViewImageIntent(index: Int? = null): PendingIntent {
+        val newIntent = createImoyokanIntent()
+            .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_VIEW_IMAGE)
+        if (index != null) {
+            newIntent.putExtra(KEY_EXTRA_IMAGE_INDEX, index)
+        }
+        return PendingIntent.getBroadcast(context, ++requestCode, newIntent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     /** URLを通知で開くIntent */
     fun createNextPageIntent(url: String, vararg extras: Pair<String, Any>): PendingIntent {
-        val newIntent = createImoyokanIntent(context, intent)
+        val newIntent = createImoyokanIntent()
             .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_RELOAD_URL)
             .putExtra(KEY_EXTRA_URL, url)
-        extras.forEach {
-            when (it.second) {
-                is Int -> newIntent.putExtra(it.first, it.second as Int)
-                is String -> newIntent.putExtra(it.first, it.second as String)
-            }
-        }
+            .putAll(*extras)
         return PendingIntent.getBroadcast(context, ++requestCode, newIntent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
@@ -143,4 +149,13 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         )
     }
 
+}
+
+fun RemoteViews.setOnClickOrGone(id: Int, b: Boolean, gone: Int = View.GONE, f: () -> PendingIntent) {
+    if (b) {
+        this.setOnClickPendingIntent(id, f())
+        this.setViewVisibility(id, View.VISIBLE)
+    } else {
+        this.setViewVisibility(id, gone)
+    }
 }

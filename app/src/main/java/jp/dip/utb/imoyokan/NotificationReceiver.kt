@@ -6,7 +6,6 @@ import android.content.Intent
 import androidx.core.app.RemoteInput
 import jp.dip.utb.imoyokan.futaba.Replier
 import jp.dip.utb.imoyokan.futaba.analyseCatalogUrl
-import jp.dip.utb.imoyokan.futaba.analyseImageUrl
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -22,9 +21,14 @@ class NotificationReceiver : BroadcastReceiver() {
             val url = intent.str(KEY_EXTRA_URL)
             when {
                 analyseCatalogUrl(url) != null -> CatalogNotification(context, intent).notifyThis()
-                analyseImageUrl(url) != null -> ImageNotification(context, intent).notifyThis()
                 else -> ThreadNotification(context, intent).notify()
             }
+            return
+        }
+
+        // 画像
+        if (action == INTENT_ACTION_VIEW_IMAGE) {
+            ImageNotification(context, intent).notifyThis()
             return
         }
 

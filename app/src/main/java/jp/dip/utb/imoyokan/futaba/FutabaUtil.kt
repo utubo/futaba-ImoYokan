@@ -7,6 +7,7 @@ import android.text.style.ForegroundColorSpan
 import jp.dip.utb.imoyokan.BuildConfig
 import jp.dip.utb.imoyokan.aroundWhenIsNotEmpty
 import jp.dip.utb.imoyokan.pick
+import jp.dip.utb.imoyokan.toHttps
 
 @Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
 const val RES_INTERVAL = 36100000u
@@ -20,6 +21,7 @@ const val SORT_NEWER = "1"
 const val SORT_REPLY = "3"
 val KITAA_REGEX = "ｷﾀ━━+\\(ﾟ∀ﾟ\\)━━+".toRegex()
 const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
+const val SIO_KARA_SU_ROOT = "http://www.nijibox5.com/futabafiles/tubu/src/"
 
 fun String.toColoredText(br:String = "\n"): SpannableStringBuilder {
     val sb = SpannableStringBuilder()
@@ -56,13 +58,24 @@ fun analyseCatalogUrl(url: String): Triple<String, String, String>? {
     return Triple(server, b, sort)
 }
 
-fun analyseImageUrl(url: String): Triple<String, String, String>? {
-    val urlMatches = "(https?://.+)/([^/]+)\\.(jpe?g|png)([#?][^/]*)?".toRegex().find(url)?.groupValues ?: return null
-    return Triple(urlMatches[1], urlMatches[2], urlMatches[3])
-}
-
 fun getCatalogUrl(url: String, sort:String = ""): String {
     val root = url.pick("(^https?://.*\\.2chan\\.net/[^/]+)".toRegex())
     return "$root/futaba.php?mode=cat${aroundWhenIsNotEmpty("&sort=", sort, "")}"
+}
+
+fun toThumbnailUrl(url: String): String {
+    return if (url.startsWith(SIO_KARA_SU_ROOT)) {
+            url.replace("src", "misc").replace(".png|.jpg|.jpeg|.webm|.mp4".toRegex(), ".thumb.jpg")
+        } else {
+            url.toHttps().replace("/src/", "/thumb/").replace(".png|.jpg|.jpeg|.webm|.mp4".toRegex(), "s.jpg")
+        }
+}
+
+fun toCatalogImageUrl(url: String): String {
+    return if (url.startsWith(SIO_KARA_SU_ROOT)) {
+        toThumbnailUrl(url)
+    } else {
+        toThumbnailUrl(url).replace("/thumb/", "/cat/")
+    }
 }
 

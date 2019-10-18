@@ -16,12 +16,11 @@ data class ThreadInfo(val url: String) : Serializable {
     val b: String
     val res: String
     var form = FromParams("", "")
-    var thumbUrl = ""
-    var imageUrl = ""
     var replies = ArrayList<ResInfo>()
     var timestamp = Date()
     var lastModified = ""
     var failedMessage = ""
+    var imageUrls = ArrayList<String>()
     //val jsonUrl = base + "/futaba.php?mode=json&res=" + res + "&start=" + start + "&" + Math.random()
 
     init {
@@ -92,6 +91,8 @@ class ThreadInfoBuilder {
         val numberRegex =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
         val mailRegex =  "<a href=\"mailto:([^\"]+)\">".toRegex()
         val textRegex =  "<blockquote[^>]*>([^\n]+)</blockquote>".toRegex()
+        val imageRegex = "(su)?\\d+\\.(jpg|png)".toRegex()
+        val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+\\.(jpg|png))".toRegex()
         for (line in html.split("\n")) {
             if (isPre) {
                 // フォームデータ
@@ -103,8 +104,7 @@ class ThreadInfoBuilder {
                     // スレ画読み込み
                     val m = "<a href=\"/(${threadInfo.b}/src/[^\"]+)\" target=\"_blank\"><img src=\"/(${threadInfo.b}/thumb/\\d+s\\.jpg)".toRegex().find(line)
                     if (m != null) {
-                        threadInfo.imageUrl = "${threadInfo.server}/${m.groupValues[1]}"
-                        threadInfo.thumbUrl = "${threadInfo.server}/${m.groupValues[2]}"
+                        threadInfo.imageUrls.put("${threadInfo.server}/${m.groupValues[1]}")
                     }
                     resNumber = threadInfo.res
                     resMail = line.pick(mailRegex)
@@ -114,7 +114,19 @@ class ThreadInfoBuilder {
             }
             // レス
             if (line.contains("<blockquote")) {
-                val resText = line.pick(textRegex)
+                var resText = line.pick(textRegex)
+                if (line.contains(".jpg") || line.contains(".png")) {
+                    resImageRegex.find(line)?.let {
+                        resText = "${it.groupValues[1]}\n${resText}"
+                    }
+                    imageRegex.findAll(resText).forEach {
+                        if (it.value.startsWith("su")) {
+                            threadInfo.imageUrls.put(SIO_KARA_SU_ROOT + it.value)
+                        } else {
+                            threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${it.value}")
+                        }
+                    }
+                }
                 threadInfo.replies.add(ResInfo(index, resNumber, resText.removeHtmlTag(), resMail))
                 index ++
                 continue
@@ -128,5 +140,9 @@ class ThreadInfoBuilder {
         }
 
         return threadInfo
+    }
+
+    private fun <T> ArrayList<T>.put(v: T) {
+        if (!this.contains(v)) this.add(v)
     }
 }

@@ -19,7 +19,6 @@ import com.squareup.picasso.Picasso
 import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.io.*
 import java.util.*
 import kotlin.math.min
 
@@ -35,9 +34,10 @@ class ThreadNotification(private val context: Context, private val intent: Inten
     private fun getThreadInfo(): ThreadInfo {
         var threadInfo: ThreadInfo? = null
         // まずはキャッシュから
+        val cache = Cache(context)
         val useCache = intent.getIntExtra(KEY_EXTRA_POSITION, RELOAD_THREAD) != RELOAD_THREAD
         if (useCache) {
-            threadInfo = loadFromCache()
+            threadInfo = cache.loadFromCache()
         }
         // キャッシュを使わない or キャッシュが見つからないならインターネットから読み込む
         val pref = Pref.getInstance(context)
@@ -48,7 +48,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             }
             threadInfo = builder.build()
             if (threadInfo.lastModified != pref.lastThreadModified || threadInfo.url != pref.lastThreadUrl) {
-                saveToCache(threadInfo)
+                cache.saveToCache(threadInfo)
             }
         }
         // 読み込んだ情報を保存
@@ -70,7 +70,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val replyPendingIntent = PendingIntent.getBroadcast(
             context,
             REQUEST_CODE_REPLY_MIN + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
-            builder.createImoyokanIntent(context, intent)
+            builder.createImoyokanIntent()
                 .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_REPLY)
                 .putExtra(KEY_EXTRA_URL, threadInfo.url)
                 .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua),
@@ -88,7 +88,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // アクションボタンを登録
         builder
             .addAction(replyAction)
-            .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url)
+            .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url, KEY_EXTRA_POSITION to RELOAD_THREAD)
             .addCatalogAction()
 
         // 読み込みに失敗していた場合
@@ -119,28 +119,22 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setTextViewText(R.id.text, sb)
 
         // スレ画像
-        if (threadInfo.thumbUrl.isNotEmpty()) {
-            val bitmap = Picasso.get().load(threadInfo.thumbUrl.replace("/thumb/", "/cat/").toHttps()).get()
-            view.setImageViewBitmap(R.id.large_icon, bitmap)
-            val imageIntent = builder.createNextPageIntent(
-                threadInfo.thumbUrl,
-                KEY_EXTRA_IMAGE_SRC_URL to threadInfo.imageUrl,
-                KEY_EXTRA_POSITION to if (hasNext) position else RELOAD_THREAD
-            )
-            view.setOnClickPendingIntent(R.id.large_icon, imageIntent)
-        } else {
-            view.setViewVisibility(R.id.large_icon, View.GONE)
+        view.setOnClickOrGone(R.id.large_icon, threadInfo.imageUrls.isNotEmpty()) {
+            try {
+                val bitmap = Picasso.get().load(toCatalogImageUrl(threadInfo.imageUrls[0])).get()
+                view.setImageViewBitmap(R.id.large_icon, bitmap)
+            } catch (e: Throwable) {
+                Log.d(NOTIFY_NAME, "スレ画読み込み失敗", e)
+                view.setImageViewResource(R.id.large_icon, android.R.drawable.ic_delete)
+            }
+            builder.createViewImageIntent()
         }
+        view.setTextViewText(R.id.images_count, "x${threadInfo.imageUrls.size}")
+        view.setOnClickOrGone(R.id.images, 1 < threadInfo.imageUrls.size) { builder.createViewImageIntent(threadInfo.imageUrls.size - 1) }
 
         // いろんなボタン
-        if (0 < position) {
-            view.setViewVisibility(R.id.prev, View.VISIBLE)
-            view.setOnClickPendingIntent(R.id.prev, builder.createThreadIntent(position - 1))
-        }
-        if (hasNext) {
-            view.setViewVisibility(R.id.next, View.VISIBLE)
-            view.setOnClickPendingIntent(R.id.next, builder.createThreadIntent(position + 1))
-        }
+        view.setOnClickOrGone(R.id.prev, 0 < position, View.INVISIBLE) { builder.createThreadIntent(position.prev) }
+        view.setOnClickOrGone(R.id.next, hasNext, View.INVISIBLE) { builder.createThreadIntent(position.next) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
 
         // 表示するよ！
@@ -168,28 +162,4 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         return if (Pref.getInstance(context).thread.shortKitaa) this.replace(KITAA_REGEX, SHORT_KITAA) else this
     }
 
-    companion object {
-        const val CACHE_FILENAME = "thread_cache.dat"
-    }
-
-    private fun saveToCache(threadInfo: ThreadInfo) {
-        try {
-            val file = File(context.cacheDir, CACHE_FILENAME)
-            ObjectOutputStream(FileOutputStream(file)).use{ it.writeObject(threadInfo) }
-        } catch (e: Throwable) {
-            Log.d(NOTIFY_NAME, "Failed to save thread cache.", e)
-        }
-    }
-
-    private fun loadFromCache(): ThreadInfo? {
-        try {
-            val file = File(context.cacheDir, CACHE_FILENAME)
-            ObjectInputStream(FileInputStream(file)).use {
-                (it.readObject() as? ThreadInfo)?.also { result -> return result }
-            }
-        } catch (e: Throwable) {
-            Log.d(NOTIFY_NAME, "Failed to load thread cache.", e)
-        }
-        return null
-    }
 }

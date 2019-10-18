@@ -58,10 +58,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         shortKitaa.isChecked = pref.thread.shortKitaa
     }
 
-    private fun toggleVisible(b: Boolean): Int {
-        return if (b) View.VISIBLE else View.GONE
-    }
-
     // イベント
 
     fun onClickLastThread(@Suppress("UNUSED_PARAMETER") view: View) {

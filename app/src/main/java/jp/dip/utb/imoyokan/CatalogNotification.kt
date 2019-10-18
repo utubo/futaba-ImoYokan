@@ -41,6 +41,10 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         pref.lastCatalogUrl = url
         pref.apply()
 
+        // スレッドのスクロール位置とかの情報はクリア
+        intent.removeExtra(KEY_EXTRA_POSITION)
+        intent.removeExtra(KEY_EXTRA_IMAGE_INDEX)
+
         // URLが取れたならボタンも作れる
         builder
             .addCatalogAction("カタログ", catalogInfo, SORT_DEFAULT)

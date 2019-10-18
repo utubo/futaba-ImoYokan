@@ -12,9 +12,13 @@
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_gravity">end|bottom</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:layout_alignParentBottom">true</item>
         <item name="android:src">@android:drawable/ic_menu_share</item>
+    </style>
+
+    <style name="prev_image_button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:drawableStart">@drawable/ic_left</item>
     </style>
 
     <style name="scroll_button">

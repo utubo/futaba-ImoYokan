@@ -3,6 +3,7 @@
 package jp.dip.utb.imoyokan
 
 import android.content.Intent
+import android.view.View
 import java.nio.charset.Charset
 
 // 通知とextraData
@@ -10,12 +11,13 @@ const val NOTIFY_NAME = "ImoYokan"
 const val NOTIFY_DESCRIPTION = "ImoYokan"
 const val CHANNEL_ID = "imoyokan_channel"
 const val KEY_EXTRA_ACTION = "key_extra_action"
-const val KEY_EXTRA_IMAGE_SRC_URL = "key_extra_src_url"
+const val KEY_EXTRA_IMAGE_INDEX = "key_extra_image_index"
 const val KEY_EXTRA_MAIL = "key_extra_mail"
 const val KEY_EXTRA_POSITION = "key_extra_position"
 const val KEY_EXTRA_PTUA = "key_extra_ptua"
 const val KEY_EXTRA_REPLY_TEXT = "key_extra_reply_text"
 const val KEY_EXTRA_URL = "key_extra_url"
+const val INTENT_ACTION_VIEW_IMAGE = 99
 const val INTENT_ACTION_REPLY = 100
 const val INTENT_ACTION_RELOAD_URL = 15000
 const val REQUEST_CODE_SHARE = 99
@@ -89,10 +91,31 @@ fun String.pick(regex: Regex, g: Int = 1): String {
     return regex.find(this)?.groupValues?.get(g) ?: ""
 }
 
+fun String.pick(regex: String, g: Int = 1): String {
+    return this.pick(regex.toRegex(), g)
+}
+
 fun String.blankToNull(): String? {
     return if (this.isBlank()) null else this
 }
 
+val Int.prev: Int get() { return this - 1 }
+val Int.next: Int get() { return this + 1 }
+
 fun Intent.str(key: String): String {
     return this.getStringExtra(key) ?: ""
+}
+
+fun Intent.putAll(vararg extras: Pair<String, Any>): Intent {
+    extras.forEach {
+        when (it.second) {
+            is Int -> this.putExtra(it.first, it.second as Int)
+            is String -> this.putExtra(it.first, it.second as String)
+        }
+    }
+    return this
+}
+
+fun toggleVisible(b: Boolean): Int {
+    return if (b) View.VISIBLE else View.GONE
 }

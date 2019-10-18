@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import jp.dip.utb.imoyokan.futaba.analyseCatalogUrl
-import jp.dip.utb.imoyokan.futaba.analyseImageUrl
 import jp.dip.utb.imoyokan.futaba.analyseUrl
 
 class HiddenActivity : AppCompatActivity() {
@@ -20,9 +19,6 @@ class HiddenActivity : AppCompatActivity() {
             val err = when {
                 analyseCatalogUrl(url) != null -> {
                     CatalogNotification(this, intent).notifyThis(); null
-                }
-                analyseImageUrl(url) != null -> {
-                    ImageNotification(this, intent).notifyThis(); null
                 }
                 analyseUrl(url) != null -> {
                     ThreadNotification(this, intent).notify(); null

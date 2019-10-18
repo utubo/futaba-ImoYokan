@@ -8,12 +8,56 @@
     tools:ignore="ContentDescription"
     >
     <!-- RelativeLayoutの配下にlayout_alignParentBottom="true"みたいな要素を置くと最大限まで広がる -->
-    <ImageView
-        android:id="@+id/image"
-        android:layout_alignParentBottom="true"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter">
-    </ImageView>
-    <ImageView android:id="@+id/share" style="@style/share_button" />
+        android:layout_above="@id/info">
+        <ImageView
+            android:id="@+id/image"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter">
+        </ImageView>
+        <ImageView
+            android:id="@+id/center"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"/>
+        <TextView
+            style="@style/prev_image_button"
+            android:id="@+id/prev"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@id/center"/>
+        <TextView
+            style="@style/prev_image_button"
+            android:id="@+id/next"
+            android:scaleX="-1"
+            android:layout_alignParentEnd="true"
+            android:layout_alignStart="@id/center"/>
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+        <TextView
+            android:id="@+id/index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="RelativeOverlap" />
+        <TextView
+            android:id="@+id/filename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            tools:ignore="RelativeOverlap" />
+        <ImageView android:id="@+id/share" style="@style/share_button" android:layout_alignParentEnd="true" />
+    </RelativeLayout>
 </RelativeLayout>
