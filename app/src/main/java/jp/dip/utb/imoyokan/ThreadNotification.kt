@@ -25,6 +25,11 @@ import kotlin.math.min
 
 class ThreadNotification(private val context: Context, private val intent: Intent) {
 
+    companion object {
+        private const val AUTO_SMALL_FONT_LINES = 10
+        private const val AUTO_SMALL_FONT_LENGTH = 15 * AUTO_SMALL_FONT_LINES
+    }
+
     fun notify(title: String = "", text: String = "") {
         GlobalScope.launch {
             notifyAsync(getThreadInfo(), title,  text)
@@ -154,12 +159,23 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         userSpan.setSpan(ForegroundColorSpan(Color.BLACK), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         this.append(userSpan)
         this.append(delimiter)
-        this.append(text.shortKitaa().toColoredText())
+        this.append(text.shortKitaa().toColoredText().autoSmallFont())
         return this
     }
 
     private fun String.shortKitaa(): String {
         return if (Pref.getInstance(context).thread.shortKitaa) this.replace(KITAA_REGEX, SHORT_KITAA) else this
+    }
+
+    private fun SpannableStringBuilder.autoSmallFont(): SpannableStringBuilder {
+        if (!Pref.getInstance(context).thread.autoSmallFont) {
+            return this
+        }
+        if (this.length < AUTO_SMALL_FONT_LENGTH && this.split("\n").size < AUTO_SMALL_FONT_LINES) {
+            return this
+        }
+        this.setSpan(RelativeSizeSpan(0.7f), 0, this.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return this
     }
 
 }

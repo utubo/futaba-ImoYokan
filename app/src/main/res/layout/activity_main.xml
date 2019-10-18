@@ -92,10 +92,16 @@
                 </LinearLayout>
                 <Switch
                     android:id="@+id/short_kitaa"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:onClick="onClickSwitch"
-                    android:text="ｷﾀｰを短く表示する" />
+                    android:text="ｷﾀｰを短くする" />
+                <Switch
+                    android:id="@+id/auto_small_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickSwitch"
+                    android:text="長文を小さくする" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

@@ -25,6 +25,7 @@ class Pref private constructor(context: Context) {
 
     class Thread(pref: Pref) {
         var shortKitaa: Boolean by pref.prefValue("thread_short_kitaa", false)
+        var autoSmallFont: Boolean by pref.prefValue("thread_auto_small_font", false)
     }
 
     class Catalog(pref: Pref) {
