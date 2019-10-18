@@ -15,6 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
         >
         <TextView
             android:id="@+id/message"
@@ -23,77 +24,78 @@
             android:text="アプリやブラウザからURLを共有して開いてください"/>
 
         <TextView
-            android:background="@drawable/ghost_button"
-            android:gravity="center"
+            style="@style/ghost_button"
             android:id="@+id/catalog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:onClick="onClickLastCatalog"
-            android:padding="8dp"
-            android:text="前回のカタログを表示する"
-            android:visibility="visible" />
+            android:text="前回のカタログを表示する"/>
         <TextView
-            android:background="@drawable/ghost_button"
-            android:gravity="center"
-            android:id="@+id/thread"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/ghost_button"
             android:layout_marginTop="8dp"
+            android:id="@+id/thread"
             android:onClick="onClickLastThread"
-            android:padding="8dp"
-            android:text="前回のスレッドを表示する"
-            android:visibility="visible"/>
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-        <TextView
-            android:id="@+id/setting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_action_settings"
-            android:drawablePadding="4dp"
-            android:gravity="start|center_vertical"
-            android:text="設定"/>
+            android:text="前回のスレッドを表示する"/>
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginStart="24dp">
-            <LinearLayout
+            android:gravity="start"
+            android:layout_marginTop="20dp"
+            >
+            <TextView
+                android:id="@+id/setting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onClickCatalogCols">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/catalog_cols"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="="/>
-                <TextView
-                    android:id="@+id/catalog_cols"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="7"/>
-            </LinearLayout>
+                android:drawableStart="@drawable/ic_action_settings"
+                android:drawablePadding="4dp"
+                android:gravity="start|center_vertical"
+                android:text="設定"/>
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onClickCatalogRows">
-                <TextView
+                android:orientation="vertical"
+                android:layout_marginStart="24dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickCatalogCols">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/catalog_cols"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="="/>
+                    <TextView
+                        android:id="@+id/catalog_cols"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="7"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickCatalogRows">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/catalog_rows"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="="/>
+                    <TextView
+                        android:id="@+id/catalog_rows"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3"/>
+                </LinearLayout>
+                <Switch
+                    android:id="@+id/short_kitaa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/catalog_rows"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="="/>
-                <TextView
-                    android:id="@+id/catalog_rows"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="3"/>
+                    android:onClick="onClickSwitch"
+                    android:text="ｷﾀｰを短く表示する" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

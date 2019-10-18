@@ -20,7 +20,12 @@ class Pref private constructor(context: Context) {
     var lastCatalogUrl: String by prefValue("last_catalog_url", "")
     var lastThreadUrl: String by prefValue("last_thread_url", "")
     var lastThreadModified: String by prefValue("last_thread_last_modified", "")
+    val thread = Thread(this)
     val catalog = Catalog(this)
+
+    class Thread(pref: Pref) {
+        var shortKitaa: Boolean by pref.prefValue("thread_short_kitaa", false)
+    }
 
     class Catalog(pref: Pref) {
         var cols: Int by pref.prefValue("catalog_cols", 7)
@@ -41,6 +46,7 @@ class Pref private constructor(context: Context) {
             val value = when (default) {
                 is Int -> pref.getString(id, default.toString())?.toInt() // getIntは使い物にならないのでStringで保存するしかない
                 is String -> pref.getString(id, default)
+                is Boolean -> pref.getBoolean(id, default)
                 else -> default
             }
             cache[id] = value as Any
@@ -66,6 +72,7 @@ class Pref private constructor(context: Context) {
             when (it.value) {
                 is Int -> e.putString(it.key, (it.value as Int).toString())
                 is String -> e.putString(it.key, it.value as String)
+                is Boolean -> e.putBoolean(it.key, it.value as Boolean)
                 else -> { }
             }
         }

@@ -16,10 +16,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import com.squareup.picasso.Picasso
-import jp.dip.utb.imoyokan.futaba.ResInfo
-import jp.dip.utb.imoyokan.futaba.ThreadInfo
-import jp.dip.utb.imoyokan.futaba.ThreadInfoBuilder
-import jp.dip.utb.imoyokan.futaba.toColoredText
+import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.*
@@ -163,8 +160,12 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         userSpan.setSpan(ForegroundColorSpan(Color.BLACK), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         this.append(userSpan)
         this.append(delimiter)
-        this.append(text.toColoredText())
+        this.append(text.shortKitaa().toColoredText())
         return this
+    }
+
+    private fun String.shortKitaa(): String {
+        return if (Pref.getInstance(context).thread.shortKitaa) this.replace(KITAA_REGEX, SHORT_KITAA) else this
     }
 
     companion object {

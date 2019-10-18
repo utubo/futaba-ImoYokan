@@ -18,6 +18,8 @@ const val QUOTE_COLOR = "#DE789922" // TODO: "DE"はAndroidのprimary textの不
 const val SORT_DEFAULT = ""
 const val SORT_NEWER = "1"
 const val SORT_REPLY = "3"
+val KITAA_REGEX = "ｷﾀ━━+\\(ﾟ∀ﾟ\\)━━+".toRegex()
+const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
 
 fun String.toColoredText(br:String = "\n"): SpannableStringBuilder {
     val sb = SpannableStringBuilder()
