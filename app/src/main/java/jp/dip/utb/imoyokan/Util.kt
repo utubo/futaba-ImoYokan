@@ -73,6 +73,10 @@ fun String.replaceForPost(charset: Charset): String {
     return s
 }
 
+fun String.addLineBreakForSingleLineInput(replaceTarget: String = "  "): String {
+    return this.replace(replaceTarget, "\n")
+}
+
 fun aroundWhenIsNotEmpty(head: String, text: String?, tail: String): String {
     return if (text?.isNotBlank() == true) (head + text + tail) else ""
 }

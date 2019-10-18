@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.RemoteInput
-import jp.dip.utb.imoyokan.futaba.Replyer
+import jp.dip.utb.imoyokan.futaba.Replier
 import jp.dip.utb.imoyokan.futaba.analyseCatalogUrl
 import jp.dip.utb.imoyokan.futaba.analyseImageUrl
 import kotlinx.coroutines.GlobalScope
@@ -55,7 +55,7 @@ class NotificationReceiver : BroadcastReceiver() {
         GlobalScope.launch {
             val url = intent.str(KEY_EXTRA_URL)
             val ptua = intent.str(KEY_EXTRA_PTUA)
-            val (title, msg) = Replyer().reply(url, text, mail, ptua)
+            val (title, msg) = Replier().reply(url, text, mail, ptua)
             //val title = "テスト"; val msg = "mail=${mail},text=${text}"
             threadNotification.notify(title, msg)
         }

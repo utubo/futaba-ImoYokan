@@ -5,7 +5,7 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import jp.dip.utb.imoyokan.*
 
-class Replyer {
+class Replier {
     @ExperimentalUnsignedTypes
     fun reply(url: String, text: String, mail: String, ptua: String): Pair<String, String> {
         val (server, b, res) = analyseUrl(url)!!
@@ -13,7 +13,7 @@ class Replyer {
         val params = HashMap<String, String>()
         params["b"] = b
         params["resto"] = res
-        params["com"] = text.replaceForPost(FUTABA_CHARSET)
+        params["com"] = text.replaceForPost(FUTABA_CHARSET).addLineBreakForSingleLineInput()
         params["email"] = mail.replaceForPost(FUTABA_CHARSET)
         params["pwd"] = ""
         params["mode"] = "regist"
@@ -53,4 +53,5 @@ class Replyer {
             }
         }
     }
+
 }
