@@ -131,7 +131,7 @@ fun loadImage(url: String): Pair<Bitmap?, String> {
     return try {
         Pair(Picasso.get().load(url).get(), "")
     } catch (e: Throwable) {
-        Log.d(NOTIFY_NAME, "スレ画読み込み失敗", e)
+        Log.d(NOTIFY_NAME, "画像読み込み失敗 url=${url}", e)
         Pair(null, e.message ?: "")
     }
 }
