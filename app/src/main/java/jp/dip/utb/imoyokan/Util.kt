@@ -102,12 +102,12 @@ fun String.blankToNull(): String? {
 val Int.prev: Int get() { return this - 1 }
 val Int.next: Int get() { return this + 1 }
 
-fun Intent.str(key: String): String {
-    return this.getStringExtra(key) ?: ""
-}
-
 val List<*>.maxIndex: Int get() {
     return this.size - 1
+}
+
+fun Intent.str(key: String): String {
+    return this.getStringExtra(key) ?: ""
 }
 
 fun Intent.putAll(vararg extras: Pair<String, Any>): Intent {
