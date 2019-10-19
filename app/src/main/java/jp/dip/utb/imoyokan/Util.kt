@@ -106,6 +106,10 @@ fun Intent.str(key: String): String {
     return this.getStringExtra(key) ?: ""
 }
 
+val List<*>.maxIndex: Int get() {
+    return this.size - 1
+}
+
 fun Intent.putAll(vararg extras: Pair<String, Any>): Intent {
     extras.forEach {
         when (it.second) {

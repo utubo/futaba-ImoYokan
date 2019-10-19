@@ -37,15 +37,18 @@ class ImageNotification(private val context: Context, private val intent: Intent
 
         // 前後ボタン
         val index = (intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0) + threadInfo.imageUrls.size) % threadInfo.imageUrls.size
-        val maxIndex = threadInfo.imageUrls.size -1
-        val hasNext = index < maxIndex
+        val hasNext = index < threadInfo.imageUrls.maxIndex
         view.setOnClickOrGone(R.id.prev, index != 0) { builder.createViewImageIntent(index.prev) }
         view.setOnClickOrGone(R.id.next, hasNext) { builder.createViewImageIntent(index.next) }
-        builder.addAction(NotificationCompat.Action.Builder(
-            android.R.drawable.ic_menu_more,
-            if (hasNext) "末尾" else "先頭",
-            builder.createViewImageIntent(if (hasNext) maxIndex else 0)).build()
-        )
+        if (1 < threadInfo.imageUrls.size) {
+            builder.addAction(
+                NotificationCompat.Action.Builder(
+                    android.R.drawable.ic_menu_more,
+                    if (hasNext) "末尾" else "先頭",
+                    builder.createViewImageIntent(if (hasNext) threadInfo.imageUrls.maxIndex else 0)
+                ).build()
+            )
+        }
 
         // 共有ボタン
         val url = threadInfo.imageUrls[index]
@@ -58,7 +61,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
 
         // 画像をダウンロード
         view.setTextViewText(R.id.filename, url.pick("([^/]+$)"))
-        view.setTextViewText(R.id.index, "${index.next}/${maxIndex.next}")
+        view.setTextViewText(R.id.index, "${index.next}/${threadInfo.imageUrls.size}")
         try {
             val bitmap = Picasso.get().load(toThumbnailUrl(url)).get()
             view.setImageViewBitmap(R.id.image, bitmap)

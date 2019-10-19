@@ -90,7 +90,7 @@ class ThreadInfoBuilder {
         val threadMarker = "<input type=checkbox name=\"${threadInfo.res}\""
         val numberRegex =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
         val mailRegex =  "<a href=\"mailto:([^\"]+)\">".toRegex()
-        val textRegex =  "<blockquote[^>]*>([^\n]+)</blockquote>".toRegex()
+        val textRegex =  "<blockquote[^>]*>(.+)</blockquote>".toRegex()
         val imageRegex = "(su)?\\d+\\.(jpg|png)".toRegex()
         val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+\\.(jpg|png))".toRegex()
         for (line in html.split("\n")) {

@@ -135,7 +135,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             builder.createViewImageIntent()
         }
         view.setTextViewText(R.id.images_count, "x${threadInfo.imageUrls.size}")
-        view.setOnClickOrGone(R.id.images, 1 < threadInfo.imageUrls.size) { builder.createViewImageIntent(threadInfo.imageUrls.size - 1) }
+        view.setOnClickOrGone(R.id.images, 1 < threadInfo.imageUrls.size) { builder.createViewImageIntent(threadInfo.imageUrls.maxIndex) }
 
         // いろんなボタン
         view.setOnClickOrGone(R.id.prev, 0 < position, View.INVISIBLE) { builder.createThreadIntent(position.prev) }
