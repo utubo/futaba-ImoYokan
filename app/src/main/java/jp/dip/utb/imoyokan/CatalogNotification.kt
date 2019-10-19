@@ -5,7 +5,6 @@ import android.content.Intent
 import android.text.format.DateFormat
 import android.view.View
 import android.widget.RemoteViews
-import com.squareup.picasso.Picasso
 import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -75,8 +74,8 @@ class CatalogNotification(private val context: Context, private val intent: Inte
             view.setOnClickPendingIntent(id, builder.createNextPageIntent(it.href))
             // 画像をセット
             if (it.img != null) {
-                val bitmap = Picasso.get().load(it.img).get()
-                view.setImageViewBitmap(id, bitmap)
+                val (bitmap, _) = loadImage(it.img)
+                view.setImageViewAny(id, bitmap ?: android.R.drawable.ic_delete)
             }
             view.setViewVisibility(id, View.VISIBLE)
 

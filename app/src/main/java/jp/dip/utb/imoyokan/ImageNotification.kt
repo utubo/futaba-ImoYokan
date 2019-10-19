@@ -2,12 +2,8 @@ package jp.dip.utb.imoyokan
 
 import android.content.Context
 import android.content.Intent
-import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.squareup.picasso.Picasso
-import jp.dip.utb.imoyokan.futaba.SIO_KARA_REGEX
-import jp.dip.utb.imoyokan.futaba.SIO_KARA_SU_ROOT
 import jp.dip.utb.imoyokan.futaba.toThumbnailUrl
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -31,7 +27,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
         }
 
         // ここからカスタムview
-        val view = RemoteViews(context.packageName, R.layout.notification_image).also { it.setViewVisibility(R.id.message, View.GONE) }
+        val view = RemoteViews(context.packageName, R.layout.notification_image)
         builder
             .setRemoteViews(view)
             .addThreadAction(POSITION_KEEP)
@@ -59,6 +55,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
         // ファイル名とか
         view.setTextViewText(R.id.filename, url.pick("([^/]+$)"))
         view.setTextViewText(R.id.index, "${index.next}/${threadInfo.imageUrls.size}")
+        view.setTextViewText(R.id.message, "")
 
         // ダウンロード前にプログレスバーを表示する
         builder
@@ -66,14 +63,9 @@ class ImageNotification(private val context: Context, private val intent: Intent
             .notifyThis()
 
         // 画像をダウンロード
-        try {
-            val bitmap = Picasso.get().load(toThumbnailUrl(url)).get()
-            view.setImageViewBitmap(R.id.image, bitmap)
-        } catch (e: Exception) {
-            view.setImageViewBitmap(R.id.image, null)
-            view.setTextViewText(R.id.message, e.message)
-            view.setViewVisibility(R.id.message, View.VISIBLE)
-        }
+        val (bitmap, message) = loadImage(toThumbnailUrl(url))
+        view.setImageViewBitmap(R.id.image, bitmap)
+        view.setTextViewText(R.id.message, message)
 
         // 表示するよ！
         builder

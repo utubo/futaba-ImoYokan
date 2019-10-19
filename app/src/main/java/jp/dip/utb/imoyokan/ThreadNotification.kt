@@ -10,12 +10,10 @@ import android.text.SpannableStringBuilder
 import android.text.format.DateFormat
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
-import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
-import com.squareup.picasso.Picasso
 import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -125,13 +123,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
         // スレ画像
         view.setOnClickOrGone(R.id.large_icon, threadInfo.imageUrls.isNotEmpty()) {
-            try {
-                val bitmap = Picasso.get().load(toCatalogImageUrl(threadInfo.imageUrls[0])).get()
-                view.setImageViewBitmap(R.id.large_icon, bitmap)
-            } catch (e: Throwable) {
-                Log.d(NOTIFY_NAME, "スレ画読み込み失敗", e)
-                view.setImageViewResource(R.id.large_icon, android.R.drawable.ic_delete)
-            }
+            val (bitmap, _) = loadImage(toCatalogImageUrl(threadInfo.imageUrls[0]))
+            view.setImageViewAny(R.id.large_icon, bitmap ?: android.R.drawable.ic_delete)
             builder.createViewImageIntent()
         }
         view.setTextViewText(R.id.images_count, "x${threadInfo.imageUrls.size}")

@@ -3,7 +3,10 @@
 package jp.dip.utb.imoyokan
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.util.Log
 import android.view.View
+import com.squareup.picasso.Picasso
 import java.nio.charset.Charset
 
 // 通知とextraData
@@ -122,4 +125,13 @@ fun Intent.putAll(vararg extras: Pair<String, Any>): Intent {
 
 fun visibleOrGone(b: Boolean): Int {
     return if (b) View.VISIBLE else View.GONE
+}
+
+fun loadImage(url: String): Pair<Bitmap?, String> {
+    return try {
+        Pair(Picasso.get().load(url).get(), "")
+    } catch (e: Throwable) {
+        Log.d(NOTIFY_NAME, "スレ画読み込み失敗", e)
+        Pair(null, e.message ?: "")
+    }
 }
