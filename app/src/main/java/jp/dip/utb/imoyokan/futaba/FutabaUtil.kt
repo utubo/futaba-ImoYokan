@@ -22,6 +22,10 @@ const val SORT_REPLY = "3"
 val KITAA_REGEX = "ｷﾀ━━+\\(ﾟ∀ﾟ\\)━━+".toRegex()
 const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
 const val SIO_KARA_SU_ROOT = "http://www.nijibox5.com/futabafiles/tubu/src/"
+const val SIO_KARA_SS_ROOT = "http://www.nijibox5.com/futabafiles/kobin/src/"
+val SIO_KARA_REGEX = "http://www\\.nijibox\\d\\.com/".toRegex()
+const val IMAGE_EXT = "\\.(jpg|jpeg|png|gif|webm|mp4)"
+val IMAGE_EXT_REGEX = IMAGE_EXT.toRegex()
 
 fun String.toColoredText(br:String = "\n"): SpannableStringBuilder {
     val sb = SpannableStringBuilder()
@@ -64,15 +68,19 @@ fun getCatalogUrl(url: String, sort:String = ""): String {
 }
 
 fun toThumbnailUrl(url: String): String {
-    return if (url.startsWith(SIO_KARA_SU_ROOT)) {
-            url.replace("src", "misc").replace(".png|.jpg|.jpeg|.webm|.mp4".toRegex(), ".thumb.jpg")
+    return if (SIO_KARA_REGEX.containsMatchIn(url)) {
+        when {
+            url.contains(".webm") -> url.replace("src.*".toRegex(), "images/icon_webm.png")
+            url.contains(".mp4") -> url.replace("src.*".toRegex(), "images/icon_mp4.png")
+            else -> url.replace("src", "misc").replace(IMAGE_EXT_REGEX, ".thumb.jpg")
+        }
         } else {
-            url.toHttps().replace("/src/", "/thumb/").replace(".png|.jpg|.jpeg|.webm|.mp4".toRegex(), "s.jpg")
+            url.toHttps().replace("/src/", "/thumb/").replace(IMAGE_EXT_REGEX, "s.jpg")
         }
 }
 
 fun toCatalogImageUrl(url: String): String {
-    return if (url.startsWith(SIO_KARA_SU_ROOT)) {
+    return if (SIO_KARA_REGEX.containsMatchIn(url)) {
         toThumbnailUrl(url)
     } else {
         toThumbnailUrl(url).replace("/thumb/", "/cat/")

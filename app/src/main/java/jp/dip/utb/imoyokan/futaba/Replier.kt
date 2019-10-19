@@ -8,8 +8,12 @@ import jp.dip.utb.imoyokan.*
 class Replier {
     @ExperimentalUnsignedTypes
     fun reply(url: String, text: String, mail: String, ptua: String): Pair<String, String> {
-        val (server, b, res) = analyseUrl(url)!!
-        val (_, _, pthbResult) = "${server}/$URL_CACHEMT".toHttps().httpGet().responseString()
+        val (server, b, res) = analyseUrl(url) ?: return Pair("返信失敗", "URLが変！\n${url}")
+        val pthb = "${server}/$URL_CACHEMT"
+            .toHttps()
+            .httpGet()
+            .responseString().third.get()
+            .pick("return \"(\\d+)\"")
         val params = HashMap<String, String>()
         params["b"] = b
         params["resto"] = res
@@ -18,8 +22,8 @@ class Replier {
         params["pwd"] = ""
         params["mode"] = "regist"
         params["ptua"] = ptua
-        params["pthb"] = pthbResult.get().pick("return \"(\\d+)\"".toRegex())
-        params["pthc"] = if (params["pthb"]!!.isNotEmpty()) (params["pthb"]!!.toULong() - RES_INTERVAL).toString() else ""
+        params["pthb"] = pthb
+        params["pthc"] = if (pthb.isNotEmpty()) (pthb.toULong() - RES_INTERVAL).toString() else ""
         params["baseform"] = ""
         params["js"] = "on"
         params["scsz"] = "1920x1080x24"

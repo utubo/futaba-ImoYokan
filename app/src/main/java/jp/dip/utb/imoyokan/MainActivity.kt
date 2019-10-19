@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun refresh() {
-        topMessage.visibility = toggleVisible(pref.lastCatalogUrl.isEmpty() && pref.lastThreadUrl.isEmpty())
-        catalog.visibility = toggleVisible(pref.lastCatalogUrl.isNotEmpty())
-        thread.visibility = toggleVisible(pref.lastThreadUrl.isNotEmpty())
+        topMessage.visibility = visibleOrGone(pref.lastCatalogUrl.isEmpty() && pref.lastThreadUrl.isEmpty())
+        catalog.visibility = visibleOrGone(pref.lastCatalogUrl.isNotEmpty())
+        thread.visibility = visibleOrGone(pref.lastThreadUrl.isNotEmpty())
         catalogCols.text = pref.catalog.cols.toString()
         catalogRows.text = pref.catalog.rows.toString()
         shortKitaa.isChecked = pref.thread.shortKitaa

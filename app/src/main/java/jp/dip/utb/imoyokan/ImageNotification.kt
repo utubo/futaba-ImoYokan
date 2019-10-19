@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.squareup.picasso.Picasso
+import jp.dip.utb.imoyokan.futaba.SIO_KARA_REGEX
+import jp.dip.utb.imoyokan.futaba.SIO_KARA_SU_ROOT
 import jp.dip.utb.imoyokan.futaba.toThumbnailUrl
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,7 +38,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
             .addCatalogAction()
 
         // 前後ボタン
-        val index = (intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0) + threadInfo.imageUrls.size) % threadInfo.imageUrls.size
+        val index = intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0).coerceIn(0, threadInfo.imageUrls.maxIndex)
         val hasNext = index < threadInfo.imageUrls.maxIndex
         view.setOnClickOrGone(R.id.prev, index != 0) { builder.createViewImageIntent(index.prev) }
         view.setOnClickOrGone(R.id.next, hasNext) { builder.createViewImageIntent(index.next) }
@@ -54,14 +56,16 @@ class ImageNotification(private val context: Context, private val intent: Intent
         val url = threadInfo.imageUrls[index]
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(url))
 
+        // ファイル名とか
+        view.setTextViewText(R.id.filename, url.pick("([^/]+$)"))
+        view.setTextViewText(R.id.index, "${index.next}/${threadInfo.imageUrls.size}")
+
         // ダウンロード前にプログレスバーを表示する
         builder
             .setProgress()
             .notifyThis()
 
         // 画像をダウンロード
-        view.setTextViewText(R.id.filename, url.pick("([^/]+$)"))
-        view.setTextViewText(R.id.index, "${index.next}/${threadInfo.imageUrls.size}")
         try {
             val bitmap = Picasso.get().load(toThumbnailUrl(url)).get()
             view.setImageViewBitmap(R.id.image, bitmap)

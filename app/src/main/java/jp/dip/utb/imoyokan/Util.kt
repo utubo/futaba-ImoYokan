@@ -120,6 +120,6 @@ fun Intent.putAll(vararg extras: Pair<String, Any>): Intent {
     return this
 }
 
-fun toggleVisible(b: Boolean): Int {
+fun visibleOrGone(b: Boolean): Int {
     return if (b) View.VISIBLE else View.GONE
 }

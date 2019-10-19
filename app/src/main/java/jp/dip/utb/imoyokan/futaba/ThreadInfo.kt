@@ -1,5 +1,3 @@
-@file:Suppress("PLUGIN_WARNING")
-
 package jp.dip.utb.imoyokan.futaba
 
 import com.github.kittinunf.fuel.httpGet
@@ -10,9 +8,7 @@ import kotlin.collections.ArrayList
 import java.io.Serializable
 
 data class ThreadInfo(val url: String) : Serializable {
-    @Suppress("MemberVisibilityCanBePrivate")
     val server: String
-    @Suppress("MemberVisibilityCanBePrivate")
     val b: String
     val res: String
     var form = FromParams("", "")
@@ -91,8 +87,8 @@ class ThreadInfoBuilder {
         val numberRegex =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
         val mailRegex =  "<a href=\"mailto:([^\"]+)\">".toRegex()
         val textRegex =  "<blockquote[^>]*>(.+)</blockquote>".toRegex()
-        val imageRegex = "(su)?\\d+\\.(jpg|png)".toRegex()
-        val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+\\.(jpg|png))".toRegex()
+        val imageRegex = "(su|ss)?\\d+${IMAGE_EXT}".toRegex()
+        val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+${IMAGE_EXT})".toRegex()
         for (line in html.split("\n")) {
             if (isPre) {
                 // フォームデータ
@@ -115,15 +111,15 @@ class ThreadInfoBuilder {
             // レス
             if (line.contains("<blockquote")) {
                 var resText = line.pick(textRegex)
-                if (line.contains(".jpg") || line.contains(".png")) {
+                if (IMAGE_EXT_REGEX.containsMatchIn(line)) {
                     resImageRegex.find(line)?.let {
                         resText = "${it.groupValues[1]}\n${resText}"
                     }
                     imageRegex.findAll(resText).forEach {
-                        if (it.value.startsWith("su")) {
-                            threadInfo.imageUrls.put(SIO_KARA_SU_ROOT + it.value)
-                        } else {
-                            threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${it.value}")
+                        when {
+                            it.value.startsWith("su") -> threadInfo.imageUrls.put(SIO_KARA_SU_ROOT + it.value)
+                            it.value.startsWith("ss") -> threadInfo.imageUrls.put(SIO_KARA_SS_ROOT + it.value)
+                            else -> threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${it.value}")
                         }
                     }
                 }
