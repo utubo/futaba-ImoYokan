@@ -21,8 +21,11 @@ const val SORT_NEWER = "1"
 const val SORT_REPLY = "3"
 val KITAA_REGEX = "ｷﾀ━━+\\(ﾟ∀ﾟ\\)━━+".toRegex()
 const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
-const val SIO_KARA_SU_ROOT = "http://www.nijibox5.com/futabafiles/tubu/src/"
+const val SIO_KARA_SA_ROOT = "http://www.nijibox6.com/futabafiles/001/src/"
+const val SIO_KARA_SP_ROOT = "http://www.nijibox2.com/futabafiles/003/src/"
+const val SIO_KARA_SQ_ROOT = "http://www.nijibox6.com/futabafiles/mid/src/"
 const val SIO_KARA_SS_ROOT = "http://www.nijibox5.com/futabafiles/kobin/src/"
+const val SIO_KARA_SU_ROOT = "http://www.nijibox5.com/futabafiles/tubu/src/"
 val SIO_KARA_REGEX = "http://www\\.nijibox\\d\\.com/".toRegex()
 const val IMAGE_EXT = "\\.(jpg|jpeg|png|gif|webm|mp4)"
 val IMAGE_EXT_REGEX = IMAGE_EXT.toRegex()
@@ -70,6 +73,7 @@ fun getCatalogUrl(url: String, sort:String = ""): String {
 fun toThumbnailUrl(url: String): String {
     return if (SIO_KARA_REGEX.containsMatchIn(url)) {
         when {
+            url.startsWith(SIO_KARA_SA_ROOT) -> url // saはサムネ無し5MB以下だからいいか…
             url.contains(".webm") -> url.replace("src.*".toRegex(), "images/icon_webm.png")
             url.contains(".mp4") -> url.replace("src.*".toRegex(), "images/icon_mp4.png")
             else -> url.replace("src", "misc").replace(IMAGE_EXT_REGEX, ".thumb.jpg")

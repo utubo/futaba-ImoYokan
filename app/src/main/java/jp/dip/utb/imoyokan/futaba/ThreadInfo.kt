@@ -87,7 +87,7 @@ class ThreadInfoBuilder {
         val numberRegex =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
         val mailRegex =  "<a href=\"mailto:([^\"]+)\">".toRegex()
         val textRegex =  "<blockquote[^>]*>(.+)</blockquote>".toRegex()
-        val imageRegex = "(su|ss)?\\d+${IMAGE_EXT}".toRegex()
+        val imageRegex = "(sa|sp|sq|su|ss)?\\d+${IMAGE_EXT}".toRegex()
         val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+${IMAGE_EXT})".toRegex()
         for (line in html.split("\n")) {
             if (isPre) {
@@ -117,8 +117,11 @@ class ThreadInfoBuilder {
                     }
                     imageRegex.findAll(resText).forEach {
                         when {
-                            it.value.startsWith("su") -> threadInfo.imageUrls.put(SIO_KARA_SU_ROOT + it.value)
+                            it.value.startsWith("sa") -> threadInfo.imageUrls.put(SIO_KARA_SA_ROOT + it.value)
+                            it.value.startsWith("sp") -> threadInfo.imageUrls.put(SIO_KARA_SP_ROOT + it.value)
+                            it.value.startsWith("sq") -> threadInfo.imageUrls.put(SIO_KARA_SQ_ROOT + it.value)
                             it.value.startsWith("ss") -> threadInfo.imageUrls.put(SIO_KARA_SS_ROOT + it.value)
+                            it.value.startsWith("su") -> threadInfo.imageUrls.put(SIO_KARA_SU_ROOT + it.value)
                             else -> threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${it.value}")
                         }
                     }
