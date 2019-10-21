@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">ImoYokan</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="catalog_cols">カタログサイズ(横)</string>
-    <string name="catalog_rows">カタログサイズ(縦)</string>
 </resources>

@@ -12,7 +12,7 @@ class Pref private constructor(context: Context) {
     companion object {
         var instance: Pref? = null
         fun getInstance(context: Context) = instance ?: synchronized(this) {
-            instance ?: Pref(context).also { instance = it }
+            instance ?: Pref(context.applicationContext).also { instance = it }
         }
     }
 

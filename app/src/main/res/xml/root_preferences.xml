@@ -1,0 +1,39 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    app:iconSpaceReserved="false"
+    >
+
+    <PreferenceCategory app:title="カタログ" app:iconSpaceReserved="false">
+        <ListPreference app:iconSpaceReserved="false"
+            app:title="カタログサイズ(横)"
+            app:key="catalog_cols"
+            app:defaultValue="7"
+            app:entries="@array/catalog_cols"
+            app:entryValues="@array/catalog_cols"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference app:iconSpaceReserved="false"
+            app:title="カタログサイズ(縦)"
+            app:key="catalog_rows"
+            app:defaultValue="4"
+            app:entries="@array/catalog_rows"
+            app:entryValues="@array/catalog_rows"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="スレッド" app:iconSpaceReserved="false">
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="ｷﾀｰを短くする"
+            app:key="thread_short_kitaa" />
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="長文を小さく表示する"
+            app:key="thread_auto_small_font" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="画像" app:iconSpaceReserved="false">
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="塩のサムネに中間サーバを使う"
+            app:key="media_use_sio_cache_server"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

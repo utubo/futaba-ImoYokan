@@ -30,86 +30,16 @@
             android:text="前回のカタログを表示する"/>
         <TextView
             style="@style/ghost_button"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:id="@+id/thread"
             android:onClick="onClickLastThread"
             android:text="前回のスレッドを表示する"/>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="start"
-            android:layout_marginTop="20dp"
-            >
-            <TextView
-                android:id="@+id/setting"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_action_settings"
-                android:drawablePadding="4dp"
-                android:gravity="start|center_vertical"
-                android:text="設定"/>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="24dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onClickCatalogCols">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/catalog_cols"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="="/>
-                    <TextView
-                        android:id="@+id/catalog_cols"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="7"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onClickCatalogRows">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/catalog_rows"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="="/>
-                    <TextView
-                        android:id="@+id/catalog_rows"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3"/>
-                </LinearLayout>
-                <Switch
-                    android:id="@+id/short_kitaa"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onClickSwitch"
-                    android:text="ｷﾀｰを短くする" />
-                <Switch
-                    android:id="@+id/auto_small_font"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onClickSwitch"
-                    android:text="長文を小さくする" />
-                <Switch
-                    android:id="@+id/media_use_sio_cache_server"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onClickSwitch"
-                    android:text="塩のサムネに中間サーバを使う" />
-            </LinearLayout>
-        </LinearLayout>
+        <TextView
+            style="@style/ghost_button"
+            android:layout_marginTop="16dp"
+            android:onClick="onClickSettings"
+            android:drawableStart="@drawable/ic_action_settings"
+            android:text="設定"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

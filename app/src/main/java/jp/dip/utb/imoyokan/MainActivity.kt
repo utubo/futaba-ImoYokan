@@ -1,11 +1,9 @@
 package jp.dip.utb.imoyokan
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -16,11 +14,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private lateinit var topMessage: TextView
     private lateinit var catalog: TextView
     private lateinit var thread: TextView
-    private lateinit var catalogCols: TextView
-    private lateinit var catalogRows: TextView
-    private lateinit var shortKitaa: Switch
-    private lateinit var autoSmallFont: Switch
-    private lateinit var useSioCacheServer: Switch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,20 +22,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         topMessage = findViewById(R.id.message)
         catalog = findViewById(R.id.catalog)
         thread = findViewById(R.id.thread)
-        catalogCols = findViewById(R.id.catalog_cols)
-        catalogRows = findViewById(R.id.catalog_rows)
-        shortKitaa = findViewById(R.id.short_kitaa)
-        shortKitaa.setTextColor(catalogCols.textColors.defaultColor)
-        autoSmallFont = findViewById(R.id.auto_small_font)
-        autoSmallFont.setTextColor(catalogCols.textColors.defaultColor)
-        useSioCacheServer = findViewById(R.id.media_use_sio_cache_server)
-        useSioCacheServer.setTextColor(catalogCols.textColors.defaultColor)
         refresh()
     }
 
+    // ボタンを出したり消したり
     override fun onResume() {
         super.onResume()
         pref.pref.registerOnSharedPreferenceChangeListener(this)
+        refresh()
     }
 
     override fun onPause() {
@@ -59,15 +46,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         topMessage.visibility = visibleOrGone(pref.lastCatalogUrl.isEmpty() && pref.lastThreadUrl.isEmpty())
         catalog.visibility = visibleOrGone(pref.lastCatalogUrl.isNotEmpty())
         thread.visibility = visibleOrGone(pref.lastThreadUrl.isNotEmpty())
-        catalogCols.text = pref.catalog.cols.toString()
-        catalogRows.text = pref.catalog.rows.toString()
-        shortKitaa.isChecked = pref.thread.shortKitaa
-        autoSmallFont.isChecked = pref.thread.autoSmallFont
-        useSioCacheServer.isChecked = pref.media.useSioCacheServer
     }
 
-    // イベント
-
+    // ボタンクリックイベント
     fun onClickLastThread(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(applicationContext, HiddenActivity::class.java)
         intent.putExtra(KEY_EXTRA_URL, pref.lastThreadUrl)
@@ -80,33 +61,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         startActivity(intent)
     }
 
-    fun onClickCatalogCols(@Suppress("UNUSED_PARAMETER") view: View) {
-        val items = arrayOf("3", "4", "5", "6", "7", "8", "9")
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.catalog_cols))
-            .setItems(items) { _, which ->
-                pref.catalog.cols = items[which].toInt()
-                pref.apply()
-            }
-            .show()
-    }
-
-    fun onClickCatalogRows(@Suppress("UNUSED_PARAMETER") view: View) {
-        val items = arrayOf("1", "2", "3", "4", "5")
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.catalog_rows))
-            .setItems(items) { _, which ->
-                pref.catalog.rows = items[which].toInt()
-                pref.apply()
-            }
-            .show()
-    }
-
-    fun onClickSwitch(@Suppress("UNUSED_PARAMETER") view: View) {
-        pref.thread.shortKitaa = shortKitaa.isChecked
-        pref.thread.autoSmallFont = autoSmallFont.isChecked
-        pref.media.useSioCacheServer = useSioCacheServer.isChecked
+    fun onClickSettings(@Suppress("UNUSED_PARAMETER") view: View) {
+        startActivity(Intent(this, SettingsActivity::class.java))
     }
 
 }
-
