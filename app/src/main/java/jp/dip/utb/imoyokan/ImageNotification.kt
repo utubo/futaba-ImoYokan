@@ -65,7 +65,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
 
         // 画像をダウンロード
         val (bitmap, message) = loadImage(toThumbnailUrl(url))
-        view.setImageViewBitmap(R.id.image, bitmap)
+        view.setImageViewAny(R.id.image, bitmap)
         view.setTextViewText(R.id.message, message)
 
         // 表示するよ！

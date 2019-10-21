@@ -171,7 +171,11 @@ fun RemoteViews.setOnClickOrInvisible(id: Int, b: Boolean, f: () -> PendingInten
     }
 }
 
-fun RemoteViews.setImageViewAny(id: Int, image: Any) {
+fun RemoteViews.setImageViewAny(id: Int, image: Any?) {
+    if (image == null) {
+        setImageViewBitmap(id, null)
+        return
+    }
     when (image) {
         is Bitmap -> setImageViewBitmap(id, image)
         is Int -> setImageViewResource(id, image)
