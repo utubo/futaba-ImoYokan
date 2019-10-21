@@ -153,12 +153,21 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
 
 }
 
-fun RemoteViews.setOnClickOrGone(id: Int, b: Boolean, gone: Int = View.GONE, f: () -> PendingIntent) {
+fun RemoteViews.setOnClickOrGone(id: Int, b: Boolean, f: () -> PendingIntent) {
     if (b) {
         this.setOnClickPendingIntent(id, f())
         this.setViewVisibility(id, View.VISIBLE)
     } else {
-        this.setViewVisibility(id, gone)
+        this.setViewVisibility(id, View.GONE)
+    }
+}
+
+fun RemoteViews.setOnClickOrInvisible(id: Int, b: Boolean, f: () -> PendingIntent) {
+    if (b) {
+        this.setOnClickPendingIntent(id, f())
+        this.setViewVisibility(id, View.VISIBLE)
+    } else {
+        this.setViewVisibility(id, View.INVISIBLE)
     }
 }
 

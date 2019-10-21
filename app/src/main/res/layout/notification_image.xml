@@ -19,22 +19,24 @@
             android:layout_height="match_parent"
             android:scaleType="fitCenter">
         </ImageView>
-        <ImageView
-            android:id="@+id/center"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_centerInParent="true"/>
-        <TextView
-            style="@style/prev_image_button"
-            android:id="@+id/prev"
-            android:layout_alignParentStart="true"
-            android:layout_alignEnd="@id/center"/>
-        <TextView
-            style="@style/prev_image_button"
-            android:id="@+id/next"
-            android:scaleX="-1"
-            android:layout_alignParentEnd="true"
-            android:layout_alignStart="@id/center"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                style="@style/prev_image_button"
+                android:id="@+id/prev"
+                android:layout_weight="1"/>
+            <ImageView
+                android:id="@+id/image_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/next"
+                style="@style/prev_image_button"
+                android:layout_weight="1"
+                android:scaleX="-1" />
+        </LinearLayout>
         <TextView
             android:id="@+id/message"
             android:layout_width="wrap_content"

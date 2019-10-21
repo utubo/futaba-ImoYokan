@@ -36,8 +36,8 @@ class ImageNotification(private val context: Context, private val intent: Intent
         // 前後ボタン
         val index = intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0).coerceIn(0, threadInfo.imageUrls.maxIndex)
         val hasNext = index < threadInfo.imageUrls.maxIndex
-        view.setOnClickOrGone(R.id.prev, index != 0) { builder.createViewImageIntent(index.prev) }
-        view.setOnClickOrGone(R.id.next, hasNext) { builder.createViewImageIntent(index.next) }
+        view.setOnClickOrInvisible(R.id.prev, index != 0) { builder.createViewImageIntent(index.prev) }
+        view.setOnClickOrInvisible(R.id.next, hasNext) { builder.createViewImageIntent(index.next) }
         if (1 < threadInfo.imageUrls.size) {
             builder.addAction(
                 NotificationCompat.Action.Builder(
@@ -51,6 +51,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
         // 共有ボタン
         val url = threadInfo.imageUrls[index]
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(url))
+        view.setOnClickPendingIntent(R.id.image_button, builder.createShareUrlIntent(url)) // 画像タップでも共有
 
         // ファイル名とか
         view.setTextViewText(R.id.filename, url.pick("([^/]+$)"))

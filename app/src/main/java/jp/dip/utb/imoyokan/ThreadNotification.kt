@@ -10,7 +10,6 @@ import android.text.SpannableStringBuilder
 import android.text.format.DateFormat
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
-import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
@@ -131,8 +130,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickOrGone(R.id.images, 1 < threadInfo.imageUrls.size) { builder.createViewImageIntent(threadInfo.imageUrls.maxIndex) }
 
         // いろんなボタン
-        view.setOnClickOrGone(R.id.prev, 0 < position, View.INVISIBLE) { builder.createThreadIntent(position.prev) }
-        view.setOnClickOrGone(R.id.next, hasNext, View.INVISIBLE) { builder.createThreadIntent(position.next) }
+        view.setOnClickOrInvisible(R.id.prev, 0 < position) { builder.createThreadIntent(position.prev) }
+        view.setOnClickOrInvisible(R.id.next, hasNext) { builder.createThreadIntent(position.next) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
 
         // 表示するよ！
