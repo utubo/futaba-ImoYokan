@@ -102,6 +102,12 @@
                     android:layout_height="wrap_content"
                     android:onClick="onClickSwitch"
                     android:text="長文を小さくする" />
+                <Switch
+                    android:id="@+id/media_use_sio_cache_server"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickSwitch"
+                    android:text="塩のサムネに中間サーバを使う" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

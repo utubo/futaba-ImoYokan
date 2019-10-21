@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private lateinit var catalogRows: TextView
     private lateinit var shortKitaa: Switch
     private lateinit var autoSmallFont: Switch
+    private lateinit var useSioCacheServer: Switch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +35,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         shortKitaa.setTextColor(catalogCols.textColors.defaultColor)
         autoSmallFont = findViewById(R.id.auto_small_font)
         autoSmallFont.setTextColor(catalogCols.textColors.defaultColor)
+        useSioCacheServer = findViewById(R.id.media_use_sio_cache_server)
+        useSioCacheServer.setTextColor(catalogCols.textColors.defaultColor)
         refresh()
     }
 
@@ -60,6 +63,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         catalogRows.text = pref.catalog.rows.toString()
         shortKitaa.isChecked = pref.thread.shortKitaa
         autoSmallFont.isChecked = pref.thread.autoSmallFont
+        useSioCacheServer.isChecked = pref.media.useSioCacheServer
     }
 
     // イベント
@@ -101,6 +105,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     fun onClickSwitch(@Suppress("UNUSED_PARAMETER") view: View) {
         pref.thread.shortKitaa = shortKitaa.isChecked
         pref.thread.autoSmallFont = autoSmallFont.isChecked
+        pref.media.useSioCacheServer = useSioCacheServer.isChecked
     }
 
 }

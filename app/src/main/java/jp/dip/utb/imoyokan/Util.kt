@@ -135,3 +135,5 @@ fun loadImage(url: String): Pair<Bitmap?, String> {
         Pair(null, e.message ?: "")
     }
 }
+
+

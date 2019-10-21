@@ -10,7 +10,7 @@ class Pref private constructor(context: Context) {
 
     // シングルトン
     companion object {
-        private var instance: Pref? = null
+        var instance: Pref? = null
         fun getInstance(context: Context) = instance ?: synchronized(this) {
             instance ?: Pref(context).also { instance = it }
         }
@@ -22,6 +22,7 @@ class Pref private constructor(context: Context) {
     var lastThreadModified: String by prefValue("last_thread_last_modified", "")
     val thread = Thread(this)
     val catalog = Catalog(this)
+    val media = Media(this)
 
     class Thread(pref: Pref) {
         var shortKitaa: Boolean by pref.prefValue("thread_short_kitaa", false)
@@ -32,6 +33,10 @@ class Pref private constructor(context: Context) {
         var cols: Int by pref.prefValue("catalog_cols", 7)
         var rows: Int by pref.prefValue("catalog_rows", 4)
         var sort: String by pref.prefValue("catalog_sort", "")
+    }
+
+    class Media(pref: Pref) {
+        var useSioCacheServer: Boolean by pref.prefValue("media_use_sio_cache_server", true)
     }
 
     // Utils
