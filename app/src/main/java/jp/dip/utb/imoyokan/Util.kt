@@ -129,7 +129,7 @@ fun visibleOrGone(b: Boolean): Int {
 fun loadImage(url: String): Pair<Any?, String> {
     return try {
         when {
-            url.endsWith(".png") -> Pair(R.drawable.ic_mp4, "")
+            url.endsWith(".mp4") -> Pair(R.drawable.ic_mp4, "")
             url.endsWith(".webm") -> Pair(R.drawable.ic_webm, "")
             else -> Pair(Picasso.get().load(url).get(), "")
         }
