@@ -71,10 +71,14 @@ fun getCatalogUrl(url: String, sort:String = ""): String {
 fun toThumbnailUrl(url: String): String {
     return if (SIO_KARA_REGEX.containsMatchIn(url)) {
         when {
+            // 動画は未対応
+            url.contains(".webm") -> url
+            url.contains(".mp4") -> url
+            // 中間サーバ
             Pref.instance?.media?.useSioCacheServer ?: false -> "${SIO_CACHE_SERVER_ROOT}${url.pick("([^/]+$)")}.thumb.jpg"
-            url.contains(".webm") -> url // 未対応
-            url.contains(".mp4") -> url // 未対応
-            url.startsWith(SIO_KARA_SA_ROOT) -> url // 未対応
+            // 空瓶はサムネ無し
+            url.startsWith(SIO_KARA_SA_ROOT) -> url
+            // 塩のサムネ表示の画像
             else -> url.replace("src", "misc").replace(IMAGE_EXT_REGEX, ".thumb.jpg")
         }
         } else {
