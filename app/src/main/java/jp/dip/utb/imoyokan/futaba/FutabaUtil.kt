@@ -13,6 +13,7 @@ const val URL_CACHEMT = "bin/cachemt7.php"
 const val USER_AGENT = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
 val FUTABA_CHARSET = charset("windows-31j")
 const val QUOTE_COLOR = "#DE789922" // TODO: "DE"はAndroidのprimary textの不透明度)
+const val VIDEO_EXT_COLOR = "#DED81B60"
 const val SORT_DEFAULT = ""
 const val SORT_NEWER = "1"
 const val SORT_REPLY = "3"
@@ -71,11 +72,13 @@ fun getCatalogUrl(url: String, sort:String = ""): String {
 fun toThumbnailUrl(url: String): String {
     return if (SIO_KARA_REGEX.containsMatchIn(url)) {
         when {
-            // 動画は未対応
-            url.contains(".webm") -> url
+            // mp4は塩も中間サーバもサムネ未対応
             url.contains(".mp4") -> url
-            // 中間サーバ
+            // 中間サーバを使う設定なら優先して使う
             Pref.instance?.media?.useSioCacheServer ?: false -> "${SIO_CACHE_SERVER_ROOT}${url.pick("([^/]+$)")}.thumb.jpg"
+            // 以下は塩
+            // webmはサムネ未対応
+            url.contains(".webm") -> url
             // 空瓶はサムネ無し
             url.startsWith(SIO_KARA_SA_ROOT) -> url
             // 塩のサムネ表示の画像

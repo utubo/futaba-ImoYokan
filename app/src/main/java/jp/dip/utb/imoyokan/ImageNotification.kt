@@ -2,8 +2,13 @@ package jp.dip.utb.imoyokan
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import jp.dip.utb.imoyokan.futaba.VIDEO_EXT_COLOR
 import jp.dip.utb.imoyokan.futaba.toThumbnailUrl
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -54,7 +59,17 @@ class ImageNotification(private val context: Context, private val intent: Intent
         view.setOnClickPendingIntent(R.id.image_button, builder.createShareUrlIntent(url)) // 画像タップでも共有
 
         // ファイル名とか
-        view.setTextViewText(R.id.filename, url.pick("([^/]+$)"))
+        val filenameSpan = SpannableStringBuilder(url.pick("([^/]+$)"))
+        val ext = url.pick("(\\.\\w+)$")
+        if (".gif.webm.mp4".contains(ext)) {
+            filenameSpan.setSpan(ForegroundColorSpan(
+                Color.parseColor(VIDEO_EXT_COLOR)),
+                filenameSpan.indexOf(ext),
+                filenameSpan.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        view.setTextViewText(R.id.filename, filenameSpan)
         view.setTextViewText(R.id.index, "${index.next}/${threadInfo.imageUrls.size}")
         view.setTextViewText(R.id.message, "")
 
