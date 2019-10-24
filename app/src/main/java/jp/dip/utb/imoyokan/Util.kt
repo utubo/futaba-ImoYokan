@@ -43,6 +43,7 @@ fun String.removeHtmlTag(): String {
         .replace("&gt;", ">", true)
         .replace("&lt;", "<", true)
         .replace("&hearts;", STR_HEARTS)
+        .replace("&zwj;", "&#8205;")
     s = "&#(\\d{2,});".toRegex().replace(s) {
         val code = it.groupValues[1].toInt()
         if (code < 32)
