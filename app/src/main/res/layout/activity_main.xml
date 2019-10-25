@@ -18,20 +18,20 @@
         android:gravity="center"
         >
         <TextView
-            android:id="@+id/message"
+            android:id="@+id/top_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="アプリやブラウザからURLを共有して開いてください"/>
 
         <TextView
             style="@style/ghost_button"
-            android:id="@+id/catalog"
+            android:id="@+id/catalog_button"
             android:onClick="onClickLastCatalog"
             android:text="前回のカタログを表示する"/>
         <TextView
             style="@style/ghost_button"
             android:layout_marginTop="16dp"
-            android:id="@+id/thread"
+            android:id="@+id/thread_button"
             android:onClick="onClickLastThread"
             android:text="前回のスレッドを表示する"/>
         <TextView
