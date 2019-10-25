@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.lang.Thread.sleep
 
 
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -48,17 +51,26 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         thread.visibility = visibleOrGone(pref.lastThreadUrl.isNotEmpty())
     }
 
+    private fun autoFinish(delayMills: Long = 200L) {
+        GlobalScope.launch {
+            sleep(delayMills)
+            finish()
+        }
+    }
+
     // ボタンクリックイベント
     fun onClickLastThread(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(applicationContext, HiddenActivity::class.java)
         intent.putExtra(KEY_EXTRA_URL, pref.lastThreadUrl)
         startActivity(intent)
+        autoFinish()
     }
 
     fun onClickLastCatalog(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(applicationContext, HiddenActivity::class.java)
         intent.putExtra(KEY_EXTRA_URL, pref.lastCatalogUrl)
         startActivity(intent)
+        autoFinish()
     }
 
     fun onClickSettings(@Suppress("UNUSED_PARAMETER") view: View) {

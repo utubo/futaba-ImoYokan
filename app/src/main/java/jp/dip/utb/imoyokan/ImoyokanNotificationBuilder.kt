@@ -1,5 +1,6 @@
 package jp.dip.utb.imoyokan
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,6 +11,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -40,6 +42,20 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         }
         // 表示するよ!
         manager.notify(0, builder.build())
+        expandStatusBar()
+    }
+
+    private fun expandStatusBar() {
+        try {
+            @SuppressLint("WrongConstant")
+            val service = context.getSystemService("statusbar")
+            val clazz = Class.forName("android.app.StatusBarManager")
+            val method = clazz.getMethod("expandNotificationsPanel")
+            method.invoke(service)
+        } catch (e: Throwable) {
+            // ダメならログを出力して諦める
+            Log.d(NOTIFY_NAME, "ステータスバーの展開に失敗", e)
+        }
     }
 
     fun notifyMessage(title: String, message: String?) {

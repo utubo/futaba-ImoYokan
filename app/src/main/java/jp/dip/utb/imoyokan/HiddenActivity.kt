@@ -15,17 +15,11 @@ class HiddenActivity : AppCompatActivity() {
             ?: intent.getStringExtra(Intent.EXTRA_TEXT)
             ?: intent.getStringExtra(KEY_EXTRA_URL)
         intent.putExtra(KEY_EXTRA_URL, url)
-        if (url != null) {
-            val err = when {
-                analyseCatalogUrl(url) != null -> {
-                    CatalogNotification(this, intent).notifyThis(); null
-                }
-                analyseUrl(url) != null -> {
-                    ThreadNotification(this, intent).notify(); null
-                }
-                else -> "URLが変！ $url"
-            }
-            Toast.makeText(applicationContext, err ?: "通知領域に表示します", Toast.LENGTH_LONG).show()
+        when {
+            url == null -> { /* なにもしない */ }
+            analyseCatalogUrl(url) != null -> CatalogNotification(this, intent).notifyThis()
+            analyseUrl(url) != null -> ThreadNotification(this, intent).notify()
+            else -> Toast.makeText(applicationContext, "URLが変！ $url", Toast.LENGTH_LONG).show()
         }
         finish()
     }
