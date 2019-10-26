@@ -36,4 +36,14 @@
             android:defaultValue="true" />
     </PreferenceCategory>
 
+
+    <PreferenceCategory app:title="その他" app:iconSpaceReserved="false">
+        <Preference android:title="配布ページ" app:iconSpaceReserved="false">
+            <intent android:action="android.intent.action.VIEW" android:data="https://x123.x0.to/~imoyokan/" />
+        </Preference>
+        <Preference android:title="バージョン" app:iconSpaceReserved="false"
+            android:key="version"
+            android:summary="@string/versionName"/>
+    </PreferenceCategory>
+
 </PreferenceScreen>
