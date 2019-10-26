@@ -7,6 +7,8 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import android.net.Uri
@@ -17,6 +19,8 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import jp.dip.utb.imoyokan.futaba.getCatalogUrl
+import java.util.*
+import kotlin.collections.HashMap
 
 class ImoyokanNotificationBuilder(private val context: Context, private val intent: Intent) {
 
@@ -25,6 +29,7 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     private val manager = NotificationManagerCompat.from(context)
     private var requestCode = REQUEST_CODE_RELOAD_URL_MIN
     private var isChannelReady = false
+    private val uslShareIntents = HashMap<String, PendingIntent>()
 
     init {
         builder.setSmallIcon(R.drawable.ic_stat_imoyokan)
@@ -153,18 +158,30 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         return PendingIntent.getBroadcast(context, ++requestCode, newIntent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    /** URLを共有するIntent  */
-    fun createShareUrlIntent(url: String, target: Class<*>? = null): PendingIntent {
-        val share = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        if (target != null) {
-            share.setClassName(target.`package`!!.name, target.name)
-        }
-        return PendingIntent.getActivity(
+    /** URLを共有するPendingIntent  */
+    fun createShareUrlIntent(url: String): PendingIntent {
+        return uslShareIntents[url] ?: PendingIntent.getActivity(
             context,
-            REQUEST_CODE_SHARE,
-            Intent.createChooser(share, url),
+            ++requestCode,
+            getShareUrlChooser(url),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
+    }
+
+    private fun getShareUrlChooser(url: String): Intent {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        // ↑これだけだと既定のブラウザくらいしか表示されないので↓MATCH_ALLで検索してEXTRA_INITIAL_INTENTSに追加する
+        val list = context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)
+        list.sortWith(ResolveInfo.DisplayNameComparator(context.packageManager))
+        list.sortByDescending { it.preferredOrder } // ←意味ないかも…
+        val intents = ArrayList<Intent>()
+        for (it in list) {
+            if (it.activityInfo.packageName == context.packageName) continue
+            intents.add(Intent(intent).setClassName(it.activityInfo.packageName, it.activityInfo.name))
+        }
+        return Intent
+            .createChooser(Intent(), url)
+            .putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
     }
 
 }
