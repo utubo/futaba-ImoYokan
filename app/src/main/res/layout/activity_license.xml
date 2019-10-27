@@ -29,7 +29,6 @@ http://www.apache.org/licenses/LICENSE-2.0
             "/>
             <View style="@style/hr"/>
             <TextView style="@style/license_text" android:text="
-\n
 This software includes the work that is distributed in the Apache License 2.0.\n
 http://www.apache.org/licenses/LICENSE-2.0
             "/>
