@@ -17,6 +17,7 @@ data class ThreadInfo(val url: String) : Serializable {
     var lastModified = ""
     var failedMessage = ""
     var imageUrls = ArrayList<String>()
+    //↓JSONデータはスレ本文がないので使いにくい
     //val jsonUrl = base + "/futaba.php?mode=json&res=" + res + "&start=" + start + "&" + Math.random()
 
     init {
@@ -87,7 +88,6 @@ class ThreadInfoBuilder {
         val numberRegex =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
         val mailRegex =  "<a href=\"mailto:([^\"]+)\">".toRegex()
         val textRegex =  "<blockquote[^>]*>(.+)</blockquote>".toRegex()
-        val imageRegex = "(sa|sp|sq|su|ss)?\\d+${IMAGE_EXT}".toRegex()
         val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+${IMAGE_EXT})".toRegex()
         for (line in html.split("\n")) {
             if (isPre) {
@@ -98,9 +98,9 @@ class ThreadInfoBuilder {
                 }
                 if (line.contains(threadMarker)) {
                     // スレ画読み込み
-                    val m = "<a href=\"/(${threadInfo.b}/src/[^\"]+)\" target=\"_blank\"><img src=\"/(${threadInfo.b}/thumb/\\d+s\\.jpg)".toRegex().find(line)
-                    if (m != null) {
-                        threadInfo.imageUrls.put("${threadInfo.server}/${m.groupValues[1]}")
+                    val imageUrl = line.pick("<a href=\"/(${threadInfo.b}/src/[^\"]+)\" target=\"_blank\"><img src=\"/${threadInfo.b}/thumb/\\d+s\\.jpg")
+                    if (imageUrl.isNotBlank()) {
+                        threadInfo.imageUrls.put("${threadInfo.server}/${imageUrl}")
                     }
                     resNumber = threadInfo.res
                     resMail = line.pick(mailRegex)
@@ -112,18 +112,13 @@ class ThreadInfoBuilder {
             if (line.contains("<blockquote")) {
                 var resText = line.pick(textRegex)
                 if (IMAGE_EXT_REGEX.containsMatchIn(line)) {
-                    resImageRegex.find(line)?.let {
-                        resText = "${it.groupValues[1]}\n${resText}"
+                    val resImage = line.pick(resImageRegex)
+                    if (resImage.isNotBlank()) {
+                        resText = "${resImage}\n${resText}"
+                        threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${resImage}")
                     }
-                    imageRegex.findAll(resText).forEach {
-                        when {
-                            it.value.startsWith("sa") -> threadInfo.imageUrls.put(SIO_KARA_SA_ROOT + it.value)
-                            it.value.startsWith("sp") -> threadInfo.imageUrls.put(SIO_KARA_SP_ROOT + it.value)
-                            it.value.startsWith("sq") -> threadInfo.imageUrls.put(SIO_KARA_SQ_ROOT + it.value)
-                            it.value.startsWith("ss") -> threadInfo.imageUrls.put(SIO_KARA_SS_ROOT + it.value)
-                            it.value.startsWith("su") -> threadInfo.imageUrls.put(SIO_KARA_SU_ROOT + it.value)
-                            else -> threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${it.value}")
-                        }
+                    SIO_FILE_REGEX.findAll(resText).forEach {
+                        threadInfo.imageUrls.put(getSiokaraUrl(it.value))
                     }
                 }
                 threadInfo.replies.add(ResInfo(index, resNumber, resText.removeHtmlTag(), resMail))
@@ -137,7 +132,6 @@ class ThreadInfoBuilder {
                 continue
             }
         }
-
         return threadInfo
     }
 

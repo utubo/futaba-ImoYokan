@@ -19,13 +19,7 @@ const val SORT_NEWER = "1"
 const val SORT_REPLY = "3"
 val KITAA_REGEX = "ｷﾀ━━+\\(ﾟ∀ﾟ\\)━━+".toRegex()
 const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
-val SIO_KARA_REGEX = "http://www\\.nijibox\\d\\.com/".toRegex()
-const val SIO_KARA_SA_ROOT = "http://www.nijibox6.com/futabafiles/001/src/"
-const val SIO_KARA_SP_ROOT = "http://www.nijibox2.com/futabafiles/003/src/"
-const val SIO_KARA_SQ_ROOT = "http://www.nijibox6.com/futabafiles/mid/src/"
-const val SIO_KARA_SS_ROOT = "http://www.nijibox5.com/futabafiles/kobin/src/"
-const val SIO_KARA_SU_ROOT = "http://www.nijibox5.com/futabafiles/tubu/src/"
-const val SIO_CACHE_SERVER_ROOT = "https://x123.x0.to/~imoyokan_sio_cache_server/thumb/"
+
 const val IMAGE_EXT = "\\.(jpg|jpeg|png|gif|webm|mp4)"
 val IMAGE_EXT_REGEX = IMAGE_EXT.toRegex()
 
@@ -70,28 +64,13 @@ fun getCatalogUrl(url: String, sort:String = ""): String {
 }
 
 fun toThumbnailUrl(url: String): String {
-    return if (SIO_KARA_REGEX.containsMatchIn(url)) {
-        when {
-            // 中間サーバを使う設定なら優先して使う
-            Pref.instance?.media?.useSioCacheServer ?: false -> "${SIO_CACHE_SERVER_ROOT}${url.pick("([^/]+$)")}.thumb.jpg"
-            // サムネ未対応
-            url.contains(".mp4") -> url
-            url.contains(".webm") -> url
-            // 空瓶はサムネ無し
-            url.startsWith(SIO_KARA_SA_ROOT) -> url
-            // 塩のサムネ表示の画像
-            else -> url.replace("src", "misc").replace(IMAGE_EXT_REGEX, ".thumb.jpg")
-        }
+    return if (SIO_FILE_REGEX.containsMatchIn(url)) {
+            getSiokaraThumbnailUrl(url)
         } else {
             url.toHttps().replace("/src/", "/thumb/").replace(IMAGE_EXT_REGEX, "s.jpg")
         }
 }
 
 fun toCatalogImageUrl(url: String): String {
-    return if (SIO_KARA_REGEX.containsMatchIn(url)) {
-        toThumbnailUrl(url)
-    } else {
-        toThumbnailUrl(url).replace("/thumb/", "/cat/")
-    }
+    return toThumbnailUrl(url).replace("/thumb/", "/cat/")
 }
-
