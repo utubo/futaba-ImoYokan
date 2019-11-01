@@ -13,6 +13,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
+import android.service.notification.StatusBarNotification
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
@@ -182,6 +183,11 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         return Intent
             .createChooser(Intent(), url)
             .putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
+    }
+
+    fun getLastNotification(): StatusBarNotification? {
+        val sv = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return sv.activeNotifications.firstOrNull { it.packageName == context.packageName }
     }
 
 }

@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import jp.dip.utb.imoyokan.futaba.VIDEO_EXT_COLOR
@@ -78,10 +79,19 @@ class ImageNotification(private val context: Context, private val intent: Intent
             .setProgress()
             .notifyThis()
 
+        // ダウンロードには時間がかかるので読み込み後別の画面かもしれない
+        val beforePostTime = builder.getLastNotification()?.postTime
+
         // 画像をダウンロード
         val (bitmap, message) = loadImage(toThumbnailUrl(url))
         view.setImageViewAny(R.id.image, bitmap)
         view.setTextViewText(R.id.message, message)
+
+        val afterPostTime = builder.getLastNotification()?.postTime
+        if (beforePostTime != null && afterPostTime != null && beforePostTime != afterPostTime) {
+            Log.d(NOTIFY_NAME, "画面切り替えずみなので表示をキャンセルしました")
+            return
+        }
 
         // 表示するよ！
         builder
