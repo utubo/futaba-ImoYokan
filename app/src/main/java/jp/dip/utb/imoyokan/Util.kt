@@ -22,7 +22,6 @@ const val KEY_EXTRA_URL = "key_extra_url"
 const val INTENT_ACTION_VIEW_IMAGE = 99
 const val INTENT_ACTION_REPLY = 100
 const val INTENT_ACTION_RELOAD_URL = 15000
-const val REQUEST_CODE_SHARE = 99
 const val REQUEST_CODE_REPLY_MIN = 100
 const val REQUEST_CODE_RELOAD_URL_MIN = 15000
 const val POSITION_KEEP = 10000
@@ -130,8 +129,8 @@ fun visibleOrGone(b: Boolean): Int {
 fun loadImage(url: String): Pair<Any?, String> {
     return try {
         when {
-            url.endsWith(".mp4") -> Pair(R.drawable.ic_mp4, "")
-            url.endsWith(".webm") -> Pair(R.drawable.ic_webm, "")
+            url.endsWith(".mp4") -> Pair(R.drawable.ic_video, "")
+            url.endsWith(".webm") -> Pair(R.drawable.ic_video, "")
             else -> Pair(Picasso.get().load(url).get(), "")
         }
     } catch (e: Throwable) {
