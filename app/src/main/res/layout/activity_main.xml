@@ -17,8 +17,14 @@
         app:layout_constraintStart_toStartOf="parent"
         android:gravity="center"
         >
+        <ImageView
+            style="@style/top_page_icon_space"
+            android:src="@drawable/ic_stat_imoyokan"
+            android:tint="@android:color/secondary_text_light"
+            tools:ignore="ContentDescription" />
         <TextView
             android:id="@+id/top_message"
+            android:layout_margin="@dimen/top_page_item_margin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="アプリやブラウザからURLを共有して開いてください"/>
@@ -27,19 +33,18 @@
             style="@style/ghost_button"
             android:id="@+id/catalog_button"
             android:onClick="onClickLastCatalog"
-            android:text="前回のカタログを表示する"/>
+            android:text="カタログ"/>
         <TextView
             style="@style/ghost_button"
-            android:layout_marginTop="16dp"
             android:id="@+id/thread_button"
             android:onClick="onClickLastThread"
-            android:text="前回のスレッドを表示する"/>
+            android:text="前回のスレッド"/>
         <TextView
             style="@style/ghost_button"
-            android:layout_marginTop="16dp"
             android:onClick="onClickSettings"
             android:drawableStart="@drawable/ic_action_settings"
             android:text="設定"/>
+        <Space style="@style/top_page_icon_space" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

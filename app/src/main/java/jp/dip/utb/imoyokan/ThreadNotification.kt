@@ -62,6 +62,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
     private fun notifyAsync(threadInfo: ThreadInfo, title: String, text: String) {
 
+        // 「カタログでmayを開く→imgのスレを共有で開く→カタログボタンをタップ」したときもimgのカタログを表示するように頑張る
+        Pref.getInstance(context).lastCatalogUrl = getCatalogUrl(threadInfo.url)
+
         // フォームデータを上書き
         intent.putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
 

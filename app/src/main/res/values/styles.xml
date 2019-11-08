@@ -2,12 +2,12 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- common -->
     <style name="share_button">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
@@ -15,12 +15,14 @@
         <item name="android:src">@android:drawable/ic_menu_share</item>
     </style>
 
+    <!-- Image notification -->
     <style name="prev_image_button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:drawableStart">@drawable/ic_left</item>
     </style>
 
+    <!-- Thread notification -->
     <style name="scroll_button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
@@ -28,6 +30,7 @@
         <item name="android:visibility">invisible</item>
     </style>
 
+    <!-- Catalog notification -->
     <style name="catalog_item">
         <item name="android:layout_width">38dp</item>
         <item name="android:layout_height">38dp</item>
@@ -35,14 +38,28 @@
         <item name="android:layout_margin">1dp</item>
     </style>
 
+    <!-- Main activity -->
+    <dimen name="top_page_item_margin">10dp</dimen>
+
+    <style name="top_page_icon_space">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_margin">@dimen/top_page_item_margin</item>
+    </style>
+
     <style name="ghost_button">
         <item name="android:background">@drawable/ghost_button</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">8dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:layout_margin">@dimen/top_page_item_margin</item>
     </style>
 
+    <!-- License activity -->
     <style name="license_text">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -50,6 +67,7 @@
         <item name="android:layout_marginBottom">24dp</item>
         <item name="android:autoLink">web</item>
     </style>
+
     <style name="hr">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
