@@ -97,8 +97,8 @@ class ThreadInfoBuilder {
                     continue
                 }
                 if (line.contains(threadMarker)) {
-                    // スレ画読み込み
-                    val imageUrl = line.pick("<a href=\"/(${threadInfo.b}/src/[^\"]+)\" target=\"_blank\"><img src=\"/${threadInfo.b}/thumb/\\d+s\\.jpg")
+                    // スレ画読み込み(板によってダブルクォーテーションだったりシングルクォーテーションだったりする…)
+                    val imageUrl = line.pick("<a href=./(${threadInfo.b}/src/[^\"']+). target=._blank.><img src=./${threadInfo.b}/thumb/\\d+s\\.jpg.")
                     if (imageUrl.isNotBlank()) {
                         threadInfo.imageUrls.put("${threadInfo.server}/${imageUrl}")
                     }
