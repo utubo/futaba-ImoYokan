@@ -3,6 +3,7 @@ package jp.dip.utb.imoyokan
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -75,9 +76,13 @@ class ImageNotification(private val context: Context, private val intent: Intent
         view.setTextViewText(R.id.message, "")
 
         // ダウンロード前にプログレスバーを表示する
-        builder
-            .setProgress()
-            .notifyThis()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // Android9以降はバグで表示領域が広がりきってるとプログレスバーを表示できない
+            view.setTextViewText(R.id.message, "⏳")
+        } else {
+            builder.setProgress()
+        }
+        builder.notifyThis()
 
         // ダウンロードには時間がかかるので読み込み後別の画面かもしれない
         val beforePostTime = builder.getLastNotification()?.postTime

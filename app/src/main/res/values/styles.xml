@@ -16,10 +16,12 @@
     </style>
 
     <!-- Image notification -->
+    <dimen name="prev_button_width">64dp</dimen>
     <style name="prev_image_button">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">@dimen/prev_button_width</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:drawableStart">@drawable/ic_left</item>
+        <item name="android:src">@drawable/ic_left</item>
+        <item name="android:paddingRight">40dp</item>
     </style>
 
     <!-- Thread notification -->
