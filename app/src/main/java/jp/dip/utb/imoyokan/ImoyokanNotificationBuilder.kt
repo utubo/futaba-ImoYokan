@@ -137,7 +137,7 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     fun createImoyokanIntent(): Intent {
         return Intent(context, NotificationReceiver::class.java)
             .putExtra(KEY_EXTRA_MAIL, intent.getStringExtra(KEY_EXTRA_MAIL))
-            .putExtra(KEY_EXTRA_POSITION, intent.getIntExtra(KEY_EXTRA_POSITION, RELOAD_THREAD))
+            .putExtra(KEY_EXTRA_POSITION, intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM))
             .putExtra(KEY_EXTRA_IMAGE_INDEX, intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0))
     }
 

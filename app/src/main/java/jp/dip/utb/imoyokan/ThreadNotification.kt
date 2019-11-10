@@ -37,7 +37,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         var threadInfo: ThreadInfo? = null
         // まずはキャッシュから
         val cache = Cache(context)
-        val useCache = intent.getIntExtra(KEY_EXTRA_POSITION, RELOAD_THREAD) != RELOAD_THREAD
+        val useCache = intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM) != THREAD_BOTTOM
         if (useCache) {
             threadInfo = cache.loadFromCache()
         }
@@ -95,7 +95,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // アクションボタンを登録
         builder
             .addAction(replyAction)
-            .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url, KEY_EXTRA_POSITION to RELOAD_THREAD)
+            .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url, KEY_EXTRA_POSITION to THREAD_BOTTOM)
             .addCatalogAction()
 
         // 読み込みに失敗していた場合
@@ -108,7 +108,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
         // レス
         val sb = SpannableStringBuilder()
-        val position  = min(intent.getIntExtra(KEY_EXTRA_POSITION, RELOAD_THREAD), threadInfo.replies.last().index)
+        val position  = min(intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM), threadInfo.replies.last().index)
         val hasNext = position < threadInfo.replies.last().index
         threadInfo.replies.filter{ it.index <= position }.takeLast(MAX_RES_COUNT).forEach {
             val mail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
