@@ -25,6 +25,7 @@ class Pref private constructor(context: Context) {
     val media = Media(this)
 
     class Thread(pref: Pref) {
+        var removeLineBreaks: Boolean by pref.prefValue("thread_remove_line_breaks", true)
         var shortKitaa: Boolean by pref.prefValue("thread_short_kitaa", false)
         var autoSmallFont: Boolean by pref.prefValue("thread_auto_small_font", false)
     }

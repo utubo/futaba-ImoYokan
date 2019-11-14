@@ -113,9 +113,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         threadInfo.replies.filter{ it.index <= position }.takeLast(MAX_RES_COUNT).forEach {
             val mail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
             if (it.index == 0) {
-                sb.addResponse("${it.number}${mail}", it.getCompressText(), "\n")
+                sb.addResponse("${it.number}${mail}", decorateResText(it.text), "\n")
             } else {
-                sb.addResponse("${it.index}${mail}", it.getCompressText())
+                sb.addResponse("${it.index}${mail}", decorateResText(it.text))
             }
         }
         // メッセージ
@@ -146,7 +146,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
     }
 
     @SuppressLint("NewApi")
-    private fun SpannableStringBuilder.addResponse(user: String, text: String, delimiter: String = " "): SpannableStringBuilder {
+    private fun SpannableStringBuilder.addResponse(user: String, text: CharSequence, delimiter: String = " "): SpannableStringBuilder {
         if (this.isNotEmpty()) {
             val responseDelimiter = SpannableStringBuilder("\n\n")
             responseDelimiter.setSpan(RelativeSizeSpan(0.5f), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -156,15 +156,46 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         userSpan.setSpan(ForegroundColorSpan(Color.BLACK), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         this.append(userSpan)
         this.append(delimiter)
-        this.append(text.shortKitaa().toColoredText().autoSmallFont())
+        this.append(text)
         return this
+    }
+
+    private fun decorateResText(text: String): Spannable {
+        return text
+            .removeLineBreaks()
+            .shortKitaa()
+            .toColoredText()
+            .autoSmallFont()
+    }
+
+    private fun String.removeLineBreaks(): String {
+        if (!Pref.getInstance(context).thread.removeLineBreaks) {
+            return this
+        }
+        val levelRegex = "^(>*)".toRegex()
+        val s = StringBuilder()
+        var prevLevel = 0
+        this.split("\n").forEach {
+            val level = levelRegex.find(it)?.value?.length ?: 0
+            if (prevLevel == level) {
+                s.append(it.replace(levelRegex, " "))
+            } else if (prevLevel == 0 || level == 0) {
+                s.append("\n")
+                s.append(it)
+            } else {
+                s.append(" ")
+                s.append(it)
+            }
+            prevLevel = level
+        }
+        return s.toString().trim()
     }
 
     private fun String.shortKitaa(): String {
         return if (Pref.getInstance(context).thread.shortKitaa) this.replace(KITAA_REGEX, SHORT_KITAA) else this
     }
 
-    private fun SpannableStringBuilder.autoSmallFont(): SpannableStringBuilder {
+    private fun Spannable.autoSmallFont(): Spannable {
         if (!Pref.getInstance(context).thread.autoSmallFont) {
             return this
         }

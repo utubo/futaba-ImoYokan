@@ -38,28 +38,7 @@ data class ThreadInfo(val url: String) : Serializable {
 
 data class FromParams(var ptua: String, var mail: String) : Serializable
 
-data class ResInfo(val index: Int, val number: String, val text: String, val mail: String = "") : Serializable {
-    /** 通知領域は狭いので適当に改行を抜く */
-    fun getCompressText(): String {
-        val levelRegex = "^(>*)".toRegex()
-        val s = StringBuilder()
-        var prevLevel = 0
-        text.split("\n").forEach {
-            val level = levelRegex.find(it)?.value?.length ?: 0
-            if (prevLevel == level) {
-                s.append(it.replace(levelRegex, " "))
-            } else if (prevLevel == 0 || level == 0) {
-                s.append("\n")
-                s.append(it)
-            } else {
-                s.append(" ")
-                s.append(it)
-            }
-            prevLevel = level
-        }
-        return s.toString().trim()
-    }
-}
+data class ResInfo(val index: Int, val number: String, val text: String, val mail: String = "") : Serializable
 
 class ThreadInfoBuilder {
     var url: String = ""

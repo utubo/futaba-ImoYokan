@@ -2,7 +2,7 @@ package jp.dip.utb.imoyokan.futaba
 
 import android.graphics.Color
 import android.text.Spannable
-import android.text.SpannableStringBuilder
+import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import jp.dip.utb.imoyokan.*
 
@@ -23,21 +23,16 @@ const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
 const val IMAGE_EXT = "\\.(jpg|jpeg|png|gif|webm|mp4)"
 val IMAGE_EXT_REGEX = IMAGE_EXT.toRegex()
 
-fun String.toColoredText(br:String = "\n"): SpannableStringBuilder {
-    val sb = SpannableStringBuilder()
-    val quoteStyle = ForegroundColorSpan(Color.parseColor(QUOTE_COLOR))
-    this.split(br).forEach { line ->
-        if (sb.isNotEmpty()) {
-            sb.append(br)
+fun String.toColoredText(br:String = "\n"): Spannable {
+    val quoteColor = Color.parseColor(QUOTE_COLOR)
+    val sb = SpannableString(this)
+    var start = 0
+    while (start < sb.length) {
+        val end = sb.indexOf(br, start + 1).let { if (it == -1) sb.length else it }
+        if (sb[start] == '>') {
+            sb.setSpan(ForegroundColorSpan(quoteColor), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
-        if (line.startsWith(">")) {
-            val start = sb.length
-            sb.append(line)
-            val end = sb.length
-            sb.setSpan(quoteStyle, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        } else {
-            sb.append(line)
-        }
+        start = end + 1
     }
     return sb
 }

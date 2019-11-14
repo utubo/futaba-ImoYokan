@@ -22,6 +22,10 @@
 
     <PreferenceCategory app:title="スレッド" app:iconSpaceReserved="false">
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="改行を詰める"
+            app:key="thread_remove_line_breaks"
+            app:defaultValue="true" />
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
             app:title="ｷﾀｰを短くする"
             app:key="thread_short_kitaa" />
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
