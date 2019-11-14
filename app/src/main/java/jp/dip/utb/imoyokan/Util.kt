@@ -41,6 +41,7 @@ fun String.removeHtmlTag(): String {
         .replace("<[^>]+>".toRegex(), "&#0;")
         .replace("&gt;", ">", true)
         .replace("&lt;", "<", true)
+        .replace("&quot;", "\"", true)
         .replace("&hearts;", STR_HEARTS)
         .replace("&zwj;", "&#8205;")
     s = "&#(\\d{2,});".toRegex().replace(s) {
