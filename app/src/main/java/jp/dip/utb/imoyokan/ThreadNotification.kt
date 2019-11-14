@@ -98,31 +98,39 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url, KEY_EXTRA_POSITION to THREAD_BOTTOM)
             .addCatalogAction()
 
-        // 読み込みに失敗していた場合
-        if (threadInfo.isFailed()) {
-            threadInfo.replies.add(ResInfo(0, threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", threadInfo.failedMessage, "")}"))
-        }
-
         // ここからカスタムView
         val view = RemoteViews(context.packageName, R.layout.notification_thread)
 
-        // レス
+        // スクロール情報
+        var position = 0
+        var hasNext = false
+
+        // 文字表示するところ
         val sb = SpannableStringBuilder()
-        val position  = min(intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM), threadInfo.replies.last().index)
-        val hasNext = position < threadInfo.replies.last().index
-        threadInfo.replies.filter{ it.index <= position }.takeLast(MAX_RES_COUNT).forEach {
-            val mail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
-            if (it.index == 0) {
-                sb.addResponse("${it.number}${mail}", decorateResText(it.text), "\n")
-            } else {
-                sb.addResponse("${it.index}${mail}", decorateResText(it.text))
+        if (threadInfo.isFailed()) {
+            // 読み込みに失敗していた場合
+            sb.addResponse(threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", threadInfo.failedMessage, "")}")
+        } else {
+            // レス
+            position = min(
+                intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM),
+                threadInfo.replies.last().index
+            )
+            hasNext = position < threadInfo.replies.last().index
+            threadInfo.replies.filter { it.index <= position }.takeLast(MAX_RES_COUNT).forEach {
+                val mail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
+                if (it.index == 0) {
+                    sb.addResponse("${it.number}${mail}", decorateResText(it.text), "\n")
+                } else {
+                    sb.addResponse("${it.index}${mail}", decorateResText(it.text))
+                }
             }
         }
         // メッセージ
         if (title.isNotBlank() || text.isNotBlank()) {
             sb.addResponse(title, text)
         }
-        // 文字表示するところできたよ
+        // できたよ
         view.setTextViewText(R.id.text, sb)
 
         // スレ画像
