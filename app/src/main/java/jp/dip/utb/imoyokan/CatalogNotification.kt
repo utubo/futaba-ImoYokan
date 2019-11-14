@@ -73,10 +73,8 @@ class CatalogNotification(private val context: Context, private val intent: Inte
             val id = context.resources.getIdentifier("cat_${x}_${y}", "id", context.packageName)
             view.setOnClickPendingIntent(id, builder.createNextPageIntent(it.href))
             // 画像をセット
-            if (it.img != null) {
-                val (bitmap, _) = loadImage(it.img)
-                view.setImageViewAny(id, bitmap ?: android.R.drawable.ic_delete)
-            }
+            val (bitmap, _) = loadImage(it.img)
+            view.setImageViewAny(id, bitmap ?: android.R.drawable.ic_delete)
             view.setViewVisibility(id, View.VISIBLE)
 
             // プログレスバー更新はやらない

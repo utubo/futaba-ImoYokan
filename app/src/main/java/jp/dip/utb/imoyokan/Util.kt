@@ -126,9 +126,11 @@ fun visibleOrGone(b: Boolean): Int {
     return if (b) View.VISIBLE else View.GONE
 }
 
-fun loadImage(url: String): Pair<Any?, String> {
+fun loadImage(url: String?): Pair<Any?, String> {
     return try {
         when {
+            url == null -> Pair(null, "Empty URL")
+            url.isBlank() -> Pair(null, "Empty URL")
             url.endsWith(".mp4") -> Pair(R.drawable.ic_video, "")
             url.endsWith(".webm") -> Pair(R.drawable.ic_video, "")
             else -> Pair(Picasso.get().load(url).get(), "")
