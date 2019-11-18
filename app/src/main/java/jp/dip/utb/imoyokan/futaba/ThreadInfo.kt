@@ -1,7 +1,5 @@
 package jp.dip.utb.imoyokan.futaba
 
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import jp.dip.utb.imoyokan.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -51,13 +49,13 @@ class ThreadInfoBuilder {
         }
 
         // HTML読み込み
-        val (_, response, result) = url.toHttps().httpGet().responseString(FUTABA_CHARSET)
-        if (result is Result.Failure) {
-            threadInfo.failedMessage = result.getException().message.toString()
+        val res = HttpRequest(url).get()
+        if (res.code() != 200) {
+            threadInfo.failedMessage = res.message()
             return threadInfo
         }
-        val html = result.get()
-        threadInfo.lastModified = response.header("last-modified").toString()
+        val html = res.bodyString(FUTABA_CHARSET)
+        threadInfo.lastModified = res.header("last-modified").toString()
 
         var index = 0
         var resNumber = ""

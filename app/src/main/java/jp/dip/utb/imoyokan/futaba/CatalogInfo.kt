@@ -1,10 +1,6 @@
 package jp.dip.utb.imoyokan.futaba
 
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
-import jp.dip.utb.imoyokan.pick
-import jp.dip.utb.imoyokan.removeHtmlTag
-import jp.dip.utb.imoyokan.toHttps
+import jp.dip.utb.imoyokan.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -13,11 +9,9 @@ class CatalogInfo(val url: String) {
     val server: String
     val b: String
     val sort: String
-    var exception: Exception? = null
+    var failedMessage: String = ""
     val isFailed: Boolean
-    get() { return exception != null}
-    val message: String
-    get() { return exception?.message ?: ""}
+    get() { return failedMessage.isNotBlank()}
 
     init {
         val m = analyseCatalogUrl(url)
@@ -25,7 +19,7 @@ class CatalogInfo(val url: String) {
         this.b = m?.second ?: ""
         this.sort = m?.third ?: ""
         if (m == null) {
-            exception = Exception("URLが変！")
+            failedMessage = "URLが変！"
         }
     }
 }
@@ -52,12 +46,12 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
         }
 
         // HTML読み込み
-        val (_, _, result) = url.toHttps().httpGet().header("Cookie", "cxyl=${cols}x${rows}x${textLength}x0x0;") .responseString(FUTABA_CHARSET)
-        if (result is Result.Failure) {
-            catalogInfo.exception = result.getException()
+        val res = HttpRequest(url).header("Cookie", "cxyl=${cols}x${rows}x${textLength}x0x0;").get()
+        if (res.code() != 200) {
+            catalogInfo.failedMessage = res.message()
             return catalogInfo
         }
-        val html = result.get()
+        val html = res.bodyString(FUTABA_CHARSET)
 
         // 解析
         if (html.contains("JSON.parse('{\"res\"")) {

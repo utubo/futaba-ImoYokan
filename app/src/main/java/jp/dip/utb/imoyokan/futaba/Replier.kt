@@ -1,22 +1,15 @@
 package jp.dip.utb.imoyokan.futaba
 
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.httpPost
-import com.github.kittinunf.result.Result
 import jp.dip.utb.imoyokan.*
 
 class Replier {
     @ExperimentalUnsignedTypes
     fun reply(url: String, text: String, mail: String, ptua: String): Pair<String, String> {
-        val (server, b, res) = analyseUrl(url) ?: return Pair("返信失敗", "URLが変！\n${url}")
-        val pthb = "${server}/$URL_CACHEMT"
-            .toHttps()
-            .httpGet()
-            .responseString().third.get()
-            .pick("return \"(\\d+)\"")
+        val (server, b, resto) = analyseUrl(url) ?: return Pair("返信失敗", "URLが変！\n${url}")
+        val pthb = HttpRequest("${server}/$URL_CACHEMT".toHttps()).get().bodyString(FUTABA_CHARSET).pick("return \"(\\d+)\"")
         val params = HashMap<String, String>()
         params["b"] = b
-        params["resto"] = res
+        params["resto"] = resto
         params["com"] = text.replaceForPost(FUTABA_CHARSET).addLineBreakForSingleLineInput()
         params["email"] = mail.replaceForPost(FUTABA_CHARSET)
         params["pwd"] = ""
@@ -29,33 +22,20 @@ class Replier {
         params["scsz"] = "1920x1080x24"
         params["chrenc"] = "文字"
         params["MAX_FILE_SIZE"] = "2048000"
-        val body = StringBuilder()
-        params.forEach {
-            body.append("--").append(BOUNDARY).append("\r\n")
-            body.append("Content-Disposition: form-data; name=\"${it.key}\"").append("\r\n")
-            body.append("\r\n")
-            body.append(it.value).append("\r\n")
-        }
-        body.append("--").append(BOUNDARY).append("--").append("\r\n")
-        val (_, _, result) = "${server}/${b}/futaba.php?guid=on"
-            .toHttps().httpPost()
-            .header("User-Agent" to USER_AGENT)
-            .header("Cookie" to "posttime=${params["pthc"]};")
-            .header("Content-Type" to "multipart/form-data; boundary=$BOUNDARY")
-            .body(body.toString(), FUTABA_CHARSET)
-            .responseString(FUTABA_CHARSET)
-        return when (result) {
-            is Result.Failure -> {
-                Pair("返信失敗", result.getException().message ?: "")
-            }
-            is Result.Success -> {
-                val msg =
-                    "<font color=red size=5><b>([^<]+)<br>".toRegex().find(result.get())?.value?.removeHtmlTag()
-                        ?: "<body[^>]*>(.+)</body>".toRegex().find(result.get())?.value?.removeHtmlTag()
-                        ?: ""
-                Pair("返信しました", msg)
-            }
+        val res = HttpRequest("${server}/${b}/futaba.php?guid=on".toHttps())
+            .header("User-Agent", USER_AGENT)
+            .header("Cookie", "posttime=${params["pthc"]};")
+            .header("Content-Type", "multipart/form-data; boundary=$BOUNDARY")
+            .post(params, FUTABA_CHARSET)
+        return if (res.code() != 200) {
+            Pair("返信失敗", res.message())
+        } else {
+            val html = res.bodyString(FUTABA_CHARSET)
+            val msg =
+                "<font color=red size=5><b>([^<]+)<br>".toRegex().find(html)?.value?.removeHtmlTag()
+                    ?: "<bodyString[^>]*>(.+)</bodyString>".toRegex().find(html)?.value?.removeHtmlTag()
+                    ?: ""
+            Pair("返信しました", msg)
         }
     }
-
 }

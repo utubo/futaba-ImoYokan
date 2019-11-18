@@ -31,7 +31,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
 
         // URLさえ取れない場合
         if (catalogInfo.isFailed) {
-            builder.notifyMessage("カタログ取得失敗", catalogInfo.message)
+            builder.notifyMessage("カタログ取得失敗", catalogInfo.failedMessage)
             return
         }
 
@@ -58,7 +58,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         // HTML読み込みと解析
         catalogInfoBuilder.reload()
         if (catalogInfo.isFailed) {
-            builder.notifyMessage("カタログ取得失敗", catalogInfo.message)
+            builder.notifyMessage("カタログ取得失敗", catalogInfo.failedMessage)
             return
         }
 

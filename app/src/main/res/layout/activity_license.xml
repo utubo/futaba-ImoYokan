@@ -13,11 +13,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView style="@style/license_text" android:text="
-fuel\n
+OkHttp\n
 \n
-Copyright (c) 2018 Kittinun Vantasin\n
-Released under the MIT license\n
-https://opensource.org/licenses/mit-license.php
+Copyright 2013 Square, Inc.\n
+Licensed under the Apache License, Version 2.0\n
+http://www.apache.org/licenses/LICENSE-2.0
             "/>
             <View style="@style/hr"/>
             <TextView style="@style/license_text" android:text="
