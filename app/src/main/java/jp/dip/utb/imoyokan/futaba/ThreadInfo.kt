@@ -61,8 +61,10 @@ class ThreadInfoBuilder {
         var resNumber = ""
         var resMail = ""
         var isPre = true
-        val threadMarker = "<input type=checkbox name=\"${threadInfo.res}\""
-        val numberRegex =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
+        val threadMarkerOld = "<input type=checkbox name=\"${threadInfo.res}\""
+        val threadMarker = "<span id=\"delcheck${threadInfo.res}\""
+        val numberRegexOld =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
+        val numberRegex = "<span id=\"delcheck(\\d+)".toRegex()
         val mailRegex =  "<a href=\"mailto:([^\"]+)\">".toRegex()
         val textRegex =  "<blockquote[^>]*>(.+)</blockquote>".toRegex()
         val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+${IMAGE_EXT})".toRegex()
@@ -73,7 +75,7 @@ class ThreadInfoBuilder {
                     threadInfo.form.ptua = line.pick("name=\"ptua\" value=\"(\\d+)\"".toRegex())
                     continue
                 }
-                if (line.contains(threadMarker)) {
+                if (line.contains(threadMarker)  || line.contains(threadMarkerOld)) {
                     // スレ画読み込み(板によってダブルクォーテーションだったりシングルクォーテーションだったりする…)
                     val imageUrl = line.pick("<a href=./(${threadInfo.b}/src/[^\"']+). target=._blank.><img src=./${threadInfo.b}/thumb/\\d+s\\.jpg.")
                     if (imageUrl.isNotBlank()) {
@@ -84,6 +86,17 @@ class ThreadInfoBuilder {
                     isPre = false
                     continue
                 }
+            }
+            // 番号とメール(旧)
+            if (line.startsWith("<input type=checkbox")) {
+                resNumber = line.pick(numberRegexOld)
+                resMail = line.pick(mailRegex)
+                continue
+            }
+            // 番号とメール
+            if (line.startsWith("<span id=\"delcheck")) {
+                resNumber = line.pick(numberRegex)
+                resMail = line.pick(mailRegex)
             }
             // レス
             if (line.contains("<blockquote")) {
@@ -100,12 +113,6 @@ class ThreadInfoBuilder {
                 }
                 threadInfo.replies.add(ResInfo(index, resNumber, resText.removeHtmlTag(), resMail))
                 index ++
-                continue
-            }
-            // 番号とメール
-            if (line.startsWith("<input type=checkbox")) {
-                resNumber = line.pick(numberRegex)
-                resMail = line.pick(mailRegex)
                 continue
             }
         }
