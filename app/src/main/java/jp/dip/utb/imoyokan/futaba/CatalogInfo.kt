@@ -60,7 +60,7 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
                 // アプリサイズを大きくしたくないのでJSONは標準ライブラリで解析する
                 val json = html
                     .pick("JSON.parse\\('(.+)'\\);</script>")
-                    .replace("\\", "") // javascriptの文字列なのでバックスラッシュをアンエスケープする
+                    .replace("\\\\(.)".toRegex(), "$1") // javascriptの文字列なのでバックスラッシュをアンエスケープする
                 val items = JSONObject(json).getJSONArray("res")
                 items.forEach {
                     val href =
