@@ -1,6 +1,8 @@
 package jp.dip.utb.imoyokan.futaba
 
 import jp.dip.utb.imoyokan.*
+import org.json.JSONArray
+import org.json.JSONObject
 
 class CatalogInfo(val url: String) {
     val items: ArrayList<CatalogItem> = ArrayList()
@@ -9,7 +11,7 @@ class CatalogInfo(val url: String) {
     val sort: String
     var failedMessage: String = ""
     val isFailed: Boolean
-    get() { return failedMessage.isNotBlank()}
+        get() { return failedMessage.isNotBlank()}
 
     init {
         val m = analyseCatalogUrl(url)
@@ -43,32 +45,32 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
             return catalogInfo
         }
 
-        try {
-            // HTML読み込み
-            val res = HttpRequest(url).header("Cookie", "cxyl=${cols}x${rows}x${textLength}x0x0;").get()
-            if (res.code() != 200) {
-                catalogInfo.failedMessage = res.message()
-                return catalogInfo
-            }
-            val html = res.bodyString(FUTABA_CHARSET)
+        // HTML読み込み
+        val res = HttpRequest(url).header("Cookie", "cxyl=${cols}x${rows}x${textLength}x0x0;").get()
+        if (res.code() != 200) {
+            catalogInfo.failedMessage = res.message()
+            return catalogInfo
+        }
+        val html = res.bodyString(FUTABA_CHARSET)
 
-            // 解析
+        // 解析
+        try {
             if (html.contains("JSON.parse('{\"res\"")) {
                 // JSONを解析(レイアウト板とか)そのうち全部この形式になるらしい
-                val json = html.pick("JSON.parse\\('(.+)'\\);</script>")
-                // 普通のJSONじゃないみたい…
-                //val items = JSONObject(json).getJSONArray("res")
-                val items = toMapArray(json)
+                // アプリサイズを大きくしたくないのでJSONは標準ライブラリで解析する
+                val json = html
+                    .pick("JSON.parse\\('(.+)'\\);</script>")
+                    .replace("\\", "") // javascriptの文字列なのでバックスラッシュをアンエスケープする
+                val items = JSONObject(json).getJSONArray("res")
                 items.forEach {
-                    if (it["no"] != null) {
-                        val href =
-                            "${catalogInfo.server}/${catalogInfo.b}/res/${it["no"]}.htm"
-                        val img = if (it["src"] != null) "${catalogInfo.server}${it["src"]}".toHttps() else null
-                        val text = it["com"]?.removeHtmlTag() ?: ""
-                        val count = toInt(it["cr"])
-                        val item = CatalogItem(href, img, text, count)
-                        catalogInfo.items.add(item)
-                    }
+                    val href =
+                        "${catalogInfo.server}/${catalogInfo.b}/res/${it.getString("no")}.htm"
+                    val img =
+                        if (it.has("src")) "${catalogInfo.server}${it.getStringDefault("src")}".toHttps() else null
+                    val text = it.getStringDefault("com").removeHtmlTag()
+                    val count = it.getInt("cr")
+                    val item = CatalogItem(href, img, text, count)
+                    catalogInfo.items.add(item)
                 }
             } else {
                 // 旧版tableタグから解析(こっちはそのうちなくなるらしい)
@@ -89,57 +91,13 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
         return catalogInfo
     }
 
-    /**
-     * JSONを雑に階層のない平坦なListにします<br>
-     * (カタログで使いたいだけなので)
-     */
-    private fun toMapArray(json: String): List<Map<String, String>> {
-        val maxIndex = json.length - 1
-        var isInStr = false
-        var key = ""
-        val value = StringBuilder()
-        var item = HashMap<String, String>()
-        val items = ArrayList<HashMap<String, String>>()
-        for (i in 0..maxIndex) {
-            val c = json[i]
-            if (isInStr) {
-                when (c) {
-                    '"' -> isInStr = false
-                    '\\' -> { }
-                    else -> value.append(c)
-                }
-                continue
-            }
-            when (c) {
-                '{' -> {
-                    item = HashMap()
-                    items.add(item)
-                }
-                '"' -> {
-                    isInStr = true
-                    value.clear()
-                }
-                ':' -> {
-                    key = value.toString()
-                    value.clear()
-                }
-                ',', '}' -> {
-                    if (key.isNotBlank()) item[key] = value.toString()
-                    key = ""
-                    value.clear()
-                }
-                else -> value.append(c)
-            }
-        }
-        return items
-    }
-
-    private fun toInt(s: String?, default: Int = 0): Int {
-        return try {
-            if (s == null || s.isBlank()) default else Integer.parseInt(s)
-        } catch (t: Throwable) {
-            default
+    private fun JSONArray.forEach(action: (JSONObject) -> Unit) {
+        for (i in 0 until length()) {
+            action(this.getJSONObject(i))
         }
     }
 
+    private fun JSONObject.getStringDefault(key: String, default: String = ""): String {
+        return if (this.has(key)) this.getString(key).replace("\\", "") else default // アンエスケープ面倒だから…
+    }
 }
