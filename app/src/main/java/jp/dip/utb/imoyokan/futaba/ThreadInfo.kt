@@ -77,9 +77,8 @@ class ThreadInfoBuilder {
                 }
                 if (line.contains(threadMarker)  || line.contains(threadMarkerOld)) {
                     // スレ画読み込み(板によってダブルクォーテーションだったりシングルクォーテーションだったりする…)
-                    val imageUrl = line.pick("<a href=./(${threadInfo.b}/src/[^\"']+). target=._blank.><img src=./${threadInfo.b}/thumb/\\d+s\\.jpg.")
-                    if (imageUrl.isNotBlank()) {
-                        threadInfo.imageUrls.put("${threadInfo.server}/${imageUrl}")
+                    "<a href=./(${threadInfo.b}/src/[^\"']+). target=._blank.><img src=./${threadInfo.b}/thumb/\\d+s\\.jpg.".toRegex().find(line)?.forGroupValue(1) {
+                        threadInfo.imageUrls.put("${threadInfo.server}/${it}")
                     }
                     resNumber = threadInfo.res
                     resMail = line.pick(mailRegex)
@@ -102,10 +101,9 @@ class ThreadInfoBuilder {
             if (line.contains("<blockquote")) {
                 var resText = line.pick(textRegex)
                 if (IMAGE_EXT_REGEX.containsMatchIn(line)) {
-                    val resImage = line.pick(resImageRegex)
-                    if (resImage.isNotBlank()) {
-                        resText = "${resImage}\n${resText}"
-                        threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${resImage}")
+                    resImageRegex.find(line)?.forGroupValue(1) {
+                        resText = "${it}\n${resText}"
+                        threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${it}")
                     }
                     SIO_FILE_REGEX.findAll(resText).forEach {
                         threadInfo.imageUrls.put(getSiokaraUrl(it.value))

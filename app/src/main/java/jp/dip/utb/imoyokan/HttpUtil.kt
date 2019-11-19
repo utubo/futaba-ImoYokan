@@ -1,5 +1,6 @@
 package jp.dip.utb.imoyokan
 
+import jp.dip.utb.imoyokan.futaba.USER_AGENT
 import okhttp3.*
 import java.net.URLEncoder
 import java.nio.charset.Charset
@@ -24,7 +25,7 @@ fun Response.bodyString(charset: Charset? = null): String {
 // ↑これだけだと非常に面倒なので↓ユーティリティも定義しておく
 
 class HttpRequest(val url: String) {
-    private val request = Request.Builder().url(url)
+    private val request = Request.Builder().url(url).header("User-Agent", USER_AGENT)
     fun header(name: String, value: String): HttpRequest {
         request.header(name, value)
         return this

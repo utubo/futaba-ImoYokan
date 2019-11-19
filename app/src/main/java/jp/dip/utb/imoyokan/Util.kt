@@ -98,8 +98,9 @@ fun String.pick(regex: String, g: Int = 1): String {
     return this.pick(regex.toRegex(), g)
 }
 
-fun String.blankToNull(): String? {
-    return if (this.isBlank()) null else this
+/** ?.groupValues?.get(index)?.let と同じ */
+fun MatchResult.forGroupValue(index: Int, f: (String) -> Unit) {
+    f(this.groupValues[index])
 }
 
 val Int.prev: Int get() { return this - 1 }

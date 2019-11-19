@@ -23,9 +23,7 @@ class Replier {
         params["chrenc"] = "文字"
         params["MAX_FILE_SIZE"] = "2048000"
         val res = HttpRequest("${server}/${b}/futaba.php?guid=on".toHttps())
-            .header("User-Agent", USER_AGENT)
             .header("Cookie", "posttime=${params["pthc"]};")
-            .header("Content-Type", "multipart/form-data; boundary=$BOUNDARY")
             .post(params, FUTABA_CHARSET)
         return if (res.code() != 200) {
             Pair("返信失敗", res.message())

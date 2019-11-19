@@ -118,7 +118,7 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     }
 
     fun addCatalogAction(): ImoyokanNotificationBuilder {
-        val url = pref.lastCatalogUrl.blankToNull() ?: getCatalogUrl(pref.lastThreadUrl)
+        val url = pref.lastCatalogUrl.ifBlank { getCatalogUrl(pref.lastThreadUrl) }
         addNextPageAction(android.R.drawable.ic_menu_gallery, "カタログ", url)
         return this
     }

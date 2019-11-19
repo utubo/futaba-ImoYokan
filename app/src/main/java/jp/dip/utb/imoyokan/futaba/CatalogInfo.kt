@@ -59,14 +59,12 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
                 // JSONを解析(レイアウト板とか)そのうち全部この形式になるらしい
                 // アプリサイズを大きくしたくないのでJSONは標準ライブラリで解析する
                 val json = html
-                    .pick("JSON.parse\\('(.+)'\\);</script>")
-                    .replace("\\\\(.)".toRegex(), "$1") // javascriptの文字列なのでバックスラッシュをアンエスケープする
+                    .pick("""JSON\.parse\('(.+)'\);</script>""")
+                    .replace("""\\(.)""".toRegex(), "$1") // javascriptの文字列なのでバックスラッシュをアンエスケープする
                 val items = JSONObject(json).getJSONArray("res")
                 items.forEach {
-                    val href =
-                        "${catalogInfo.server}/${catalogInfo.b}/res/${it.getString("no")}.htm"
-                    val img =
-                        if (it.has("src")) "${catalogInfo.server}${it.getStringDefault("src")}".toHttps() else null
+                    val href = "${catalogInfo.server}/${catalogInfo.b}/res/${it.getString("no")}.htm"
+                    val img = if (it.has("src")) "${catalogInfo.server}${it.getStringDefault("src")}".toHttps() else null
                     val text = it.getStringDefault("com").removeHtmlTag()
                     val count = it.getInt("cr")
                     val item = CatalogItem(href, img, text, count)
@@ -74,7 +72,7 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
                 }
             } else {
                 // 旧版tableタグから解析(こっちはそのうちなくなるらしい)
-                "<td><a href='(res/\\d+.htm)' target='_blank'><img src='/([^']+)'[^>]+></a>(.*)<font size=2>(\\d+)</font></td>".toRegex()
+                """<td><a href='(res/\d+\.htm)' target='_blank'><img src='/([^']+)'[^>]+></a>(.*)<font size=2>(\d+)</font></td>""".toRegex()
                     .findAll(html).forEach {
                     val href = "${catalogInfo.server}/${catalogInfo.b}/${it.groupValues[1]}"
                     val img = "${catalogInfo.server}/${it.groupValues[2]}".toHttps()
@@ -98,6 +96,6 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
     }
 
     private fun JSONObject.getStringDefault(key: String, default: String = ""): String {
-        return if (this.has(key)) this.getString(key).replace("\\", "") else default // アンエスケープ面倒だから…
+        return if (this.has(key)) this.getString(key).replace("""\""", "") else default // アンエスケープ面倒だから…
     }
 }
