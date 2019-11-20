@@ -37,7 +37,7 @@ class NotificationReceiver : BroadcastReceiver() {
         var text = remoteInput.getString(KEY_EXTRA_REPLY_TEXT) ?: ""
         var mail = intent.str(KEY_EXTRA_MAIL)
         val oldMail = mail
-        val m = "^@(\\S*)\\s+(.+)".toRegex().find(text)
+        val m = """^@(\S*)\s+(.*)""".toRegex().find(text)
         if (m != null) {
             mail = m.groupValues[1]
             text = m.groupValues[2].trim()
