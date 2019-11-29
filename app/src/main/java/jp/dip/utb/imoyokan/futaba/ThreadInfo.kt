@@ -29,7 +29,7 @@ data class ThreadInfo(val url: String) : Serializable {
     }
 
     fun isFailed(): Boolean {
-        return failedMessage.isNotBlank()
+        return failedMessage.isNotBlank() || replies.isEmpty()
     }
 
 }
