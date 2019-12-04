@@ -92,7 +92,7 @@ class ThreadInfoBuilder {
                 continue
             }
             // 番号とメール
-            if (line.startsWith("<span id=\"delcheck")) {
+            if (line.contains("<span id=\"delcheck")) {
                 resNumber = line.pick(numberRegex)
                 resMail = line.pick(mailRegex)
             }

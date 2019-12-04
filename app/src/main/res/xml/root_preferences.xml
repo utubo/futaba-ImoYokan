@@ -40,10 +40,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="メールアドレス" app:iconSpaceReserved="false">
-        <SwitchPreferenceCompat app:iconSpaceReserved="false"
-            app:title="先頭全角＠も有効にする"
-            app:key="mail_ignore_wide_char"
-            app:defaultValue="false" />
         <ListPreference app:iconSpaceReserved="false"
             app:title="別のスレを開いても保持する"
             app:key="mail_keep_hours"
@@ -51,6 +47,10 @@
             app:entries="@array/mail_keep_hours_entries"
             app:entryValues="@array/mail_keep_hours_values"
             app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="全角半角を区別しない"
+            app:key="mail_ignore_wide_char"
+            app:defaultValue="false" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="その他" app:iconSpaceReserved="false">
