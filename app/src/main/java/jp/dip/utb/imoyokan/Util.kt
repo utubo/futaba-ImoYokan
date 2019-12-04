@@ -31,7 +31,7 @@ const val THREAD_BOTTOM = 20000
 const val MAX_RES_COUNT = 10
 
 // 記号
-const val STR_MAIL_LABEL = "✉"
+const val STR_MAIL_LABEL = "📧"
 const val STR_HEARTS = "❤"
 
 // ユーティリティ
@@ -119,6 +119,7 @@ fun Intent.putAll(vararg extras: Pair<String, Any>): Intent {
         when (it.second) {
             is Int -> this.putExtra(it.first, it.second as Int)
             is String -> this.putExtra(it.first, it.second as String)
+            is Boolean -> this.putExtra(it.first, it.second as Boolean)
         }
     }
     return this

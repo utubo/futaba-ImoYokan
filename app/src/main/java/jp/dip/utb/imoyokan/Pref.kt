@@ -1,15 +1,18 @@
 package jp.dip.utb.imoyokan
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 
 class Pref private constructor(context: Context) {
 
-    // シングルトン
     companion object {
+        // シングルトン
         var instance: Pref? = null
         fun getInstance(context: Context) = instance ?: synchronized(this) {
             instance ?: Pref(context.applicationContext).also { instance = it }
@@ -23,6 +26,8 @@ class Pref private constructor(context: Context) {
     val thread = Thread(this)
     val catalog = Catalog(this)
     val media = Media(this)
+    val mail = Mail(this)
+    val debugMode: Boolean by prefValue("debug_mode", false)
 
     class Thread(pref: Pref) {
         var removeLineBreaks: Boolean by pref.prefValue("thread_remove_line_breaks", true)
@@ -38,6 +43,46 @@ class Pref private constructor(context: Context) {
 
     class Media(pref: Pref) {
         var useSioCacheServer: Boolean by pref.prefValue("media_use_sio_cache_server", true)
+    }
+
+    class Mail(pref: Pref) {
+        var ignoreWideChar: Boolean by pref.prefValue("mail_ignore_wide_char", false)
+        var keepHours: Int by pref.prefValue("mail_keep_hours", 1)
+        var lastNoBlank: String by pref.prefValue("mail_no_blank", "")
+        private var last: String by pref.prefValue("mail_last", "")
+        private var timestamp: String by pref.prefValue("mail_timestamp", "")
+        private var url: String by pref.prefValue("mail_url", "")
+
+        fun set(mail:String, url: String) {
+            if (mail.isNotBlank() && mail != last) {
+                lastNoBlank = mail
+                timestamp = yyyyMMddHHmmss(Date())
+            }
+            last = mail
+            this.url = url
+        }
+
+        fun get(url: String): String {
+            if (url == this.url) {
+                return last
+            }
+            if (keepHours < 0) {
+                return last
+            }
+            if (keepHours == 0) {
+                return ""
+            }
+            if (border()< timestamp) {
+                return last
+            }
+            return ""
+        }
+
+        private fun border(): String {
+            val border = Calendar.getInstance()
+            border.add(Calendar.HOUR_OF_DAY, -keepHours)
+            return yyyyMMddHHmmss(border.time)
+        }
     }
 
     // Utils
@@ -86,4 +131,10 @@ class Pref private constructor(context: Context) {
         e.apply()
         modified.clear()
     }
+
+}
+
+@SuppressLint("SimpleDateFormat")
+private fun yyyyMMddHHmmss(date: Date): String {
+    return SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date)
 }

@@ -46,7 +46,6 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         if (threadInfo == null) {
             val builder = ThreadInfoBuilder().apply {
                 this.url = intent.str(KEY_EXTRA_URL)
-                this.mail = intent.str(KEY_EXTRA_MAIL)
             }
             threadInfo = builder.build()
             if (threadInfo.lastModified != pref.lastThreadModified || threadInfo.url != pref.lastThreadUrl) {
@@ -67,8 +66,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val (_, _, sort) = analyseCatalogUrl(pref.lastCatalogUrl) ?: Triple("", "", "") // ソート順は引き継ぐ
         pref.lastCatalogUrl = getCatalogUrl(threadInfo.url, sort)
 
-        // フォームデータを上書き
-        intent.putExtra(KEY_EXTRA_MAIL, threadInfo.form.mail)
+        // フォームデータ
+        val formMail = pref.mail.get(threadInfo.url)
 
         // 通知作成開始
         val builder = ImoyokanNotificationBuilder(context, intent)
@@ -80,11 +79,12 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             builder.createImoyokanIntent()
                 .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_REPLY)
                 .putExtra(KEY_EXTRA_URL, threadInfo.url)
+                .putExtra(KEY_EXTRA_MAIL, formMail)
                 .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val replyTitle = if (threadInfo.form.mail.isNotEmpty()) "返信 ${STR_MAIL_LABEL}${threadInfo.form.mail}" else "返信"
-        val replyLabel = if (threadInfo.form.mail.isNotEmpty()) "${STR_MAIL_LABEL}${threadInfo.form.mail}" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
+        val replyTitle = if (formMail.isNotEmpty()) "返信 ${STR_MAIL_LABEL}${formMail}" else "返信"
+        val replyLabel = if (formMail.isNotEmpty()) "@${formMail}" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
         val remoteInput = RemoteInput.Builder(KEY_EXTRA_REPLY_TEXT)
             .setLabel(replyLabel)
             .build()
@@ -118,17 +118,17 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             )
             hasNext = position < threadInfo.replies.last().index
             threadInfo.replies.filter { it.index <= position }.takeLast(MAX_RES_COUNT).forEach {
-                val mail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
+                val resMail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
                 if (it.index == 0) {
-                    sb.addResponse("${it.number}${mail}", decorateResText(it.text), "\n")
+                    sb.addResponse("${it.number}${resMail}", decorateResText(it.text), "\n")
                 } else {
-                    sb.addResponse("${it.index}${mail}", decorateResText(it.text))
+                    sb.addResponse("${it.index}${resMail}", decorateResText(it.text))
                 }
             }
         }
         // メッセージ
         if (title.isNotBlank() || text.isNotBlank()) {
-            sb.addResponse(title, text)
+            sb.addResponse(title, text, "\n")
         }
         // できたよ
         view.setTextViewText(R.id.text, sb)
@@ -163,7 +163,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val userSpan = SpannableStringBuilder(user)
         userSpan.setSpan(ForegroundColorSpan(Color.BLACK), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         this.append(userSpan)
-        this.append(delimiter)
+        if (user.isNotBlank() && text.isNotBlank()) {
+            this.append(delimiter)
+        }
         this.append(text)
         return this
     }

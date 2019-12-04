@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 
 
@@ -14,17 +15,34 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
+        pref = Pref.getInstance(this)
+        val fragment = SettingsFragment(pref.debugMode)
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.settings, SettingsFragment())
+            .replace(R.id.settings, fragment)
             .commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        pref = Pref.getInstance(this)
     }
 
-    class SettingsFragment : PreferenceFragmentCompat() {
+    class SettingsFragment(val debugMode: Boolean): PreferenceFragmentCompat() {
+
+        private var versionClickCount = 3
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+            // デバッグモード表示
+            if (debugMode) {
+                findPreference<Preference>("debug_mode")?.isVisible = true
+            }
+            findPreference<Preference>("version")?.setOnPreferenceClickListener {
+                if (versionClickCount <= 1) {
+                    findPreference<Preference>("debug_mode")?.isVisible = true
+                } else {
+                    versionClickCount --
+                }
+                true
+            }
         }
     }
 

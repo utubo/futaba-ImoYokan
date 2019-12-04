@@ -34,34 +34,54 @@ class NotificationReceiver : BroadcastReceiver() {
 
         // 返信
         val remoteInput = RemoteInput.getResultsFromIntent(intent)
-        var text = remoteInput.getString(KEY_EXTRA_REPLY_TEXT) ?: ""
-        var mail = intent.str(KEY_EXTRA_MAIL)
-        val oldMail = mail
-        val m = """^@(\S*)\s+(.*)""".toRegex().find(text)
-        if (m != null) {
-            mail = m.groupValues[1]
-            text = m.groupValues[2].trim()
-        } else if (text == "@") {
-            mail = ""
-            text = ""
-        }
-        intent.putExtra(KEY_EXTRA_MAIL, mail)
-        val threadNotification = ThreadNotification(context, intent)
+        val url = intent.str(KEY_EXTRA_URL)
 
-        if (oldMail.isNotEmpty() && mail.isEmpty() && text.isEmpty()) {
-            threadNotification.notify("返信キャンセル", "${STR_MAIL_LABEL}をクリアしました")
-            return
+        // メールアドレスを設定する
+        val pref = Pref.getInstance(context)
+        val defaultMail = intent.str(KEY_EXTRA_MAIL) // 書き込むときは基本的にintentにある(通知に表示中)のメアドが正義
+        val (mail, text) = pickMailAndText(defaultMail, remoteInput.getString(KEY_EXTRA_REPLY_TEXT, ""), pref) // ただし入力で上書きされることがある
+        if (mail != defaultMail) {
+            pref.mail.set(mail, url)
+            pref.apply()
         }
+        val threadNotification = ThreadNotification(context, intent)
         if (text.isEmpty()) {
-            threadNotification.notify("返信失敗", "本文が無いよ")
+            // 本文がないときはメールアドレス設定の結果を表示するスペースがある
+            if (defaultMail == mail) {
+                threadNotification.notify("本文が無いよ")
+            } else if (mail.isBlank()) {
+                threadNotification.notify("メールアドレスをクリアしました")
+            } else {
+                threadNotification.notify("メールアドレスをセットしました", mail)
+            }
             return
         }
+
+        // 本文があるなら返信するよ
         GlobalScope.launch {
-            val url = intent.str(KEY_EXTRA_URL)
-            val ptua = intent.str(KEY_EXTRA_PTUA)
-            val (title, msg) = Replier().reply(url, text, mail, ptua)
-            //val title = "テスト"; val msg = "mail=${mail},text=${text}"
-            threadNotification.notify(title, msg)
+            if (pref.debugMode) {
+                threadNotification.notify("Debug - 返信キャンセル", "mail=${mail},text=${text}")
+            } else {
+                val (title, msg) = Replier().reply(url, text, mail, intent.str(KEY_EXTRA_PTUA))
+                threadNotification.notify(title, msg)
+            }
         }
     }
+
+    private fun pickMailAndText(defaultMail: String, text: String, pref: Pref): Pair<String, String> {
+        val regex = if (pref.mail.ignoreWideChar) {
+            """^[@＠]([^ 　]*)[ 　]+(.*)""".toRegex()
+        } else {
+            """^@([^ ]*) +(.*)""".toRegex()
+        }
+        val m = regex.find(text)
+        return if (m != null) {
+            m.groupValues[1] to m.groupValues[2].trim()
+        } else if (text == "@" || pref.mail.ignoreWideChar && text == "＠") {
+            (if (defaultMail.isBlank()) pref.mail.lastNoBlank else "") to ""
+        } else {
+            defaultMail to text
+        }
+    }
+
 }

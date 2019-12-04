@@ -9,7 +9,7 @@ data class ThreadInfo(val url: String) : Serializable {
     val server: String
     val b: String
     val res: String
-    var form = FromParams("", "")
+    var form = FromParams()
     var replies = ArrayList<ResInfo>()
     var timestamp = Date()
     var lastModified = ""
@@ -34,17 +34,16 @@ data class ThreadInfo(val url: String) : Serializable {
 
 }
 
-data class FromParams(var ptua: String, var mail: String) : Serializable
+data class FromParams(var ptua: String = "") : Serializable
 
 data class ResInfo(val index: Int, val number: String, val text: String, val mail: String = "") : Serializable
 
 class ThreadInfoBuilder {
     var url: String = ""
-    var mail: String = ""
 
     fun build(): ThreadInfo {
-        val threadInfo = ThreadInfo(url).apply { this.form.mail = mail }
-        if (threadInfo.isFailed()) {
+        val threadInfo = ThreadInfo(url)
+        if (threadInfo.failedMessage.isNotBlank()) {
             return threadInfo
         }
 

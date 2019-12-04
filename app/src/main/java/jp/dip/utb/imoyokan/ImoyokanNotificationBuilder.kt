@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
@@ -34,6 +35,9 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
 
     init {
         builder.setSmallIcon(R.drawable.ic_stat_imoyokan)
+        if (pref.debugMode) {
+            builder.color = Color.YELLOW
+        }
     }
 
     fun notifyThis() {
@@ -136,7 +140,6 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     /** 設定に保存するまでもないIntentで引きずり回すパラメータをセットしたIntent */
     fun createImoyokanIntent(): Intent {
         return Intent(context, NotificationReceiver::class.java)
-            .putExtra(KEY_EXTRA_MAIL, intent.getStringExtra(KEY_EXTRA_MAIL))
             .putExtra(KEY_EXTRA_POSITION, intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM))
             .putExtra(KEY_EXTRA_IMAGE_INDEX, intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0))
     }

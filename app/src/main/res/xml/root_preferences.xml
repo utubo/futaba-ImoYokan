@@ -1,7 +1,6 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    app:iconSpaceReserved="false"
-    >
+    app:iconSpaceReserved="false">
 
     <PreferenceCategory app:title="カタログ" app:iconSpaceReserved="false">
         <ListPreference app:iconSpaceReserved="false"
@@ -40,6 +39,19 @@
             android:defaultValue="true" />
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="メールアドレス" app:iconSpaceReserved="false">
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="先頭全角＠も有効にする"
+            app:key="mail_ignore_wide_char"
+            app:defaultValue="false" />
+        <ListPreference app:iconSpaceReserved="false"
+            app:title="別のスレを開いても保持する"
+            app:key="mail_keep_hours"
+            app:defaultValue="1"
+            app:entries="@array/mail_keep_hours_entries"
+            app:entryValues="@array/mail_keep_hours_values"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
 
     <PreferenceCategory app:title="その他" app:iconSpaceReserved="false">
         <Preference android:title="ライセンス" app:iconSpaceReserved="false">
@@ -48,7 +60,13 @@
         <Preference android:title="配布ページ" app:iconSpaceReserved="false">
             <intent android:action="android.intent.action.VIEW" android:data="https://x123.x0.to/~imoyokan/" />
         </Preference>
-        <Preference android:title="バージョン" app:iconSpaceReserved="false" android:summary="@string/versionName"/>
+        <Preference android:title="バージョン" app:iconSpaceReserved="false" android:summary="@string/versionName" android:key="version" />
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="デバッグモード"
+            app:key="debug_mode"
+            app:defaultValue="false"
+            app:isPreferenceVisible="false"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>
