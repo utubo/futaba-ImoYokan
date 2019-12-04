@@ -15,10 +15,10 @@ class NotificationReceiver : BroadcastReceiver() {
     @ExperimentalUnsignedTypes
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.getIntExtra(KEY_EXTRA_ACTION, INTENT_ACTION_RELOAD_URL)
+        val url = intent.str(KEY_EXTRA_URL)
 
         // URL表示
         if (action == INTENT_ACTION_RELOAD_URL) {
-            val url = intent.str(KEY_EXTRA_URL)
             when {
                 analyseCatalogUrl(url) != null -> CatalogNotification(context, intent).notifyThis()
                 else -> ThreadNotification(context, intent).notify()
@@ -32,12 +32,19 @@ class NotificationReceiver : BroadcastReceiver() {
             return
         }
 
+        val pref = Pref.getInstance(context)
+
+        // メアドクリア
+        if (action == INTENT_ACTION_CLEAR_MAIL) {
+            pref.mail.set("", pref.lastThreadUrl)
+            ThreadNotification(context, intent).notify("メールアドレスをクリアしました")
+            return
+        }
+
         // 返信
         val remoteInput = RemoteInput.getResultsFromIntent(intent)
-        val url = intent.str(KEY_EXTRA_URL)
 
         // メールアドレスを設定する
-        val pref = Pref.getInstance(context)
         val defaultMail = intent.str(KEY_EXTRA_MAIL) // 書き込むときは基本的にintentにある(通知に表示中)のメアドが正義
         val (mail, text) = pickMailAndText(defaultMail, remoteInput.getString(KEY_EXTRA_REPLY_TEXT, ""), pref) // ただし入力で上書きされることがある
         if (mail != defaultMail) {

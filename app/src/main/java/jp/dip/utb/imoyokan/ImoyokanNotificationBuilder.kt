@@ -105,10 +105,10 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         return this
     }
 
-    fun createThreadIntent(position: Int): PendingIntent {
+    fun createThreadIntent(position: Int, vararg extras: Pair<String, Any>): PendingIntent {
         return when (position) {
-            POSITION_KEEP -> createNextPageIntent(pref.lastThreadUrl)
-            else -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_POSITION to position)
+            POSITION_KEEP -> createNextPageIntent(pref.lastThreadUrl, *extras)
+            else -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_POSITION to position, *extras)
         }
     }
 
@@ -153,13 +153,15 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         return PendingIntent.getBroadcast(context, ++requestCode, newIntent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    /** URLを通知で開くIntent */
-    fun createNextPageIntent(url: String, vararg extras: Pair<String, Any>): PendingIntent {
+    fun createPendingIntent(vararg extras: Pair<String, Any>): PendingIntent {
         val newIntent = createImoyokanIntent()
-            .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_RELOAD_URL)
-            .putExtra(KEY_EXTRA_URL, url)
             .putAll(*extras)
         return PendingIntent.getBroadcast(context, ++requestCode, newIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    /** URLを通知で開くIntent */
+    fun createNextPageIntent(url: String, vararg extras: Pair<String, Any>): PendingIntent {
+        return createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_RELOAD_URL, KEY_EXTRA_URL to url, *extras)
     }
 
     /** URLを共有するPendingIntent  */

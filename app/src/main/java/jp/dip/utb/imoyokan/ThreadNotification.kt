@@ -146,6 +146,10 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickOrInvisible(R.id.prev, 0 < position) { builder.createThreadIntent(position.prev) }
         view.setOnClickOrInvisible(R.id.next, hasNext) { builder.createThreadIntent(position.next) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
+        view.setOnClickOrGone(R.id.clear_mail, formMail.isNotBlank()) { builder.createPendingIntent(
+            KEY_EXTRA_ACTION to INTENT_ACTION_CLEAR_MAIL,
+            KEY_EXTRA_POSITION to POSITION_KEEP
+        )}
 
         // 表示するよ！
         builder
