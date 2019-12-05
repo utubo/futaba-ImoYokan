@@ -19,8 +19,8 @@
         >
         <ImageView
             style="@style/top_page_icon_space"
-            android:src="@drawable/ic_stat_imoyokan"
-            android:tint="@android:color/secondary_text_light"
+            android:src="@drawable/ic_imoyokan"
+            android:tint="@android:color/primary_text_light"
             tools:ignore="ContentDescription" />
         <TextView
             android:id="@+id/top_message"
@@ -42,7 +42,7 @@
         <TextView
             style="@style/ghost_button"
             android:onClick="onClickSettings"
-            android:drawableStart="@drawable/ic_action_settings"
+            android:drawableStart="@drawable/ic_settings"
             android:text="設定"/>
         <Space style="@style/top_page_icon_space" />
     </LinearLayout>

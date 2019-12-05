@@ -1,8 +1,8 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    app:iconSpaceReserved="false">
+   >
 
-    <PreferenceCategory app:title="カタログ" app:iconSpaceReserved="false">
+    <PreferenceCategory app:title="カタログ" app:icon="@drawable/ic_catalog">
         <ListPreference app:iconSpaceReserved="false"
             app:title="カタログサイズ(横)"
             app:key="catalog_cols"
@@ -19,7 +19,7 @@
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="スレッド" app:iconSpaceReserved="false">
+    <PreferenceCategory app:title="スレッド" app:icon="@drawable/ic_thread">
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
             app:title="改行を詰める"
             app:key="thread_remove_line_breaks"
@@ -32,21 +32,21 @@
             app:key="thread_auto_small_font" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="画像" app:iconSpaceReserved="false">
+    <PreferenceCategory app:title="画像" app:icon="@drawable/ic_images">
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
-            app:title="塩のサムネに中間サーバを使う"
+            app:title="塩のサムネに中間サーバーを使う"
             app:key="media_use_sio_cache_server"
             android:defaultValue="true" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="返信" app:iconSpaceReserved="false">
+    <PreferenceCategory app:title="返信" app:icon="@drawable/ic_edit">
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
             app:title="返信前に確認する"
             app:key="reply_confirm"
             app:defaultValue="false" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="メールアドレス" app:iconSpaceReserved="false">
+    <PreferenceCategory app:title="メールアドレス" app:icon="@drawable/ic_mail">
         <ListPreference app:iconSpaceReserved="false"
             app:title="別のスレを開いても保持する"
             app:key="mail_keep_hours"
@@ -60,14 +60,14 @@
             app:defaultValue="false" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="その他" app:iconSpaceReserved="false">
+    <PreferenceCategory app:title="その他" app:icon="@drawable/ic_imoyokan">
         <Preference android:title="ライセンス" app:iconSpaceReserved="false">
             <intent android:targetPackage="jp.dip.utb.imoyokan" android:targetClass="jp.dip.utb.imoyokan.LicenseActivity"/>
         </Preference>
         <Preference android:title="配布ページ" app:iconSpaceReserved="false">
             <intent android:action="android.intent.action.VIEW" android:data="https://x123.x0.to/~imoyokan/" />
         </Preference>
-        <Preference android:title="バージョン" app:iconSpaceReserved="false" android:summary="@string/versionName" android:key="version" />
+        <Preference android:title="バージョン" android:summary="@string/versionName" android:key="version" app:iconSpaceReserved="false"/>
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
             app:title="デバッグモード"
             app:key="debug_mode"

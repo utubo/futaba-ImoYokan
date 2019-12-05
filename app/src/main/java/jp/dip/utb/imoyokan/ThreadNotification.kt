@@ -100,7 +100,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // アクションボタンを登録
         builder
             .addAction(replyAction)
-            .addNextPageAction(R.drawable.ic_action_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url, KEY_EXTRA_POSITION to THREAD_BOTTOM)
+            .addNextPageAction(R.drawable.ic_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url, KEY_EXTRA_POSITION to THREAD_BOTTOM)
             .addCatalogAction()
 
         // ここからカスタムView
