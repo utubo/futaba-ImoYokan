@@ -33,6 +33,11 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         }
     }
 
+    fun notifyCache(title: String = "", text: String = "") {
+        intent.putExtra(KEY_EXTRA_POSITION, POSITION_KEEP)
+        notify(title, text)
+    }
+
     private fun getThreadInfo(): ThreadInfo {
         var threadInfo: ThreadInfo? = null
         // まずはキャッシュから
@@ -45,7 +50,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val pref = Pref.getInstance(context)
         if (threadInfo == null) {
             val builder = ThreadInfoBuilder().apply {
-                this.url = intent.str(KEY_EXTRA_URL)
+                this.url = intent.str(KEY_EXTRA_URL).ifBlank { pref.lastThreadUrl }
             }
             threadInfo = builder.build()
             if (threadInfo.lastModified != pref.lastThreadModified || threadInfo.url != pref.lastThreadUrl) {
@@ -146,10 +151,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickOrInvisible(R.id.prev, 0 < position) { builder.createThreadIntent(position.prev) }
         view.setOnClickOrInvisible(R.id.next, hasNext) { builder.createThreadIntent(position.next) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
-        view.setOnClickOrGone(R.id.clear_mail, formMail.isNotBlank()) { builder.createPendingIntent(
-            KEY_EXTRA_ACTION to INTENT_ACTION_CLEAR_MAIL,
-            KEY_EXTRA_POSITION to POSITION_KEEP
-        )}
+        view.setOnClickOrGone(R.id.clear_mail, formMail.isNotBlank()) { builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_CLEAR_MAIL)}
 
         // 表示するよ！
         builder

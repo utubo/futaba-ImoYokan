@@ -37,7 +37,7 @@ class NotificationReceiver : BroadcastReceiver() {
         // メアドクリア
         if (action == INTENT_ACTION_CLEAR_MAIL) {
             pref.mail.set("", pref.lastThreadUrl)
-            ThreadNotification(context, intent).notify("メールアドレスをクリアしました")
+            ThreadNotification(context, intent).notifyCache("メールアドレスをクリアしました")
             return
         }
 
@@ -55,11 +55,11 @@ class NotificationReceiver : BroadcastReceiver() {
         if (text.isEmpty()) {
             // 本文がないときはメールアドレス設定の結果を表示するスペースがある
             if (defaultMail == mail) {
-                threadNotification.notify("本文が無いよ")
+                threadNotification.notifyCache("本文が無いよ")
             } else if (mail.isBlank()) {
-                threadNotification.notify("メールアドレスをクリアしました")
+                threadNotification.notifyCache("メールアドレスをクリアしました")
             } else {
-                threadNotification.notify("メールアドレスをセットしました", mail)
+                threadNotification.notifyCache("メールアドレスをセットしました", mail)
             }
             return
         }
