@@ -39,6 +39,13 @@
             android:defaultValue="true" />
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="返信" app:iconSpaceReserved="false">
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="返信前に確認する"
+            app:key="reply_confirm"
+            app:defaultValue="false" />
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="メールアドレス" app:iconSpaceReserved="false">
         <ListPreference app:iconSpaceReserved="false"
             app:title="別のスレを開いても保持する"

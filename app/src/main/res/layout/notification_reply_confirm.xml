@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    tools:ignore="HardcodedText"
+    >
+    <TextView style="@style/label" android:text="返信しますか？" />
+
+    <TextView style="@style/label" android:text="メールアドレス" />
+    <TextView
+        android:id="@+id/mail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:breakStrategy="simple"
+        android:freezesText="true"/>
+
+    <TextView style="@style/label" android:text="本文" />
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:breakStrategy="simple"
+        android:freezesText="true"
+        android:requiresFadingEdge="vertical" />
+</LinearLayout>

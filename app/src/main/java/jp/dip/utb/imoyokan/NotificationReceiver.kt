@@ -42,35 +42,43 @@ class NotificationReceiver : BroadcastReceiver() {
         }
 
         // 返信
-        val remoteInput = RemoteInput.getResultsFromIntent(intent)
+        val isConfirmed = intent.hasExtra(KEY_EXTRA_CONFIRMED)
+        val inputText = if (isConfirmed) {
+            intent.getStringExtra(KEY_EXTRA_REPLY_TEXT) ?: ""
+        } else {
+            val remoteInput = RemoteInput.getResultsFromIntent(intent)
+            remoteInput.getString(KEY_EXTRA_REPLY_TEXT, "")
+        }
 
         // メールアドレスを設定する
         val defaultMail = intent.str(KEY_EXTRA_MAIL) // 書き込むときは基本的にintentにある(通知に表示中)のメアドが正義
-        val (mail, text) = pickMailAndText(defaultMail, remoteInput.getString(KEY_EXTRA_REPLY_TEXT, ""), pref) // ただし入力で上書きされることがある
+        var (mail, text) = pickMailAndText(defaultMail, inputText, pref) // ただし入力で上書きされることがある
         if (mail != defaultMail || text.isNotBlank()) {
             pref.mail.set(mail, url)
             pref.apply()
         }
-        val threadNotification = ThreadNotification(context, intent)
         if (text.isEmpty()) {
             // 本文がないときはメールアドレス設定の結果を表示するスペースがある
             if (defaultMail == mail) {
-                threadNotification.notifyCache("本文が無いよ")
+                ThreadNotification(context, intent).notifyCache("本文が無いよ")
             } else if (mail.isBlank()) {
-                threadNotification.notifyCache("メールアドレスをクリアしました")
+                ThreadNotification(context, intent).notifyCache("メールアドレスをクリアしました")
             } else {
-                threadNotification.notifyCache("メールアドレスをセットしました", mail)
+                ThreadNotification(context, intent).notifyCache("メールアドレスをセットしました", mail)
             }
             return
         }
 
         // 本文があるなら返信するよ
+        text = text.addLineBreakForSingleLineInput()
         GlobalScope.launch {
-            if (pref.debugMode) {
-                threadNotification.notify("Debug - 返信キャンセル", "mail=${mail},text=${text}")
+            if (pref.confirmBeforeReply && !isConfirmed) {
+                ReplyConfirmNotification(context, intent).notifyThis(url, intent.str(KEY_EXTRA_PTUA), mail, inputText, text)
+            } else if (pref.debugMode) {
+                ThreadNotification(context, intent).notify("Debug - 返信キャンセル", "mail=${mail},text=${text}")
             } else {
                 val (title, msg) = Replier().reply(url, text, mail, intent.str(KEY_EXTRA_PTUA))
-                threadNotification.notify(title, msg)
+                ThreadNotification(context, intent).notify(title, msg)
             }
         }
     }

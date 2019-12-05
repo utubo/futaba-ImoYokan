@@ -10,7 +10,7 @@ class Replier {
         val params = HashMap<String, String>()
         params["b"] = b
         params["resto"] = resto
-        params["com"] = text.replaceForPost(FUTABA_CHARSET).addLineBreakForSingleLineInput()
+        params["com"] = text.replaceForPost(FUTABA_CHARSET)
         params["email"] = mail.replaceForPost(FUTABA_CHARSET)
         params["pwd"] = ""
         params["mode"] = "regist"
