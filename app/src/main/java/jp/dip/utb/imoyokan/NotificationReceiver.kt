@@ -47,7 +47,7 @@ class NotificationReceiver : BroadcastReceiver() {
         // メールアドレスを設定する
         val defaultMail = intent.str(KEY_EXTRA_MAIL) // 書き込むときは基本的にintentにある(通知に表示中)のメアドが正義
         val (mail, text) = pickMailAndText(defaultMail, remoteInput.getString(KEY_EXTRA_REPLY_TEXT, ""), pref) // ただし入力で上書きされることがある
-        if (mail != defaultMail) {
+        if (mail != defaultMail || text.isNotBlank()) {
             pref.mail.set(mail, url)
             pref.apply()
         }

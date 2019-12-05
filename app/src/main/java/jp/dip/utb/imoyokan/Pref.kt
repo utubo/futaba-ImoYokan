@@ -54,7 +54,7 @@ class Pref private constructor(context: Context) {
         private var url: String by pref.prefValue("mail_url", "")
 
         fun set(mail:String, url: String) {
-            if (mail.isNotBlank() && mail != last) {
+            if (mail.isNotBlank()) {
                 lastNoBlank = mail
                 timestamp = yyyyMMddHHmmss(Date())
             }
