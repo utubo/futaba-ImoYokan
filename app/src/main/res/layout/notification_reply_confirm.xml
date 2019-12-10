@@ -7,7 +7,7 @@
     android:baselineAligned="false"
     tools:ignore="HardcodedText"
     >
-    <TextView style="@style/label" android:text="返信しますか？" />
+    <TextView style="@style/label" android:textColor="@color/colorAccent" android:text="返信しますか？" />
 
     <TextView style="@style/label" android:text="メールアドレス" />
     <TextView
