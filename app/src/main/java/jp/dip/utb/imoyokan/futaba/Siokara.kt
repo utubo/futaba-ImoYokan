@@ -4,7 +4,9 @@ import jp.dip.utb.imoyokan.Pref
 import jp.dip.utb.imoyokan.pick
 
 //val SIO_SERVER_REGEX = "http://www\\.nijibox\\d\\.com/".toRegex()
-val SIO_FILE_REGEX = "(sa|sp|sq|su|ss)\\d+${IMAGE_EXT}".toRegex()
+val SIO_FILE_REGEX = "(f|fu|sa|sp|sq|su|ss)\\d+${IMAGE_EXT}".toRegex()
+const val UP_F_ROOT = "https://dec.2chan.net/up/src/"
+const val UP_FU_ROOT = "https://dec.2chan.net/up2/src/"
 const val SIO_KARA_SA_ROOT = "http://www.nijibox6.com/futabafiles/001/src/"
 const val SIO_KARA_SP_ROOT = "http://www.nijibox2.com/futabafiles/003/src/"
 const val SIO_KARA_SQ_ROOT = "http://www.nijibox6.com/futabafiles/mid/src/"
@@ -14,6 +16,8 @@ const val SIO_CACHE_SERVER_ROOT = "https://x123.x0.to/~imoyokan_sio_cache_server
 
 fun getSiokaraUrl(filename: String): String {
     return when {
+        filename.startsWith("fu") -> (UP_FU_ROOT + filename)
+        filename.startsWith("f") -> (UP_F_ROOT + filename)
         filename.startsWith("sa") -> (SIO_KARA_SA_ROOT + filename)
         filename.startsWith("sp") -> (SIO_KARA_SP_ROOT + filename)
         filename.startsWith("sq") -> (SIO_KARA_SQ_ROOT + filename)
