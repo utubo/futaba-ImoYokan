@@ -17,10 +17,10 @@ const val VIDEO_EXT_COLOR = "#DED81B60"
 const val SORT_DEFAULT = ""
 const val SORT_NEWER = "1"
 const val SORT_REPLY = "3"
-val KITAA_REGEX = "ｷﾀ━━+\\(ﾟ∀ﾟ\\)━━+".toRegex()
+val KITAA_REGEX = """ｷﾀ━━+\(ﾟ∀ﾟ\)━━+""".toRegex()
 const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
 
-const val IMAGE_EXT = "\\.(jpg|jpeg|png|gif|webm|mp4)"
+const val IMAGE_EXT = """\.(jpg|jpeg|png|gif|webm|mp4|webp)"""
 val IMAGE_EXT_REGEX = IMAGE_EXT.toRegex()
 
 fun String.toColoredText(br:String = "\n"): Spannable {
@@ -38,7 +38,7 @@ fun String.toColoredText(br:String = "\n"): Spannable {
 }
 
 fun analyseUrl(url: String): Triple<String, String, String>? {
-    val urlMatches = "(https?://.*\\.2chan\\.net)/([^/]+)/res/(\\d+).htm".toRegex().find(url)?.groupValues ?: return null
+    val urlMatches = """(https?://.*\.2chan\.net)/([^/]+)/res/(\d+).htm""".toRegex().find(url)?.groupValues ?: return null
     val server = urlMatches[1]
     val b: String = urlMatches[2]
     val res = urlMatches[3]
@@ -46,7 +46,7 @@ fun analyseUrl(url: String): Triple<String, String, String>? {
 }
 
 fun analyseCatalogUrl(url: String): Triple<String, String, String>? {
-    val urlMatches = "(https?://.*\\.2chan\\.net)/([^/]+)/futaba.php\\?mode=cat(.*)".toRegex().find(url)?.groupValues ?: return null
+    val urlMatches = """(https?://.*\.2chan\.net)/([^/]+)/futaba.php\?mode=cat(.*)""".toRegex().find(url)?.groupValues ?: return null
     val server = urlMatches[1]
     val b: String = urlMatches[2]
     val sort: String = urlMatches[3].pick("&sort=([^&]+)".toRegex())
@@ -54,7 +54,7 @@ fun analyseCatalogUrl(url: String): Triple<String, String, String>? {
 }
 
 fun getCatalogUrl(url: String, sort:String = ""): String {
-    val root = url.pick("(^https?://.*\\.2chan\\.net/[^/]+)".toRegex())
+    val root = url.pick("""(^https?://.*\.2chan\.net/[^/]+)""".toRegex())
     return "$root/futaba.php?mode=cat${aroundWhenIsNotEmpty("&sort=", sort, "")}"
 }
 
