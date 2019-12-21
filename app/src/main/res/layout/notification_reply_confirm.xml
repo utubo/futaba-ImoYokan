@@ -4,11 +4,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="bottom"
     android:baselineAligned="false"
     tools:ignore="HardcodedText"
     >
-    <TextView style="@style/label" android:textColor="@color/colorAccent" android:text="返信しますか？" />
-
     <TextView style="@style/label" android:text="メールアドレス" />
     <TextView
         android:id="@+id/mail"
@@ -21,8 +20,12 @@
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:breakStrategy="simple"
         android:freezesText="true"
         android:requiresFadingEdge="vertical" />
+
+    <TextView style="@style/label" android:textColor="@color/colorAccent" android:text="返信しますか？" />
+
 </LinearLayout>
