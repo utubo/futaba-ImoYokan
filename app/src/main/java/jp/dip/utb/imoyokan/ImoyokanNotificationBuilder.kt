@@ -89,8 +89,8 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
 
     fun setRemoteViews(contentView: RemoteViews, bigContentView: RemoteViews? = null): ImoyokanNotificationBuilder {
         builder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setCustomBigContentView(contentView)
-            .setCustomContentView(bigContentView ?: contentView)
+            .setCustomContentView(contentView)
+            .setCustomBigContentView(bigContentView ?: contentView)
         return this
     }
 
