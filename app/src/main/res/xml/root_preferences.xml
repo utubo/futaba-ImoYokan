@@ -43,7 +43,7 @@
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
             app:title="返信前に確認する"
             app:key="reply_confirm"
-            app:defaultValue="false" />
+            app:defaultValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="メールアドレス" app:icon="@drawable/ic_mail">

@@ -27,7 +27,7 @@ class Pref private constructor(context: Context) {
     val catalog = Catalog(this)
     val media = Media(this)
     val mail = Mail(this)
-    var confirmBeforeReply: Boolean by prefValue("reply_confirm", false)
+    var confirmBeforeReply: Boolean by prefValue("reply_confirm", true)
     val debugMode: Boolean by prefValue("debug_mode", false)
 
     class Thread(pref: Pref) {
