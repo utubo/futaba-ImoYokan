@@ -1,6 +1,5 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-   >
+    xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory app:title="カタログ" app:icon="@drawable/ic_catalog">
         <ListPreference app:iconSpaceReserved="false"
@@ -34,7 +33,7 @@
 
     <PreferenceCategory app:title="画像" app:icon="@drawable/ic_images">
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
-            app:title="塩のサムネに中間サーバーを使う"
+            app:title="サムネ表示に中間サーバーを使う"
             app:key="media_use_sio_cache_server"
             android:defaultValue="true" />
     </PreferenceCategory>
@@ -72,8 +71,7 @@
             app:title="デバッグモード"
             app:key="debug_mode"
             app:defaultValue="false"
-            app:isPreferenceVisible="false"
-            />
+            app:isPreferenceVisible="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>
