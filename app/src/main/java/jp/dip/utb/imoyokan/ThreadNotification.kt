@@ -10,6 +10,7 @@ import android.text.SpannableStringBuilder
 import android.text.format.DateFormat
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
+import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
@@ -109,6 +110,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // スクロール情報
         var position = 0
         var hasNext = false
+        var gravityTop = false
 
         // 文字表示するところ
         val sb = SpannableStringBuilder()
@@ -121,8 +123,12 @@ class ThreadNotification(private val context: Context, private val intent: Inten
                 intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM),
                 threadInfo.replies.last().index
             )
+            gravityTop = position == 0 || intent.getBooleanExtra(KEY_EXTRA_GRAVITY_TOP, false)
             hasNext = position < threadInfo.replies.last().index
-            threadInfo.replies.filter { it.index <= position }.takeLast(MAX_RES_COUNT).forEach {
+            val resList =
+                if (gravityTop) threadInfo.replies.filter { position <= it.index }.take(MAX_RES_COUNT)
+                else threadInfo.replies.filter { it.index <= position }.takeLast(MAX_RES_COUNT)
+            resList.forEach {
                 val resMail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
                 if (it.index == 0) {
                     sb.addResponse("${it.number}${resMail}", decorateResText(it.text), "\n")
@@ -136,7 +142,13 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             sb.addResponse(title, text, "\n")
         }
         // できたよ
-        view.setTextViewText(R.id.text, sb)
+        if (gravityTop) {
+            view.setViewVisibility(R.id.text, View.GONE)
+            view.setViewVisibility(R.id.text_gravity_top, View.VISIBLE)
+            view.setTextViewText(R.id.text_gravity_top, sb)
+        } else {
+            view.setTextViewText(R.id.text, sb)
+        }
 
         // スレ画像
         view.setOnClickOrGone(R.id.large_icon, threadInfo.imageUrls.isNotEmpty()) {
@@ -148,8 +160,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickOrGone(R.id.images, 1 < threadInfo.imageUrls.size) { builder.createViewImageIntent(threadInfo.imageUrls.maxIndex) }
 
         // いろんなボタン
-        view.setOnClickOrInvisible(R.id.prev, 0 < position) { builder.createThreadIntent(position.prev) }
-        view.setOnClickOrInvisible(R.id.next, hasNext) { builder.createThreadIntent(position.next) }
+        view.setOnClickOrInvisible(R.id.prev, 0 < position) { builder.createThreadIntent(position.prev, KEY_EXTRA_GRAVITY_TOP to gravityTop) }
+        view.setOnClickOrInvisible(R.id.next, hasNext || gravityTop) { builder.createThreadIntent(position.next, KEY_EXTRA_GRAVITY_TOP to (gravityTop && hasNext)) }
+        view.setOnClickOrInvisible(R.id.top, 0 < position) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
         view.setOnClickOrGone(R.id.clear_mail, formMail.isNotBlank()) { builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_CLEAR_MAIL)}
 
