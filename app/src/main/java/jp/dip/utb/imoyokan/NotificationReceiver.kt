@@ -34,10 +34,28 @@ class NotificationReceiver : BroadcastReceiver() {
 
         val pref = Pref.getInstance(context)
 
-        // メアドクリア
-        if (action == INTENT_ACTION_CLEAR_MAIL) {
-            pref.mail.set("", pref.lastThreadUrl)
-            ThreadNotification(context, intent).notifyCache("メールアドレスをクリアしました")
+        // メアド設定画面表示
+        if (action == INTENT_ACTION_GO_SET_MAIL) {
+            MailSettingNotification(context, intent).notifyThis()
+            return
+        }
+
+        // メアド設定
+        if (action == INTENT_ACTION_SET_MAIL) {
+            var mail = if (intent.hasExtra(KEY_EXTRA_MAIL)) intent.str(KEY_EXTRA_MAIL) else RemoteInput.getResultsFromIntent(intent).getString(KEY_EXTRA_MAIL, "")
+            mail = mail.replace("^[@＠]".toRegex(), "") // 返信欄での直接設定と統一するため先頭＠は削除しておく
+            pref.mail.set(mail, pref.lastThreadUrl)
+            // スレッドに戻ったほうがタップ回数少ないけど解りづらいかな…
+            //when {
+            //    mail.isBlank() -> {
+            //        ThreadNotification(context, intent).notifyCache("メールアドレスをクリアしました")
+            //    }
+            //    else -> {
+            //        ThreadNotification(context, intent).notifyCache("メールアドレスをセットしました", mail)
+            //    }
+            //}
+            intent.putExtra(KEY_EXTRA_MAIL, mail)
+            MailSettingNotification(context, intent).notifyThis()
             return
         }
 
@@ -88,6 +106,7 @@ class NotificationReceiver : BroadcastReceiver() {
             }
         }
     }
+
 
     private fun pickMailAndText(defaultMail: String, text: String, pref: Pref): Pair<String, String> {
         val regex = when {
