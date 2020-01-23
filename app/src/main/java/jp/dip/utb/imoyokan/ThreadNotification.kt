@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
+import androidx.core.content.ContextCompat.getColor
 import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -165,6 +166,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickOrInvisible(R.id.top, 0 < position) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
         view.setOnClickPendingIntent(R.id.mail, builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
+        if (formMail.isNotBlank()) {
+            view.setInt(R.id.mail, "setColorFilter", getColor(context, R.color.colorPrimary))
+        }
 
         // 表示するよ！
         builder

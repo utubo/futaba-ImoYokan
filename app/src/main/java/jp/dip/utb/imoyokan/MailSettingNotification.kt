@@ -45,7 +45,6 @@ class MailSettingNotification(private val context: Context, private val intent: 
             .build()
         builder.addAction(replyAction)
 
-
         // クリアボタン
         if (mail.isNotBlank()) {
             val clearAction = NotificationCompat.Action

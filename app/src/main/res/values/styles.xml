@@ -9,12 +9,18 @@
 
     <!-- common -->
     <style name="share_button">
-        <item name="android:layout_width">20dp</item>
-        <item name="android:layout_height">20dp</item>
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
         <item name="android:layout_gravity">end|bottom</item>
         <item name="android:paddingLeft">4dp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:src">@drawable/ic_share</item>
+    </style>
+    <style name="back_image">
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:layout_gravity">end|top</item>
+        <item name="android:alpha">0.4</item>
     </style>
 
     <!-- Image notification -->
