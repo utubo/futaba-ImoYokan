@@ -91,7 +91,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val replyTitle = if (formMail.isNotEmpty()) "返信 ${STR_MAIL_LABEL}${formMail}" else "返信"
-        val replyLabel = if (formMail.isNotEmpty()) "@${formMail}" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
+        val replyLabel = if (formMail.isNotEmpty()) "ﾒｰﾙｱﾄﾞﾚｽ [${formMail}]" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
         val remoteInput = RemoteInput.Builder(KEY_EXTRA_REPLY_TEXT)
             .setLabel(replyLabel)
             .build()
@@ -111,12 +111,13 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // スクロール情報
         var position = 0
         var hasNext = false
-        var gravityTop = false
+        val gravityTop: Boolean
 
         // 文字表示するところ
         val sb = SpannableStringBuilder()
         if (threadInfo.isFailed()) {
             // 読み込みに失敗していた場合
+            gravityTop = true
             sb.addResponse(threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", threadInfo.failedMessage, "")}")
         } else {
             // レス
@@ -163,7 +164,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // いろんなボタン
         view.setOnClickOrInvisible(R.id.prev, 0 < position) { builder.createThreadIntent(position.prev, KEY_EXTRA_GRAVITY_TOP to gravityTop) }
         view.setOnClickOrInvisible(R.id.next, hasNext || gravityTop) { builder.createThreadIntent(position.next, KEY_EXTRA_GRAVITY_TOP to (gravityTop && hasNext)) }
-        view.setOnClickOrInvisible(R.id.top, 0 < position) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
+        view.setOnClickOrGone(R.id.top, 0 < position) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
         view.setOnClickPendingIntent(R.id.mail, builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
         if (formMail.isNotBlank()) {

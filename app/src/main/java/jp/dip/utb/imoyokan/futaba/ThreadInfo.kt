@@ -50,7 +50,7 @@ class ThreadInfoBuilder {
         // HTML読み込み
         val res = HttpRequest(url).get()
         if (res.code() != 200) {
-            threadInfo.failedMessage = res.message()
+            threadInfo.failedMessage = "${res.code()} ${res.message()}"
             return threadInfo
         }
         val html = res.bodyString(FUTABA_CHARSET)
