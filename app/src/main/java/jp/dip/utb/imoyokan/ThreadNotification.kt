@@ -138,6 +138,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
                     sb.addResponse("${it.index}${resMail}", decorateResText(it.text))
                 }
             }
+            sb.applyFontSize(pref.thread.fontSize)
         }
         // メッセージ
         if (title.isNotBlank() || text.isNotBlank()) {
@@ -238,6 +239,12 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         }
         this.setSpan(RelativeSizeSpan(0.7f), 0, this.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return this
+    }
+
+    private fun SpannableStringBuilder.applyFontSize(size: Float) {
+        if (size != 1f) {
+            this.setSpan(RelativeSizeSpan(size), 0, this.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
     }
 
 }

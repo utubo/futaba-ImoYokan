@@ -19,6 +19,13 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="スレッド" app:icon="@drawable/ic_thread">
+        <ListPreference app:iconSpaceReserved="false"
+            app:title="フォントサイズ"
+            app:key="thread_font_size"
+            app:defaultValue="1"
+            app:entries="@array/thread_font_size_entries"
+            app:entryValues="@array/thread_font_size_values"
+            app:useSimpleSummaryProvider="true" />
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
             app:title="改行を詰める"
             app:key="thread_remove_line_breaks"

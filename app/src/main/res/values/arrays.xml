@@ -28,4 +28,16 @@
         <item>1時間だけ保持する</item>
         <item>2時間だけ保持する</item>
     </string-array>
+    <string-array name="thread_font_size_values">
+        <item>0.6</item>
+        <item>0.8</item>
+        <item>1</item>
+        <item>1.2</item>
+    </string-array>
+    <string-array name="thread_font_size_entries">
+        <item>極小</item>
+        <item>小</item>
+        <item>中(デフォルト)</item>
+        <item>大</item>
+    </string-array>
 </resources>

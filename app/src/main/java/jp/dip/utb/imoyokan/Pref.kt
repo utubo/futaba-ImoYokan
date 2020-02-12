@@ -34,6 +34,7 @@ class Pref private constructor(context: Context) {
         var removeLineBreaks: Boolean by pref.prefValue("thread_remove_line_breaks", true)
         var shortKitaa: Boolean by pref.prefValue("thread_short_kitaa", false)
         var autoSmallFont: Boolean by pref.prefValue("thread_auto_small_font", false)
+        var fontSize: Float by pref.prefValue("thread_font_size", 1.0f)
     }
 
     class Catalog(pref: Pref) {
@@ -100,6 +101,7 @@ class Pref private constructor(context: Context) {
                 is Int -> pref.getString(id, default.toString())?.toInt() // getIntは使い物にならないのでStringで保存するしかない
                 is String -> pref.getString(id, default)
                 is Boolean -> pref.getBoolean(id, default)
+                is Float -> pref.getString(id, default.toString())?.toFloat()
                 else -> default
             }
             cache[id] = value as Any
@@ -126,6 +128,7 @@ class Pref private constructor(context: Context) {
                 is Int -> e.putString(it.key, (it.value as Int).toString())
                 is String -> e.putString(it.key, it.value as String)
                 is Boolean -> e.putBoolean(it.key, it.value as Boolean)
+                is Float -> e.putString(it.key, (it.value as Float).toString())
                 else -> { }
             }
         }
