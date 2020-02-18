@@ -8,7 +8,6 @@ import jp.dip.utb.imoyokan.*
 
 @Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
 const val RES_INTERVAL = 36100000u
-const val BOUNDARY= "BOUNDARY_ImoYokan_BOUNDARY"
 const val URL_CACHEMT = "bin/cachemt7.php"
 const val USER_AGENT = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
 val FUTABA_CHARSET = charset("windows-31j")

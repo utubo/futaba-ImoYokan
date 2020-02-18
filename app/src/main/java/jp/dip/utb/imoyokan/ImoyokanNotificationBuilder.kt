@@ -20,6 +20,7 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.RemoteInput
 import jp.dip.utb.imoyokan.futaba.getCatalogUrl
 import java.util.*
 import kotlin.collections.HashMap
@@ -193,6 +194,23 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     fun getLastNotification(): StatusBarNotification? {
         val sv = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         return sv.activeNotifications.firstOrNull { it.packageName == context.packageName }
+    }
+
+    fun addRemoteInput(icon: Int, label: String, placeHolder: String, key: String, intent: Intent) {
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            REQUEST_CODE_REPLY_MIN + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val remoteInput = RemoteInput.Builder(key)
+            .setLabel(placeHolder)
+            .build()
+        val action = NotificationCompat.Action
+            .Builder(icon, label, pendingIntent)
+            .addRemoteInput(remoteInput)
+            .build()
+        this.addAction(action)
     }
 
 }

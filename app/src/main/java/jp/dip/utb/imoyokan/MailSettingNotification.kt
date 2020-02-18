@@ -1,14 +1,11 @@
 package jp.dip.utb.imoyokan
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import androidx.core.app.RemoteInput
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 class MailSettingNotification(private val context: Context, private val intent: Intent) {
@@ -30,20 +27,13 @@ class MailSettingNotification(private val context: Context, private val intent: 
 
         // アクションボタンを登録
         // メール入力欄
-        val mailPendingIntent = PendingIntent.getBroadcast(
-            context,
-            REQUEST_CODE_REPLY_MIN + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
-            builder.createImoyokanIntent().putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_SET_MAIL),
-            PendingIntent.FLAG_UPDATE_CURRENT
+        builder.addRemoteInput(
+            android.R.drawable.ic_menu_edit,
+            "変更",
+            "ﾒｰﾙｱﾄﾞﾚｽを入力してください",
+            KEY_EXTRA_MAIL,
+            builder.createImoyokanIntent().putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_SET_MAIL)
         )
-        val remoteInput = RemoteInput.Builder(KEY_EXTRA_MAIL)
-            .setLabel("ﾒｰﾙｱﾄﾞﾚｽを入力してください")
-            .build()
-        val replyAction = NotificationCompat.Action
-            .Builder(android.R.drawable.ic_menu_send, "設定", mailPendingIntent)
-            .addRemoteInput(remoteInput)
-            .build()
-        builder.addAction(replyAction)
 
         // クリアボタン
         if (mail.isNotBlank()) {
@@ -61,13 +51,8 @@ class MailSettingNotification(private val context: Context, private val intent: 
             builder.addAction(undoAction)
         }
 
-        // 戻るボタン
-        builder
-            .addAction(NotificationCompat.Action.Builder(
-                android.R.drawable.ic_menu_close_clear_cancel,
-                "戻る",
-                builder.createThreadIntent(POSITION_KEEP)).build()
-            )
+        // スレッドボタン
+        builder.addThreadAction(POSITION_KEEP)
 
         // 表示するよ！
         builder

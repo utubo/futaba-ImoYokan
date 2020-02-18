@@ -1,7 +1,6 @@
 package jp.dip.utb.imoyokan
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -12,13 +11,10 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.widget.RemoteViews
-import androidx.core.app.NotificationCompat
-import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat.getColor
 import jp.dip.utb.imoyokan.futaba.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.*
 import kotlin.math.min
 
 
@@ -80,28 +76,22 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val builder = ImoyokanNotificationBuilder(context, intent)
 
         // レス入力欄
-        val replyPendingIntent = PendingIntent.getBroadcast(
-            context,
-            REQUEST_CODE_REPLY_MIN + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
+        val replyLabel = if (formMail.isNotEmpty()) "返信 ${STR_MAIL_LABEL}${formMail}" else "返信"
+        val replyPlaceHolder = if (formMail.isNotEmpty()) "ﾒｰﾙｱﾄﾞﾚｽ [${formMail}]" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
+        builder.addRemoteInput(
+            android.R.drawable.ic_menu_send,
+            replyLabel,
+            replyPlaceHolder,
+            KEY_EXTRA_REPLY_TEXT,
             builder.createImoyokanIntent()
                 .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_REPLY)
                 .putExtra(KEY_EXTRA_URL, threadInfo.url)
                 .putExtra(KEY_EXTRA_MAIL, formMail)
-                .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua),
-            PendingIntent.FLAG_UPDATE_CURRENT
+                .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua)
         )
-        val replyTitle = if (formMail.isNotEmpty()) "返信 ${STR_MAIL_LABEL}${formMail}" else "返信"
-        val replyLabel = if (formMail.isNotEmpty()) "ﾒｰﾙｱﾄﾞﾚｽ [${formMail}]" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
-        val remoteInput = RemoteInput.Builder(KEY_EXTRA_REPLY_TEXT)
-            .setLabel(replyLabel)
-            .build()
-        val replyAction = NotificationCompat.Action
-            .Builder(android.R.drawable.ic_menu_send, replyTitle, replyPendingIntent)
-            .addRemoteInput(remoteInput)
-            .build()
-        // アクションボタンを登録
+
+        // 他のアクションボタン
         builder
-            .addAction(replyAction)
             .addNextPageAction(R.drawable.ic_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url, KEY_EXTRA_POSITION to THREAD_BOTTOM)
             .addCatalogAction()
 
