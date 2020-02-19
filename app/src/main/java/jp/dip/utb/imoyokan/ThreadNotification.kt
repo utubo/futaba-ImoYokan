@@ -79,7 +79,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val replyLabel = if (formMail.isNotEmpty()) "返信 ${STR_MAIL_LABEL}${formMail}" else "返信"
         val replyPlaceHolder = if (formMail.isNotEmpty()) "ﾒｰﾙｱﾄﾞﾚｽ [${formMail}]" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
         builder.addRemoteInput(
-            android.R.drawable.ic_menu_send,
+            R.drawable.ic_edit,
             replyLabel,
             replyPlaceHolder,
             KEY_EXTRA_REPLY_TEXT,

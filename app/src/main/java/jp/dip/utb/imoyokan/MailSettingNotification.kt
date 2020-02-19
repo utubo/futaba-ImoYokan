@@ -28,7 +28,7 @@ class MailSettingNotification(private val context: Context, private val intent: 
         // アクションボタンを登録
         // メール入力欄
         builder.addRemoteInput(
-            android.R.drawable.ic_menu_edit,
+            R.drawable.ic_edit,
             "変更",
             "ﾒｰﾙｱﾄﾞﾚｽを入力してください",
             KEY_EXTRA_MAIL,

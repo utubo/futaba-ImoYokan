@@ -115,7 +115,7 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
 
     fun addThreadAction(position: Int): ImoyokanNotificationBuilder {
         val action = NotificationCompat.Action.Builder(
-            android.R.drawable.ic_menu_close_clear_cancel,
+            R.drawable.ic_thread,
             "スレッド",
             createThreadIntent(position)).build()
         builder.addAction(action)
@@ -124,7 +124,7 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
 
     fun addCatalogAction(): ImoyokanNotificationBuilder {
         val url = pref.lastCatalogUrl.ifBlank { getCatalogUrl(pref.lastThreadUrl) }
-        addNextPageAction(android.R.drawable.ic_menu_gallery, "カタログ", url)
+        addNextPageAction(R.drawable.ic_catalog, "カタログ", url)
         return this
     }
 
