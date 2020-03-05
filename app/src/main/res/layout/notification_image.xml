@@ -33,7 +33,7 @@
             android:layout_marginLeft="@dimen/prev_button_width"
             android:layout_marginRight="@dimen/prev_button_width"
             />
-        <TextView
+        <TextView style="@style/text_view"
             android:id="@+id/message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,11 +49,11 @@
         android:layout_alignParentBottom="true"
         android:gravity="bottom"
         tools:ignore="RelativeOverlap">
-        <TextView
+        <TextView style="@style/text_view"
             android:id="@+id/index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <TextView
+        <TextView style="@style/text_view"
             android:id="@+id/filename"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

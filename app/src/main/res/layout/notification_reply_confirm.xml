@@ -18,7 +18,7 @@
         tools:ignore="HardcodedText"
         >
         <TextView style="@style/label" android:text="メールアドレス" />
-        <TextView
+        <TextView style="@style/text_view"
             android:id="@+id/mail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
             android:freezesText="true"/>
 
         <TextView style="@style/label" android:text="本文" />
-        <TextView
+        <TextView style="@style/text_view"
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"

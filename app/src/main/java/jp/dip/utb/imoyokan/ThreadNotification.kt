@@ -3,7 +3,6 @@ package jp.dip.utb.imoyokan
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.format.DateFormat
@@ -176,7 +175,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             this.append(responseDelimiter)
         }
         val userSpan = SpannableStringBuilder(user)
-        userSpan.setSpan(ForegroundColorSpan(Color.BLACK), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        userSpan.setSpan(ForegroundColorSpan(context.resources.getColor(R.color.textColorPrimary, context.theme)), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         this.append(userSpan)
         if (user.isNotBlank() && text.isNotBlank()) {
             this.append(delimiter)

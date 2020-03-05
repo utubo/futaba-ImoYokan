@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1">
-        <TextView
+        <TextView style="@style/text_view"
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -19,7 +19,7 @@
             android:freezesText="true"
             android:gravity="bottom"
             android:requiresFadingEdge="vertical" />
-        <TextView
+        <TextView style="@style/text_view"
             android:id="@+id/text_gravity_top"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -53,11 +53,11 @@
             android:paddingTop="8dp"
             android:gravity="end"
             tools:ignore="UseCompoundDrawables">
-            <ImageView
+            <ImageView style="@style/icon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_images"/>
-            <TextView
+            <TextView style="@style/text_view"
                 android:id="@+id/images_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
