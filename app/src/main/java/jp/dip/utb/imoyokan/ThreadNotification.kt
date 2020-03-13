@@ -152,8 +152,10 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickOrGone(R.id.images, 1 < threadInfo.imageUrls.size) { builder.createViewImageIntent(threadInfo.imageUrls.maxIndex) }
 
         // いろんなボタン
-        view.setOnClickOrInvisible(R.id.prev, 0 < position) { builder.createThreadIntent(position.prev, KEY_EXTRA_GRAVITY_TOP to gravityTop) }
-        view.setOnClickOrInvisible(R.id.next, hasNext || gravityTop) { builder.createThreadIntent(position.next, KEY_EXTRA_GRAVITY_TOP to (gravityTop && hasNext)) }
+        val prevId = if (pref.reverseScrolling) R.id.next else R.id.prev
+        val nextId = if (pref.reverseScrolling) R.id.prev else R.id.next
+        view.setOnClickOrInvisible(prevId, 0 < position) { builder.createThreadIntent(position.prev, KEY_EXTRA_GRAVITY_TOP to gravityTop) }
+        view.setOnClickOrInvisible(nextId, hasNext || gravityTop) { builder.createThreadIntent(position.next, KEY_EXTRA_GRAVITY_TOP to (gravityTop && hasNext)) }
         view.setOnClickOrGone(R.id.top, 0 < position) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
         view.setOnClickPendingIntent(R.id.mail, builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))

@@ -11,9 +11,10 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 3
-        versionName "6.0"
+        versionName "6.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.debug
+        resValue "string", "versionName", versionName
     }
     buildTypes {
         release {
@@ -23,9 +24,6 @@ android {
         }
         noSgin {
         }
-    }
-    applicationVariants.all { variant ->
-        variant.resValue "string", "versionName", variant.versionName
     }
 }
 

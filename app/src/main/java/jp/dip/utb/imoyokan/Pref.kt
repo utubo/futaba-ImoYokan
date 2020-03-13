@@ -28,6 +28,7 @@ class Pref private constructor(context: Context) {
     val media = Media(this)
     val mail = Mail(this)
     var confirmBeforeReply: Boolean by prefValue("reply_confirm", true)
+    var reverseScrolling: Boolean by prefValue("reverse_scrolling", false)
     val debugMode: Boolean by prefValue("debug_mode", false)
 
     class Thread(pref: Pref) {
