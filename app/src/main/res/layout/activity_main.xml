@@ -43,6 +43,13 @@
             android:onClick="onClickSettings"
             android:drawableStart="@drawable/ic_settings"
             android:text="設定"/>
+        <TextView
+            style="@style/ghost_button"
+            android:id="@+id/update_button"
+            android:textColor="@color/colorAccent"
+            android:onClick="onClickUpdate"
+            android:visibility="gone"
+            android:text="新しいバージョンがあります" />
         <Space style="@style/top_page_icon_space" />
     </LinearLayout>
 

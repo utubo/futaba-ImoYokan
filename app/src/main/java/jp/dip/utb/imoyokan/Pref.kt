@@ -29,6 +29,7 @@ class Pref private constructor(context: Context) {
     val mail = Mail(this)
     var confirmBeforeReply: Boolean by prefValue("reply_confirm", true)
     var reverseScrolling: Boolean by prefValue("reverse_scrolling", false)
+    var updateCheck: Boolean by prefValue("update_check", true)
     val debugMode: Boolean by prefValue("debug_mode", false)
 
     class Thread(pref: Pref) {

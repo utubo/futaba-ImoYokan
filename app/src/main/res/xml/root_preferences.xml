@@ -82,9 +82,13 @@
             <intent android:targetPackage="jp.dip.utb.imoyokan" android:targetClass="jp.dip.utb.imoyokan.LicenseActivity"/>
         </Preference>
         <Preference android:title="配布ページ" app:iconSpaceReserved="false">
-            <intent android:action="android.intent.action.VIEW" android:data="https://x123.x0.to/~imoyokan/" />
+            <intent android:action="android.intent.action.VIEW" android:data="@string/home_page_url" />
         </Preference>
         <Preference android:title="バージョン" android:summary="@string/versionName" android:key="version" app:iconSpaceReserved="false"/>
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="起動時に最新版を確認する"
+            app:key="update_check"
+            app:defaultValue="true" />
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
             app:title="デバッグモード"
             app:key="debug_mode"

@@ -2,4 +2,6 @@
     <string name="app_name">ImoYokan</string>
     <string name="title_activity_settings">設定</string>
     <string name="title_activity_license">ライセンス</string>
+    <string name="home_page_url">https://x123.x0.to/~imoyokan/</string>
+    <string name="apk_url">https://x123.x0.to/~imoyokan/imoyokan.apk</string>
 </resources>
