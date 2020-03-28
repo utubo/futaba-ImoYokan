@@ -14,8 +14,14 @@ class NotificationReceiver : BroadcastReceiver() {
 
     @ExperimentalUnsignedTypes
     override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.getIntExtra(KEY_EXTRA_ACTION, INTENT_ACTION_RELOAD_URL)
+        val pref = Pref.getInstance(context)
         val url = intent.str(KEY_EXTRA_URL)
+        if (url.isNotBlank()) {
+            pref.lastUrl = url
+            pref.apply()
+        }
+
+        val action = intent.getIntExtra(KEY_EXTRA_ACTION, INTENT_ACTION_RELOAD_URL)
 
         // URL表示
         if (action == INTENT_ACTION_RELOAD_URL) {
@@ -31,8 +37,6 @@ class NotificationReceiver : BroadcastReceiver() {
             ImageNotification(context, intent).notifyThis()
             return
         }
-
-        val pref = Pref.getInstance(context)
 
         // メアド設定画面表示
         if (action == INTENT_ACTION_GO_SET_MAIL) {

@@ -42,6 +42,7 @@ class Cache(val context: Context) {
     fun saveThreadInfo(threadInfo: ThreadInfo) {
         save(threadInfo, CACHE_FILENAME)
     }
+
     fun loadCatalogInfo(): CatalogInfo? {
         return load(CATALOG_CACHE_FILENAME)
     }
