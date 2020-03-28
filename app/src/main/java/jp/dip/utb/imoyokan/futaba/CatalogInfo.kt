@@ -3,8 +3,9 @@ package jp.dip.utb.imoyokan.futaba
 import jp.dip.utb.imoyokan.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.Serializable
 
-class CatalogInfo(val url: String) {
+data class CatalogInfo(val url: String): Serializable {
     val items: ArrayList<CatalogItem> = ArrayList()
     val server: String
     val b: String
@@ -24,13 +25,13 @@ class CatalogInfo(val url: String) {
     }
 }
 
-class CatalogItem(
+data class CatalogItem (
     val href: String,
     val img: String?,
     val text: String,
     @Suppress("unused")
     val count: Int
-)
+) : Serializable
 
 class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, private val rows: Int = 3, private val textLength: Int = 4) {
 

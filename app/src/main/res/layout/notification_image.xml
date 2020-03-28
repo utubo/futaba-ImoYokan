@@ -42,22 +42,22 @@
             android:layout_centerInParent="true"
             tools:ignore="RelativeOverlap" />
     </RelativeLayout>
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:gravity="bottom"
         tools:ignore="RelativeOverlap">
         <TextView style="@style/text_view"
             android:id="@+id/index"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom" />
         <TextView style="@style/text_view"
             android:id="@+id/filename"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />
-        <ImageView android:id="@+id/share" style="@style/share_button" android:layout_alignParentEnd="true" />
-    </RelativeLayout>
+            android:layout_gravity="center|bottom" />
+        <ImageView style="@style/share_button" android:id="@+id/share"/>
+    </FrameLayout>
 </RelativeLayout>

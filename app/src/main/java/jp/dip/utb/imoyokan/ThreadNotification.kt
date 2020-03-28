@@ -41,7 +41,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val cache = Cache(context)
         val useCache = intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM) != THREAD_BOTTOM
         if (useCache) {
-            threadInfo = cache.loadFromCache()
+            threadInfo = cache.loadThreadInfo()
         }
         // キャッシュを使わない or キャッシュが見つからないならインターネットから読み込む
         val pref = Pref.getInstance(context)
@@ -51,7 +51,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             }
             threadInfo = builder.build()
             if (threadInfo.lastModified != pref.lastThreadModified || threadInfo.url != pref.lastThreadUrl) {
-                cache.saveToCache(threadInfo)
+                cache.saveThreadInfo(threadInfo)
             }
         }
         // 読み込んだ情報を保存

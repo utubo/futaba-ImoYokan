@@ -7,7 +7,7 @@
     tools:ignore="ContentDescription"
     >
 
-    <ImageView style="@style/back_image" android:src="@drawable/ic_mail" android:id="@+id/back_image"/>
+    <ImageView style="@style/background_image" android:src="@drawable/ic_mail"/>
 
     <LinearLayout
         android:orientation="vertical"

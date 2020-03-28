@@ -27,7 +27,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
         val builder = ImoyokanNotificationBuilder(context, intent)
 
         // スレッド情報を取得
-        val threadInfo = Cache(context).loadFromCache()
+        val threadInfo = Cache(context).loadThreadInfo()
         if (threadInfo == null || threadInfo.imageUrls.isEmpty()) {
             builder.notifyMessage("画像読込失敗", "レスからURLの抽出に失敗")
             return

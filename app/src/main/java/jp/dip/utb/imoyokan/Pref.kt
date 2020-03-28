@@ -42,6 +42,7 @@ class Pref private constructor(context: Context) {
         var cols: Int by pref.prefValue("catalog_cols", 7)
         var rows: Int by pref.prefValue("catalog_rows", 4)
         var sort: String by pref.prefValue("catalog_sort", "")
+        var enableScrolling: Boolean by pref.prefValue("catalog_enable_scrolling", true)
     }
 
     class Media(pref: Pref) {

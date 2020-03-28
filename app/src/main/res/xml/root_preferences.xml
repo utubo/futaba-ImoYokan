@@ -16,6 +16,11 @@
             app:entries="@array/catalog_rows"
             app:entryValues="@array/catalog_rows"
             app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="スクロールボタン"
+            app:key="catalog_enable_scrolling"
+            app:defaultValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="スレッド" app:icon="@drawable/ic_thread">
