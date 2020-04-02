@@ -34,9 +34,17 @@ data class ThreadInfo(val url: String) : Serializable {
 
 }
 
-data class FromParams(var ptua: String = "") : Serializable
+data class FromParams(
+    var ptua: String = ""
+) : Serializable
 
-data class ResInfo(val index: Int, val number: String, val text: String, val mail: String = "") : Serializable
+data class ResInfo(
+    val index: Int,
+    val number: String,
+    val text: String,
+    val mail: String = "",
+    val deleted: Boolean = false
+) : Serializable
 
 class ThreadInfoBuilder {
     var url: String = ""
@@ -59,7 +67,9 @@ class ThreadInfoBuilder {
         var index = 0
         var resNumber = ""
         var resMail = ""
+        var resDeleted = false
         var isPre = true
+        var tryOldType = true
         val threadMarkerOld = "<input type=checkbox name=\"${threadInfo.res}\""
         val threadMarker = "<span id=\"delcheck${threadInfo.res}\""
         val numberRegexOld =  "<input type=checkbox name=\"(\\d+)\"".toRegex()
@@ -86,7 +96,7 @@ class ThreadInfoBuilder {
                 }
             }
             // 番号とメール(旧)
-            if (line.startsWith("<input type=checkbox")) {
+            if (tryOldType && line.startsWith("<input type=checkbox")) {
                 resNumber = line.pick(numberRegexOld)
                 resMail = line.pick(mailRegex)
                 continue
@@ -95,6 +105,8 @@ class ThreadInfoBuilder {
             if (line.contains("<span id=\"delcheck")) {
                 resNumber = line.pick(numberRegex)
                 resMail = line.pick(mailRegex)
+                resDeleted = line.startsWith("<table border=0 class=deleted>")
+                tryOldType = false
             }
             // レス
             if (line.contains("<blockquote")) {
@@ -108,7 +120,7 @@ class ThreadInfoBuilder {
                         threadInfo.imageUrls.put(getSiokaraUrl(it.value))
                     }
                 }
-                threadInfo.replies.add(ResInfo(index, resNumber, resText.removeHtmlTag(), resMail))
+                threadInfo.replies.add(ResInfo(index, resNumber, resText.removeHtmlTag(), resMail, resDeleted))
                 index ++
                 continue
             }

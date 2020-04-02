@@ -116,9 +116,10 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             )
             gravityTop = position == 0 || intent.getBooleanExtra(KEY_EXTRA_GRAVITY_TOP, false)
             hasNext = position < threadInfo.replies.last().index
+            val showDeleted = pref.thread.showDeleted
             val resList =
-                if (gravityTop) threadInfo.replies.filter { position <= it.index }.take(MAX_RES_COUNT)
-                else threadInfo.replies.filter { it.index <= position }.takeLast(MAX_RES_COUNT)
+                if (gravityTop) threadInfo.replies.filter { position <= it.index && (showDeleted || !it.deleted) }.take(MAX_RES_COUNT)
+                else threadInfo.replies.filter { it.index <= position && (showDeleted || !it.deleted) }.takeLast(MAX_RES_COUNT)
             resList.forEach {
                 val resMail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
                 if (it.index == 0) {

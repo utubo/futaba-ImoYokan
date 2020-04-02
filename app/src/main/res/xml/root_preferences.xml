@@ -42,6 +42,9 @@
             app:title="長文を小さく表示する"
             app:key="thread_auto_small_font" />
         <SwitchPreferenceCompat app:iconSpaceReserved="false"
+            app:title="削除されたレスを表示する"
+            app:key="thread_show_deleted" />
+        <SwitchPreferenceCompat app:iconSpaceReserved="false"
             app:title="スクロールを反転する"
             android:summaryOn="画面下半分タップで上へスクロール"
             android:summaryOff="画面上半分タップで上へスクロール"
