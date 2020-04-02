@@ -11,7 +11,7 @@ data class ThreadInfo(val url: String) : Serializable {
     val res: String
     var form = FromParams()
     var replies = ArrayList<ResInfo>()
-    var timestamp = Date()
+    val timestamp = Date()
     var lastModified = ""
     var failedMessage = ""
     var imageUrls = ArrayList<String>()

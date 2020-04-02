@@ -135,7 +135,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
     private fun ImoyokanNotificationBuilder.addCatalogAction(text: String, catalogInfo: CatalogInfo, sort: String): ImoyokanNotificationBuilder {
         val sb = StringBuilder(text)
         if (catalogInfo.sort == sort) {
-            sb.append(DateFormat.format("(HH:mm:ss)", Date()))
+            sb.append(DateFormat.format("(HH:mm:ss)", catalogInfo.timestamp))
         }
         this.addNextPageAction(android.R.drawable.ic_menu_sort_by_size, sb.toString(), getCatalogUrl(catalogInfo.url, sort))
         return this

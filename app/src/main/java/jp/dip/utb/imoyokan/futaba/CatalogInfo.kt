@@ -4,12 +4,15 @@ import jp.dip.utb.imoyokan.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.Serializable
+import java.util.*
+import kotlin.collections.ArrayList
 
 data class CatalogInfo(val url: String): Serializable {
     val items: ArrayList<CatalogItem> = ArrayList()
     val server: String
     val b: String
     val sort: String
+    val timestamp = Date()
     var failedMessage: String = ""
     val isFailed: Boolean
         get() { return failedMessage.isNotBlank()}
