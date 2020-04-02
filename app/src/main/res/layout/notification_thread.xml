@@ -11,22 +11,12 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1">
-        <TextView style="@style/text_view"
+        <TextView style="@style/replies"
             android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:breakStrategy="simple"
-            android:freezesText="true"
-            android:gravity="bottom"
-            android:requiresFadingEdge="vertical" />
-        <TextView style="@style/text_view"
+            android:gravity="bottom" />
+        <TextView style="@style/replies"
             android:id="@+id/text_gravity_top"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:breakStrategy="simple"
-            android:freezesText="true"
             android:gravity="top"
-            android:requiresFadingEdge="vertical"
             android:visibility="gone" />
         <LinearLayout
             android:layout_width="match_parent"

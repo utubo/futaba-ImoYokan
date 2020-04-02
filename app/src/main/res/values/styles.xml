@@ -67,6 +67,14 @@
         <item name="android:layout_weight">1</item>
         <item name="android:visibility">invisible</item>
     </style>
+    <style name="replies" parent="@style/text_view">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:breakStrategy">simple</item>
+        <item name="android:freezesText">true</item>
+        <item name="android:requiresFadingEdge">vertical</item>
+        <item name="android:overScrollMode">never</item>
+    </style>
 
     <!-- Catalog notification -->
     <dimen name="catalog_item_size">38dp</dimen>

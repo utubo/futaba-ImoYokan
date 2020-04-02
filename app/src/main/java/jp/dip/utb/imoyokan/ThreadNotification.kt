@@ -147,7 +147,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // スレ画像
         view.setOnClickOrGone(R.id.large_icon, threadInfo.imageUrls.isNotEmpty()) {
             val (bitmap, _) = loadImage(toCatalogImageUrl(threadInfo.imageUrls[0]))
-            view.setImageViewAny(R.id.large_icon, bitmap ?: android.R.drawable.ic_delete)
+            view.setImageViewAny(R.id.large_icon, bitmap ?: R.drawable.ic_broken_image)
             builder.createViewImageIntent()
         }
         view.setTextViewText(R.id.images_count, "x${threadInfo.imageUrls.size}")
@@ -158,8 +158,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val nextId = if (pref.reverseScrolling) R.id.prev else R.id.next
         view.setOnClickOrInvisible(prevId, 0 < position         ) { builder.createThreadIntent(position.prev, KEY_EXTRA_GRAVITY_TOP to gravityTop) }
         view.setOnClickOrInvisible(nextId, hasNext || gravityTop) { builder.createThreadIntent(position.next, KEY_EXTRA_GRAVITY_TOP to (gravityTop && hasNext)) }
-        view.setOnClickOrGone(R.id.top,    1 < resList.size && 0 < position ) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
-        view.setOnClickOrGone(R.id.bottom, 1 < resList.size && position == 0) { builder.createThreadIntent(threadInfo.replies.last().index)  }
+        view.setOnClickOrGone(R.id.top,    1 < resList.size && !gravityTop) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
+        view.setOnClickOrGone(R.id.bottom, 1 < resList.size && gravityTop ) { builder.createThreadIntent(threadInfo.replies.last().index)  }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
         view.setOnClickPendingIntent(R.id.mail,  builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
         if (formMail.isNotBlank()) {
