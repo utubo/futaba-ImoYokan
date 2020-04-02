@@ -67,8 +67,9 @@
             android:layout_width="38dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
-        <ImageView android:id="@+id/top" style="@style/share_button" android:src="@drawable/ic_top" android:layout_marginBottom="12dp"/>
-        <ImageView android:id="@+id/mail" style="@style/share_button" android:src="@drawable/ic_mail" android:layout_marginBottom="12dp"/>
-        <ImageView android:id="@+id/share" style="@style/share_button" />
+        <ImageView android:id="@+id/top"    style="@style/share_button" android:src="@drawable/ic_top"  android:layout_marginBottom="12dp"/>
+        <ImageView android:id="@+id/bottom" style="@style/share_button" android:src="@drawable/ic_top"  android:layout_marginBottom="12dp" android:visibility="gone" android:scaleY="-1"/>
+        <ImageView android:id="@+id/mail"   style="@style/share_button" android:src="@drawable/ic_mail" android:layout_marginBottom="12dp"/>
+        <ImageView android:id="@+id/share"  style="@style/share_button" />
     </LinearLayout>
 </LinearLayout>

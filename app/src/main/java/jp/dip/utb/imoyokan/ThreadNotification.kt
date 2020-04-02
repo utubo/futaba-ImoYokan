@@ -103,6 +103,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val gravityTop: Boolean
 
         // 文字表示するところ
+        var resList: List<ResInfo> = listOf()
         val sb = SpannableStringBuilder()
         if (threadInfo.isFailed()) {
             // 読み込みに失敗していた場合
@@ -117,7 +118,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             gravityTop = position == 0 || intent.getBooleanExtra(KEY_EXTRA_GRAVITY_TOP, false)
             hasNext = position < threadInfo.replies.last().index
             val showDeleted = pref.thread.showDeleted
-            val resList =
+            resList =
                 if (gravityTop) threadInfo.replies.filter { position <= it.index && (showDeleted || !it.deleted) }.take(MAX_RES_COUNT)
                 else threadInfo.replies.filter { it.index <= position && (showDeleted || !it.deleted) }.takeLast(MAX_RES_COUNT)
             resList.forEach {
@@ -155,11 +156,12 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // いろんなボタン
         val prevId = if (pref.reverseScrolling) R.id.next else R.id.prev
         val nextId = if (pref.reverseScrolling) R.id.prev else R.id.next
-        view.setOnClickOrInvisible(prevId, 0 < position) { builder.createThreadIntent(position.prev, KEY_EXTRA_GRAVITY_TOP to gravityTop) }
+        view.setOnClickOrInvisible(prevId, 0 < position         ) { builder.createThreadIntent(position.prev, KEY_EXTRA_GRAVITY_TOP to gravityTop) }
         view.setOnClickOrInvisible(nextId, hasNext || gravityTop) { builder.createThreadIntent(position.next, KEY_EXTRA_GRAVITY_TOP to (gravityTop && hasNext)) }
-        view.setOnClickOrGone(R.id.top, 0 < position) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
+        view.setOnClickOrGone(R.id.top,    1 < resList.size && 0 < position ) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
+        view.setOnClickOrGone(R.id.bottom, 1 < resList.size && position == 0) { builder.createThreadIntent(threadInfo.replies.last().index)  }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
-        view.setOnClickPendingIntent(R.id.mail, builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
+        view.setOnClickPendingIntent(R.id.mail,  builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
         if (formMail.isNotBlank()) {
             view.setInt(R.id.mail, "setColorFilter", getColor(context, R.color.colorPrimary))
         }
