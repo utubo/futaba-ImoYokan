@@ -27,9 +27,9 @@ class UtilTest {
 
     @Test
     fun aroundWhenIsNotEmpty() {
-        assertEquals("[A]", aroundWhenIsNotEmpty("[", "A", "]"))
-        assertEquals("", aroundWhenIsNotEmpty("[", null, "]"))
-        assertEquals("", aroundWhenIsNotEmpty("[", "", "]"))
+        assertEquals("[A]", aroundOrEmpty("[", "A", "]"))
+        assertEquals("", aroundOrEmpty("[", null, "]"))
+        assertEquals("", aroundOrEmpty("[", "", "]"))
     }
 
     @Test

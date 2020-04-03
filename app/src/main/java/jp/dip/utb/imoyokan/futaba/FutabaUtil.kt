@@ -50,7 +50,7 @@ fun analyseCatalogUrl(url: String): Triple<String, String, String>? {
 
 fun getCatalogUrl(url: String, sort:String = ""): String {
     val root = url.pick("""(^https?://.*\.2chan\.net/[^/]+)""".toRegex())
-    return "$root/futaba.php?mode=cat${aroundWhenIsNotEmpty("&sort=", sort, "")}"
+    return "$root/futaba.php?mode=cat${aroundOrEmpty("&sort=", sort, "")}"
 }
 
 fun toThumbnailUrl(url: String): String {

@@ -36,7 +36,6 @@ const val THREAD_BOTTOM = 20000
 const val MAX_RES_COUNT = 10
 
 // 記号
-const val STR_MAIL_LABEL = "📧"
 const val STR_HEARTS = "❤"
 
 // ユーティリティ
@@ -87,7 +86,7 @@ fun String.addLineBreakForSingleLineInput(replaceTarget: String = "  "): String 
     return this.replace(replaceTarget, "\n")
 }
 
-fun aroundWhenIsNotEmpty(head: String, text: String?, tail: String): String {
+fun aroundOrEmpty(head: String, text: String?, tail: String): String {
     return if (text?.isNotBlank() == true) (head + text + tail) else ""
 }
 

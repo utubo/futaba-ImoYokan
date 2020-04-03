@@ -77,8 +77,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val builder = ImoyokanNotificationBuilder(context, intent)
 
         // レス入力欄
-        val replyLabel = if (formMail.isNotEmpty()) "返信 ${STR_MAIL_LABEL}${formMail}" else "返信"
-        val replyPlaceHolder = if (formMail.isNotEmpty()) "ﾒｰﾙｱﾄﾞﾚｽ [${formMail}]" else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
+        val mailLabel = aroundOrEmpty("[", formMail, "]")
+        val replyLabel = "返信 $mailLabel"
+        val replyPlaceHolder = if (formMail.isNotEmpty()) mailLabel else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
         builder.addRemoteInput(
             R.drawable.ic_edit,
             replyLabel,
@@ -93,7 +94,12 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
         // 他のアクションボタン
         builder
-            .addNextPageAction(R.drawable.ic_reload, DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp), threadInfo.url, KEY_EXTRA_POSITION to THREAD_BOTTOM)
+            .addNextPageAction(
+                R.drawable.ic_reload,
+                DateFormat.format("更新(HH:mm:ss)", threadInfo.timestamp),
+                threadInfo.url,
+                KEY_EXTRA_POSITION to THREAD_BOTTOM
+            )
             .addCatalogAction()
 
         // ここからカスタムView
@@ -110,7 +116,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         if (threadInfo.isFailed()) {
             // 読み込みに失敗していた場合
             gravityTop = true
-            sb.addResponse(threadInfo.res, "スレッド取得失敗${aroundWhenIsNotEmpty("\n", threadInfo.failedMessage, "")}")
+            sb.addResponse(threadInfo.res, "スレッド取得失敗${aroundOrEmpty("\n", threadInfo.failedMessage, "")}")
         } else {
             // レス
             position = min(
@@ -124,7 +130,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
                 if (gravityTop) threadInfo.replies.filter { position <= it.index && (showDeleted || !it.deleted) }.take(MAX_RES_COUNT)
                 else threadInfo.replies.filter { it.index <= position && (showDeleted || !it.deleted) }.takeLast(MAX_RES_COUNT)
             resList.forEach {
-                val resMail = aroundWhenIsNotEmpty("[", it.mail, "]") // メールは[]で囲う
+                val resMail = aroundOrEmpty("[", it.mail, "]") // メールは[]で囲う
                 if (it.index == 0) {
                     sb.addResponse("${it.number}${resMail}", decorateResText(it.text), "\n")
                 } else {
