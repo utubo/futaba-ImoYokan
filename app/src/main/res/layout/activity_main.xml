@@ -47,6 +47,7 @@
             style="@style/ghost_button"
             android:id="@+id/update_button"
             android:textColor="@color/colorAccent"
+            android:backgroundTint="@color/colorAccent"
             android:onClick="onClickUpdate"
             android:visibility="gone"
             android:text="新しいバージョンがあります" />
