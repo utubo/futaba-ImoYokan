@@ -1,6 +1,5 @@
 package jp.dip.utb.imoyokan.futaba
 
-import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -11,8 +10,6 @@ const val RES_INTERVAL = 36100000u
 const val URL_CACHEMT = "bin/cachemt7.php"
 const val USER_AGENT = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
 val FUTABA_CHARSET = charset("windows-31j")
-const val QUOTE_COLOR = "#DE789922" // TODO: "DE"はAndroidのprimary textの不透明度)
-const val VIDEO_EXT_COLOR = "#DED81B60"
 const val SORT_DEFAULT = ""
 const val SORT_NEWER = "1"
 const val SORT_REPLY = "3"
@@ -22,8 +19,7 @@ const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
 const val IMAGE_EXT = """\.(jpg|jpeg|png|gif|webm|mp4|webp)"""
 val IMAGE_EXT_REGEX = IMAGE_EXT.toRegex()
 
-fun String.toColoredText(br:String = "\n"): Spannable {
-    val quoteColor = Color.parseColor(QUOTE_COLOR)
+fun String.toColoredText(quoteColor: Int, br:String = "\n"): Spannable {
     val sb = SpannableString(this)
     var start = 0
     while (start < sb.length) {

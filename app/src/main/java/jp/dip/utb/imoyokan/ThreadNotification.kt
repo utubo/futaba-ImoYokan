@@ -24,6 +24,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         private const val AUTO_SMALL_FONT_LENGTH = 15 * AUTO_SMALL_FONT_LINES
     }
 
+    private val quoteColor = getColor(context, R.color.textColorQuote)
+
     fun notify(title: String = "", text: String = "") {
         GlobalScope.launch {
             notifyAsync(getThreadInfo(), title,  text)
@@ -193,7 +195,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         return text
             .removeLineBreaks()
             .shortKitaa()
-            .toColoredText()
+            .toColoredText(quoteColor)
             .autoSmallFont()
     }
 

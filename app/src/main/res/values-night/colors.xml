@@ -7,5 +7,8 @@
     <color name="textColor">@android:color/tertiary_text_dark</color>
     <color name="textColorPrimary">@android:color/primary_text_dark</color>
     <color name="textColorSecondary">@android:color/secondary_text_dark</color>
-    <color name="controlColorNormal">@android:color/primary_text_dark</color>
+    <color name="textColorAccent">#D81B60</color>
+    <color name="textColorQuote">#789922</color>
+    <color name="controlColorNormal">@android:color/secondary_text_dark</color>
+    <color name="topPageIcon">#ccffaa</color>
 </resources>

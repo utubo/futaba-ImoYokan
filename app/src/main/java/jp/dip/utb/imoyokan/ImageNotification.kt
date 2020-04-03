@@ -2,7 +2,6 @@ package jp.dip.utb.imoyokan
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -10,7 +9,7 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import jp.dip.utb.imoyokan.futaba.VIDEO_EXT_COLOR
+import androidx.core.content.ContextCompat
 import jp.dip.utb.imoyokan.futaba.toThumbnailUrl
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -64,8 +63,8 @@ class ImageNotification(private val context: Context, private val intent: Intent
         val filenameSpan = SpannableStringBuilder(url.pick("([^/]+$)"))
         val ext = url.pick("(\\.\\w+)$")
         if (".gif.webm.mp4".contains(ext)) {
-            filenameSpan.setSpan(ForegroundColorSpan(
-                Color.parseColor(VIDEO_EXT_COLOR)),
+            filenameSpan.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(context, R.color.textColorAccent)),
                 filenameSpan.indexOf(ext),
                 filenameSpan.length,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE

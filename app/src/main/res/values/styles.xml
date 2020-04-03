@@ -24,11 +24,7 @@
         <item name="android:layout_marginTop">8dp</item>
     </style>
 
-    <style name="icon">
-        <item name="android:tint">@color/controlColorNormal</item>
-    </style>
-
-    <style name="share_button" parent="@style/icon">
+    <style name="share_button">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_gravity">end|bottom</item>
@@ -61,7 +57,7 @@
     </style>
 
     <!-- Thread notification -->
-    <style name="scroll_button" parent="@style/icon">
+    <style name="scroll_button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
@@ -96,11 +92,12 @@
     <!-- Main activity -->
     <dimen name="top_page_item_margin">10dp</dimen>
 
-    <style name="top_page_icon_space">
+    <style name="top_page_icon">
         <item name="android:layout_width">32dp</item>
         <item name="android:layout_height">32dp</item>
         <item name="android:layout_margin">@dimen/top_page_item_margin</item>
-        <item name="android:tint">@color/textColorPrimary</item>
+        <item name="android:tint">@color/topPageIcon</item>
+        <item name="android:alpha">1.4</item>
     </style>
 
     <style name="ghost_button">
@@ -113,6 +110,7 @@
         <item name="android:paddingLeft">20dp</item>
         <item name="android:paddingRight">20dp</item>
         <item name="android:layout_margin">@dimen/top_page_item_margin</item>
+        <item name="android:drawablePadding">8dp</item>
     </style>
 
     <!-- License activity -->
@@ -127,7 +125,7 @@
     <style name="hr">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">#DE999999</item>
+        <item name="android:background">#DE999999</item><!-- めどいのでこれでいいや -->
     </style>
 
 </resources>

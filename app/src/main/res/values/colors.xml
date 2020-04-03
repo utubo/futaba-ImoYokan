@@ -7,5 +7,8 @@
     <color name="textColor">@android:color/tertiary_text_light</color>
     <color name="textColorPrimary">@android:color/primary_text_light</color>
     <color name="textColorSecondary">@android:color/secondary_text_light</color>
-    <color name="controlColorNormal">@android:color/primary_text_light</color>
+    <color name="textColorAccent">#DED81B60</color>
+    <color name="textColorQuote">#DE789922</color>
+    <color name="controlColorNormal">@android:color/tertiary_text_light</color>
+    <color name="topPageIcon">@android:color/tertiary_text_light</color>
 </resources>

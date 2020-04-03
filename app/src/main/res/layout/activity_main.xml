@@ -18,7 +18,7 @@
         android:gravity="center"
         >
         <ImageView
-            style="@style/top_page_icon_space"
+            style="@style/top_page_icon"
             android:src="@drawable/ic_imoyokan"
             tools:ignore="ContentDescription" />
         <TextView
@@ -50,7 +50,7 @@
             android:onClick="onClickUpdate"
             android:visibility="gone"
             android:text="新しいバージョンがあります" />
-        <Space style="@style/top_page_icon_space" />
+        <Space style="@style/top_page_icon" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

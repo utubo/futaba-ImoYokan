@@ -43,7 +43,7 @@
             android:paddingTop="8dp"
             android:gravity="end"
             tools:ignore="UseCompoundDrawables">
-            <ImageView style="@style/icon"
+            <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_images"/>
