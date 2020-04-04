@@ -17,6 +17,7 @@
         android:baselineAligned="false"
         tools:ignore="HardcodedText"
         >
+        <TextView style="@style/label" android:textColor="@color/colorAccent" android:text="返信しますか？" />
         <TextView style="@style/label" android:text="メールアドレス" />
         <TextView style="@style/text_view"
             android:id="@+id/mail"
@@ -24,7 +25,6 @@
             android:layout_height="wrap_content"
             android:breakStrategy="simple"
             android:freezesText="true"/>
-
         <TextView style="@style/label" android:text="本文" />
         <TextView style="@style/text_view"
             android:id="@+id/text"
@@ -34,7 +34,5 @@
             android:breakStrategy="simple"
             android:freezesText="true"
             android:requiresFadingEdge="vertical" />
-
-        <TextView style="@style/label" android:textColor="@color/colorAccent" android:text="返信しますか？" />
     </LinearLayout>
 </FrameLayout>

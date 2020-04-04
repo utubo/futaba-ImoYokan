@@ -77,8 +77,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         val builder = ImoyokanNotificationBuilder(context, intent)
 
         // レス入力欄
-        val mailLabel = aroundOrEmpty("[", formMail, "]")
-        val replyLabel = "返信 $mailLabel"
+        val mailLabel = aroundOrEmpty("@", formMail, "") // "✉"もありかなぁ…
+        val replyLabel = "返信$mailLabel"
         val replyPlaceHolder = if (formMail.isNotEmpty()) mailLabel else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
         builder.addRemoteInput(
             R.drawable.ic_edit,
