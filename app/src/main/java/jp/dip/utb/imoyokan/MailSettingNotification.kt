@@ -52,7 +52,7 @@ class MailSettingNotification(private val context: Context, private val intent: 
         }
 
         // スレッドボタン
-        builder.addThreadAction(POSITION_KEEP)
+        builder.addThreadAction("スレッドに戻る")
 
         // 表示するよ！
         builder

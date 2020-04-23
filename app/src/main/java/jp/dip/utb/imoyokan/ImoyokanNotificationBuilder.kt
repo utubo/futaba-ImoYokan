@@ -113,10 +113,10 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         }
     }
 
-    fun addThreadAction(position: Int): ImoyokanNotificationBuilder {
+    fun addThreadAction(text: String = "スレッド", position: Int = POSITION_KEEP): ImoyokanNotificationBuilder {
         val action = NotificationCompat.Action.Builder(
             R.drawable.ic_thread,
-            "スレッド",
+            text,
             createThreadIntent(position)).build()
         builder.addAction(action)
         return this

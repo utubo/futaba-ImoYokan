@@ -36,7 +36,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
         val view = RemoteViews(context.packageName, R.layout.notification_image)
         builder
             .setRemoteViews(view)
-            .addThreadAction(POSITION_KEEP)
+            .addThreadAction()
             .addCatalogAction()
 
         // 前後ボタン
