@@ -65,6 +65,10 @@ function startsWith($haystack, $needle) {
 	return (substr($haystack, 0, $length) === $needle);
 }
 
+function createRandomId($prefix = '') {
+	return  $prefix . substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0 , 4);
+}
+
 $sio_root = '';
 switch (true) {
 case startsWith($filename, 'sa') : $sio_root = 'http://www.nijibox6.com/futabafiles/001/src/'; break;
@@ -108,8 +112,9 @@ for ($try_count = 0; $try_count < 2; $try_count ++) {
 	if ($is_video) {
 		// 動画の場合はffmpegでサムネ作成
 		// ここで作ったファイルはcronで消す
-		$temp_mp4 = $cache_filename . str_shuffle('0123456789') . $ext;
-		$temp_jpg = $cache_filename . str_shuffle('0123456789') . '.jpg';
+		$temp_id = createRandomId('.');
+		$temp_mp4 = $cache_filename . $temp_id . $ext;
+		$temp_jpg = $cache_filename . $temp_id . '.jpg';
 		$fw = fopen($temp_mp4, 'w');
 		fwrite($fw, $download_data);
 		fclose($fw);
@@ -128,8 +133,9 @@ for ($try_count = 0; $try_count < 2; $try_count ++) {
 		}
 	} elseif ($ext == '.gif') {
 		// GIFはメモリ上でjpgにすると微妙なので一旦コマンドでjpgにする…そのうちやり方調べる
-		$temp_gif = $cache_filename . str_shuffle('0123456789') . $ext;
-		$temp_jpg = $cache_filename . str_shuffle('0123456789') . '.jpg';
+		$temp_id = createRandomId('.');
+		$temp_gif = $cache_filename . $temp_id . $ext;
+		$temp_jpg = $cache_filename . $temp_id . '.jpg';
 		$fw = fopen($temp_gif, 'w');
 		fwrite($fw, $download_data);
 		fclose($fw);
