@@ -141,8 +141,8 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     /** 設定に保存するまでもないIntentで引きずり回すパラメータをセットしたIntent */
     fun createImoyokanIntent(): Intent {
         return Intent(context, NotificationReceiver::class.java)
-            .putExtra(KEY_EXTRA_POSITION, intent.getIntExtra(KEY_EXTRA_POSITION, pref.thread.defaultPosition))
-            .putExtra(KEY_EXTRA_GRAVITY_TOP, intent.getBooleanExtra(KEY_EXTRA_GRAVITY_TOP, pref.thread.defaultPosition == 0))
+            .putExtra(KEY_EXTRA_POSITION, getExtraThreadPosition())
+            .putExtra(KEY_EXTRA_GRAVITY_TOP, getExtraGravityTop())
             .putExtra(KEY_EXTRA_IMAGE_INDEX, intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0))
     }
 
@@ -212,6 +212,15 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
             .addRemoteInput(remoteInput)
             .build()
         this.addAction(action)
+    }
+
+    // ヘルパー
+    fun getExtraThreadPosition(): Int {
+        return intent.getIntExtra(KEY_EXTRA_POSITION, pref.thread.defaultPosition)
+    }
+
+    fun getExtraGravityTop(): Boolean {
+        return intent.getBooleanExtra(KEY_EXTRA_GRAVITY_TOP, pref.thread.defaultPosition == 0)
     }
 
 }

@@ -118,11 +118,13 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             sb.addResponse(threadInfo.res, "スレッド取得失敗${aroundOrEmpty("\n", threadInfo.failedMessage, "")}")
         } else {
             // レス
-            position = min(
-                intent.getIntExtra(KEY_EXTRA_POSITION, pref.thread.defaultPosition),
-                threadInfo.replies.last().index
-            )
-            gravityTop = position == 0 || intent.getBooleanExtra(KEY_EXTRA_GRAVITY_TOP, false)
+            val extraPosition = builder.getExtraThreadPosition()
+            position = min(extraPosition, threadInfo.replies.last().index)
+            gravityTop = when {
+                position == 0 -> true
+                extraPosition == THREAD_BOTTOM -> false
+                else -> builder.getExtraGravityTop()
+            }
             hasNext = position < threadInfo.replies.last().index
             val showDeleted = pref.thread.showDeleted
             resList =
@@ -166,7 +168,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickOrInvisible(prevId, 0 < position         ) { builder.createThreadIntent(position.prev, KEY_EXTRA_GRAVITY_TOP to gravityTop) }
         view.setOnClickOrInvisible(nextId, hasNext || gravityTop) { builder.createThreadIntent(position.next, KEY_EXTRA_GRAVITY_TOP to (gravityTop && hasNext)) }
         view.setOnClickOrGone(R.id.top,    1 < resList.size && !gravityTop) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
-        view.setOnClickOrGone(R.id.bottom, 1 < resList.size && gravityTop ) { builder.createThreadIntent(threadInfo.replies.last().index)  }
+        view.setOnClickOrGone(R.id.bottom, 1 < resList.size && gravityTop ) { builder.createThreadIntent(threadInfo.replies.last().index, KEY_EXTRA_GRAVITY_TOP to false) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
         view.setOnClickPendingIntent(R.id.mail,  builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
         if (formMail.isNotBlank()) {
