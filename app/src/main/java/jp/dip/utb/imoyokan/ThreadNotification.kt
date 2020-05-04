@@ -41,8 +41,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         var threadInfo: ThreadInfo? = null
         // まずはキャッシュから
         val cache = Cache(context)
-        val useCache = intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM) != THREAD_BOTTOM
-        if (useCache) {
+        if (intent.getBooleanExtra(KEY_EXTRA_USE_CACHE, false)) {
             threadInfo = cache.loadThreadInfo()
         }
         // キャッシュを使わない or キャッシュが見つからないならインターネットから読み込む
@@ -120,7 +119,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         } else {
             // レス
             position = min(
-                intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM),
+                intent.getIntExtra(KEY_EXTRA_POSITION, pref.thread.defaultPosition),
                 threadInfo.replies.last().index
             )
             gravityTop = position == 0 || intent.getBooleanExtra(KEY_EXTRA_GRAVITY_TOP, false)

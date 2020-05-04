@@ -79,6 +79,8 @@ class NotificationReceiver : BroadcastReceiver() {
         }
         if (text.isBlank()) {
             // 本文がないときはメールアドレス設定の結果を表示するスペースがある
+            intent.putExtra(KEY_EXTRA_POSITION, POSITION_KEEP)
+            intent.putExtra(KEY_EXTRA_USE_CACHE, true)
             when {
                 defaultMail == mail -> {
                     ThreadNotification(context, intent).notifyCache("本文が無いよ")
@@ -95,6 +97,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
         // 本文があるなら返信するよ
         text = text.addLineBreakForSingleLineInput()
+        intent.putExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM)
         when {
             pref.confirmBeforeReply && !isConfirmed -> {
                 ReplyConfirmNotification(context, intent).notifyThis(url, intent.str(KEY_EXTRA_PTUA), mail, inputText, text)

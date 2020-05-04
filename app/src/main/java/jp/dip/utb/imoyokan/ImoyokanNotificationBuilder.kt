@@ -108,16 +108,16 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
 
     fun createThreadIntent(position: Int, vararg extras: Pair<String, Any>): PendingIntent {
         return when (position) {
-            POSITION_KEEP -> createNextPageIntent(pref.lastThreadUrl, *extras)
-            else -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_POSITION to position, *extras)
+            POSITION_KEEP -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_USE_CACHE to true, *extras)
+            else -> createNextPageIntent(pref.lastThreadUrl, KEY_EXTRA_USE_CACHE to true, KEY_EXTRA_POSITION to position, *extras)
         }
     }
 
-    fun addThreadAction(text: String = "スレッド", position: Int = POSITION_KEEP): ImoyokanNotificationBuilder {
+    fun addThreadAction(text: String = "スレッド"): ImoyokanNotificationBuilder {
         val action = NotificationCompat.Action.Builder(
             R.drawable.ic_thread,
             text,
-            createThreadIntent(position)).build()
+            createThreadIntent(POSITION_KEEP)).build()
         builder.addAction(action)
         return this
     }
@@ -141,7 +141,8 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     /** 設定に保存するまでもないIntentで引きずり回すパラメータをセットしたIntent */
     fun createImoyokanIntent(): Intent {
         return Intent(context, NotificationReceiver::class.java)
-            .putExtra(KEY_EXTRA_POSITION, intent.getIntExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM))
+            .putExtra(KEY_EXTRA_POSITION, intent.getIntExtra(KEY_EXTRA_POSITION, pref.thread.defaultPosition))
+            .putExtra(KEY_EXTRA_GRAVITY_TOP, intent.getBooleanExtra(KEY_EXTRA_GRAVITY_TOP, pref.thread.defaultPosition == 0))
             .putExtra(KEY_EXTRA_IMAGE_INDEX, intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0))
     }
 

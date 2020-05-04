@@ -39,6 +39,7 @@ class Pref private constructor(context: Context) {
         var autoSmallFont: Boolean by pref.prefValue("thread_auto_small_font", false)
         var fontSize: Float by pref.prefValue("thread_font_size", 1.0f)
         var showDeleted: Boolean by pref.prefValue("thread_show_deleted", false)
+        var defaultPosition: Int by pref.prefValue("thread_default_position", THREAD_BOTTOM)
     }
 
     class Catalog(pref: Pref) {

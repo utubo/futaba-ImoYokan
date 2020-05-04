@@ -25,6 +25,13 @@
 
     <PreferenceCategory app:title="スレッド" app:icon="@drawable/ic_thread">
         <ListPreference app:iconSpaceReserved="false"
+            app:title="スレッドを開いたら"
+            app:key="thread_default_position"
+            app:defaultValue="99999"
+            app:entries="@array/thread_default_position_entries"
+            app:entryValues="@array/thread_default_position_values"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference app:iconSpaceReserved="false"
             app:title="フォントサイズ"
             app:key="thread_font_size"
             app:defaultValue="1"

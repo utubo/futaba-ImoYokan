@@ -40,4 +40,12 @@
         <item>中(デフォルト)</item>
         <item>大</item>
     </string-array>
+    <string-array name="thread_default_position_values">
+        <item>0</item>
+        <item>99999</item>
+    </string-array>
+    <string-array name="thread_default_position_entries">
+        <item>一番上を表示する</item>
+        <item>一番下を表示する(デフォルト)</item>
+    </string-array>
 </resources>

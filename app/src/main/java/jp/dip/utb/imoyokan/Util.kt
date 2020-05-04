@@ -21,6 +21,7 @@ const val KEY_EXTRA_MAIL = "key_extra_mail"
 const val KEY_EXTRA_POSITION = "key_extra_position"
 const val KEY_EXTRA_PTUA = "key_extra_ptua"
 const val KEY_EXTRA_REPLY_TEXT = "key_extra_reply_text"
+const val KEY_EXTRA_USE_CACHE = "key_extra_use_cache"
 const val KEY_EXTRA_URL = "key_extra_url"
 const val INTENT_ACTION_GO_SET_MAIL = 60
 const val INTENT_ACTION_SET_MAIL = 70
@@ -30,7 +31,7 @@ const val INTENT_ACTION_RELOAD_URL = 15000
 const val REQUEST_CODE_REPLY_MIN = 100
 const val REQUEST_CODE_RELOAD_URL_MIN = 15000
 const val POSITION_KEEP = 10000
-const val THREAD_BOTTOM = 20000
+const val THREAD_BOTTOM = 99999
 
 // 表示設定
 const val MAX_RES_COUNT = 10
