@@ -1,0 +1,17 @@
+Options +ExecCGI
+Options +SymLinksIfOwnerMatch
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_URI} ^.*$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^.*$ /~imoyokan_sio_cache_server/thumb.php?filename=%{REQUEST_FILENAME} [T=application/x-httpd-cgi,L]
+
+Order allow,deny
+allow from all
+deny from .ru
+deny from .cn
+deny from .kr
+deny from .ro
+deny from .hr
+deny from .il
+
