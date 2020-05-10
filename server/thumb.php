@@ -14,7 +14,7 @@
 //   ffmpeg .......... 動画のサムネ作成に必要
 // cron設定
 //   # 古いサムネや作業用の動画ファイルを削除
-//   0 3 * * * find <このスクリプトがあるディレクトリ>/thumb/ -name 's*.*' -mtime 1 -exec rm -f {} \;
+//   0 3 * * * find <このスクリプトがあるディレクトリ>/thumb/ -name '*.thumb.*' -mtime +1 -exec rm -f {} \;
 
 // 環境設定
 define('PATH_TO_CONVERT', '/usr/local/bin/convert');
