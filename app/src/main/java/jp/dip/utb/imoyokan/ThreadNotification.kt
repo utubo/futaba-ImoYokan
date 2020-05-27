@@ -51,6 +51,17 @@ class ThreadNotification(private val context: Context, private val intent: Inten
                 this.url = intent.str(KEY_EXTRA_URL).ifBlank { pref.lastThreadUrl }
             }
             threadInfo = builder.build()
+            // 読み込みエラーだったら、できるだけキャッシュから復元する
+            if (threadInfo.isFailed()) {
+                val t = cache.loadThreadInfo()
+                if (t != null && threadInfo.url == t.url) {
+                    t.lastModified = threadInfo.lastModified
+                    t.failedMessage = threadInfo.failedMessage
+                    t.statusCode = threadInfo.statusCode
+                    threadInfo = t
+                }
+            }
+            // キャッシュに保存
             if (threadInfo.lastModified != pref.lastThreadModified || threadInfo.url != pref.lastThreadUrl) {
                 cache.saveThreadInfo(threadInfo)
             }
@@ -107,25 +118,23 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // スクロール情報
         var position = 0
         var hasNext = false
-        val gravityTop: Boolean
+        var gravityTop = true
 
         // 文字表示するところ
         var resList: List<ResInfo> = listOf()
         val sb = SpannableStringBuilder()
-        if (threadInfo.isFailed()) {
-            // 読み込みに失敗していた場合
-            gravityTop = true
-            sb.addResponse(threadInfo.res, "スレッド取得失敗${aroundOrEmpty("\n", threadInfo.failedMessage, "")}")
+        if (threadInfo.replies.isEmpty()) {
+            sb.addResponse(threadInfo.res, "")
         } else {
             // レス
             val extraPosition = builder.getExtraThreadPosition()
             position = min(extraPosition, threadInfo.replies.last().index)
+            hasNext = position < threadInfo.replies.last().index
             gravityTop = when {
                 position == 0 -> true
                 extraPosition == THREAD_BOTTOM -> false
                 else -> builder.getExtraGravityTop()
             }
-            hasNext = position < threadInfo.replies.last().index
             val showDeleted = pref.thread.showDeleted
             resList =
                 if (gravityTop) threadInfo.replies.filter { position <= it.index && (showDeleted || !it.deleted) }.take(MAX_RES_COUNT)
@@ -141,6 +150,10 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             sb.applyFontSize(pref.thread.fontSize)
         }
         // メッセージ
+        when {
+            threadInfo.statusCode == 404 -> sb.addResponse("スレッドが無いよ", "")
+            threadInfo.isFailed() -> sb.addResponse("読込失敗", threadInfo.failedMessage)
+        }
         if (title.isNotBlank() || text.isNotBlank()) {
             sb.addResponse(title, text, "\n")
         }

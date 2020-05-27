@@ -13,6 +13,7 @@ data class ThreadInfo(val url: String) : Serializable {
     var replies = ArrayList<ResInfo>()
     val timestamp = Date()
     var lastModified = ""
+    var statusCode = 200
     var failedMessage = ""
     var imageUrls = ArrayList<String>()
     //↓JSONデータはスレ本文がないので使いにくい
@@ -57,13 +58,13 @@ class ThreadInfoBuilder {
 
         // HTML読み込み
         val res = HttpRequest(url).get()
-        if (res.code() != 200) {
+        threadInfo.lastModified = res.header("last-modified") ?: ""
+        threadInfo.statusCode = res.code()
+        if (threadInfo.statusCode != 200) {
             threadInfo.failedMessage = "${res.code()} ${res.message()}"
             return threadInfo
         }
         val html = res.bodyString(FUTABA_CHARSET)
-        threadInfo.lastModified = res.header("last-modified").toString()
-
         var index = 0
         var resNumber = ""
         var resMail = ""
