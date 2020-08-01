@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorBackground">@android:color/background_dark</color>
-    <color name="textColor">@android:color/tertiary_text_dark</color>
+    <color name="textColor">@android:color/secondary_text_dark</color><!-- tertiary_text_darkは暗すぎる -->
     <color name="textColorPrimary">@android:color/primary_text_dark</color>
     <color name="textColorSecondary">@android:color/secondary_text_dark</color>
     <color name="textColorAccent">#D81B60</color>
