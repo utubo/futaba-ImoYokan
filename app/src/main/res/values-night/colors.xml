@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#77BB33</color>
-    <color name="colorPrimaryDark">#669922</color>
     <color name="colorAccent">#AADD88</color>
     <color name="colorBackground">@android:color/background_dark</color>
     <color name="textColor">@android:color/secondary_text_dark</color><!-- tertiary_text_darkは暗すぎる -->
