@@ -124,7 +124,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         var resList: List<ResInfo> = listOf()
         val sb = SpannableStringBuilder()
         if (threadInfo.replies.isEmpty()) {
-            sb.addResponse(threadInfo.res, "")
+            sb.addResponse(threadInfo.res, "", "")
         } else {
             // レス
             val extraPosition = builder.getExtraThreadPosition()
@@ -140,19 +140,18 @@ class ThreadNotification(private val context: Context, private val intent: Inten
                 if (gravityTop) threadInfo.replies.filter { position <= it.index && (showDeleted || !it.deleted) }.take(MAX_RES_COUNT)
                 else threadInfo.replies.filter { it.index <= position && (showDeleted || !it.deleted) }.takeLast(MAX_RES_COUNT)
             resList.forEach {
-                val resMail = aroundOrEmpty("[", it.mail, "]") // メールは[]で囲う
                 if (it.index == 0) {
-                    sb.addResponse("${it.number}${resMail}", decorateResText(it.text), "\n")
+                    sb.addResponse(it.number, it.mail, decorateResText(it.text), "\n")
                 } else {
-                    sb.addResponse("${it.index}${resMail}", decorateResText(it.text))
+                    sb.addResponse(it.index.toString(), it.mail, decorateResText(it.text))
                 }
             }
             sb.applyFontSize(pref.thread.fontSize)
         }
         // メッセージ
         when {
-            threadInfo.statusCode == 404 -> sb.addResponse("スレッドが無いよ", "")
-            threadInfo.isFailed() -> sb.addResponse("読込失敗", threadInfo.failedMessage)
+            threadInfo.statusCode == 404 -> sb.addResponse("スレッドが無いよ", "", "")
+            threadInfo.isFailed() -> sb.addResponse("読込失敗", "", threadInfo.failedMessage)
         }
         if (title.isNotBlank() || text.isNotBlank()) {
             sb.addResponse(title, text, "\n")
@@ -185,7 +184,7 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
         view.setOnClickPendingIntent(R.id.mail,  builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
         if (formMail.isNotBlank()) {
-            view.setInt(R.id.mail, "setColorFilter", getColor(context, R.color.colorPrimary))
+            view.setInt(R.id.mail, "setColorFilter", getColor(context, R.color.mailIcon))
         }
 
         // 表示するよ！
@@ -195,16 +194,24 @@ class ThreadNotification(private val context: Context, private val intent: Inten
     }
 
     @SuppressLint("NewApi")
-    private fun SpannableStringBuilder.addResponse(user: String, text: CharSequence, delimiter: String = " "): SpannableStringBuilder {
+    private fun SpannableStringBuilder.addResponse(user: String, mail: String, text: CharSequence, delimiter: String = " "): SpannableStringBuilder {
         if (this.isNotEmpty()) {
             val responseDelimiter = SpannableStringBuilder("\n\n")
             responseDelimiter.setSpan(RelativeSizeSpan(0.5f), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             this.append(responseDelimiter)
         }
-        val userSpan = SpannableStringBuilder(user)
-        userSpan.setSpan(ForegroundColorSpan(context.resources.getColor(R.color.textColorPrimary, context.theme)), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        this.append(userSpan)
-        if (user.isNotBlank() && text.isNotBlank()) {
+        if (user.isNotBlank()) {
+            val userSpan = SpannableStringBuilder(user)
+            userSpan.setSpan(ForegroundColorSpan(context.resources.getColor( R.color.textColorPrimary, context.theme)), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            this.append(userSpan)
+        }
+        if (mail.isNotBlank()) {
+            val mailText = "[${mail}]"
+            val mailSpan = SpannableStringBuilder(mailText)
+            mailSpan.setSpan(ForegroundColorSpan(context.resources.getColor(R.color.textColorMail, context.theme)), 0, mailText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            this.append(mailSpan)
+        }
+        if ((user.isNotBlank() || mail.isNotBlank()) && text.isNotBlank()) {
             this.append(delimiter)
         }
         this.append(text)

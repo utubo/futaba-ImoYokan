@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#77BB33</color>
+    <color name="colorPrimaryDark">#557711</color>
+    <color name="colorAccent">#88AA11</color>
     <color name="colorBackground">@android:color/background_light</color>
     <color name="textColor">@android:color/tertiary_text_light</color>
     <color name="textColorPrimary">@android:color/primary_text_light</color>
     <color name="textColorSecondary">@android:color/secondary_text_light</color>
-    <color name="textColorAccent">#DED81B60</color>
     <color name="textColorQuote">#DE789922</color>
+    <color name="textColorMail">#DE3333EE</color>
     <color name="controlColorNormal">@android:color/tertiary_text_light</color>
-    <color name="topPageIcon">@android:color/tertiary_text_light</color>
+    <color name="topPageIcon">#88AA11</color>
+    <color name="mailIcon">#DE3333EE</color>
 </resources>
