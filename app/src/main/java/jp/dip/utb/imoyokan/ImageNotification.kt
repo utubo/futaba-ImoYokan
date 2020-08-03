@@ -64,7 +64,7 @@ class ImageNotification(private val context: Context, private val intent: Intent
         val ext = url.pick("(\\.\\w+)$")
         if (".gif.webm.mp4".contains(ext)) {
             filenameSpan.setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorAccent)),
+                ForegroundColorSpan(context.resourceColor(R.color.colorAccent)),
                 filenameSpan.indexOf(ext),
                 filenameSpan.length,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE

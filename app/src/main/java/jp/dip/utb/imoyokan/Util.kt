@@ -2,9 +2,12 @@
 
 package jp.dip.utb.imoyokan
 
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import com.squareup.picasso.Picasso
 import java.nio.charset.Charset
 
@@ -147,4 +150,9 @@ fun loadImage(url: String?): Pair<Any?, String> {
         Log.d(NOTIFY_NAME, "画像読み込み失敗 url=${url}", e)
         Pair(null, e.message ?: "")
     }
+}
+
+/** @return context.getColor(id: Int) */
+fun Context.resourceColor(@ColorRes id: Int): Int {
+    return ContextCompat.getColor(this, id)
 }

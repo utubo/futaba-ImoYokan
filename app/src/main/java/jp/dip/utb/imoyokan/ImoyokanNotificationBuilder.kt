@@ -38,6 +38,8 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         builder.setSmallIcon(R.drawable.ic_stat_imoyokan)
         if (pref.debugMode) {
             builder.color = Color.YELLOW
+        } else {
+            builder.color = context.resourceColor(R.color.colorPrimary)
         }
     }
 

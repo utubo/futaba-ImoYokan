@@ -202,13 +202,13 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         }
         if (user.isNotBlank()) {
             val userSpan = SpannableStringBuilder(user)
-            userSpan.setSpan(ForegroundColorSpan(context.resources.getColor( R.color.textColorPrimary, context.theme)), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            userSpan.setSpan(ForegroundColorSpan(context.resourceColor(R.color.textColorPrimary)), 0, user.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             this.append(userSpan)
         }
         if (mail.isNotBlank()) {
             val mailText = "[${mail}]"
             val mailSpan = SpannableStringBuilder(mailText)
-            mailSpan.setSpan(ForegroundColorSpan(context.resources.getColor(R.color.textColorMail, context.theme)), 0, mailText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            mailSpan.setSpan(ForegroundColorSpan(context.resourceColor(R.color.textColorMail)), 0, mailText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             this.append(mailSpan)
         }
         if ((user.isNotBlank() || mail.isNotBlank()) && text.isNotBlank()) {
