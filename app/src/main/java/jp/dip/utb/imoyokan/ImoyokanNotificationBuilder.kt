@@ -18,6 +18,8 @@ import android.service.notification.StatusBarNotification
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
+import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
@@ -39,7 +41,7 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         if (pref.debugMode) {
             builder.color = Color.YELLOW
         } else {
-            builder.color = context.resourceColor(R.color.colorPrimary)
+            builder.color = context.resourceColor(R.color.notification)
         }
     }
 
@@ -199,7 +201,7 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         return sv.activeNotifications.firstOrNull { it.packageName == context.packageName }
     }
 
-    fun addRemoteInput(icon: Int, label: String, placeHolder: String, key: String, intent: Intent) {
+    fun addRemoteInput(@DrawableRes icon: Int, label: String, placeHolder: String, key: String, intent: Intent) {
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             REQUEST_CODE_REPLY_MIN + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
@@ -227,7 +229,7 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
 
 }
 
-fun RemoteViews.setOnClickOrGone(id: Int, b: Boolean, f: () -> PendingIntent) {
+fun RemoteViews.setOnClickOrGone(@IdRes id: Int, b: Boolean, f: () -> PendingIntent) {
     if (b) {
         this.setOnClickPendingIntent(id, f())
         this.setViewVisibility(id, View.VISIBLE)
@@ -236,7 +238,7 @@ fun RemoteViews.setOnClickOrGone(id: Int, b: Boolean, f: () -> PendingIntent) {
     }
 }
 
-fun RemoteViews.setOnClickOrInvisible(id: Int, b: Boolean, f: () -> PendingIntent) {
+fun RemoteViews.setOnClickOrInvisible(@IdRes id: Int, b: Boolean, f: () -> PendingIntent) {
     if (b) {
         this.setOnClickPendingIntent(id, f())
         this.setViewVisibility(id, View.VISIBLE)
@@ -245,7 +247,7 @@ fun RemoteViews.setOnClickOrInvisible(id: Int, b: Boolean, f: () -> PendingInten
     }
 }
 
-fun RemoteViews.setImageViewAny(id: Int, image: Any?) {
+fun RemoteViews.setImageViewAny(@DrawableRes id: Int, image: Any?) {
     if (image == null) {
         setImageViewBitmap(id, null)
         return

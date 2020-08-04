@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#708833</color>
     <!-- UI -->
     <color name="colorAccent">#88AA11</color>
+    <color name="notification">#88AA11</color>
     <color name="topPageIcon">#88AA11</color>
     <color name="mailIcon">#DE3333EE</color>
     <!-- Text decoration -->
