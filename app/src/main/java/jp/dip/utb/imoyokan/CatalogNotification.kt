@@ -30,7 +30,7 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         val pref = Pref.getInstance(context)
         val cols = pref.catalog.cols
         val rows = pref.catalog.rows
-        val catalogInfoBuilder = CatalogInfoBuilder(url, cols, if (pref.catalog.enableScrolling) MAX_RAWS else rows)
+        val catalogInfoBuilder = CatalogInfoBuilder(url, cols, if (pref.catalog.enableScrolling) MAX_RAWS else rows, CATALOG_TEXT_LENGTH)
         var catalogInfo: CatalogInfo? = null
         val position = intent.getIntExtra(KEY_EXTRA_CATALOG_POSITION, 0)
         var useCache = intent.hasExtra(KEY_EXTRA_CATALOG_POSITION)
@@ -76,10 +76,30 @@ class CatalogNotification(private val context: Context, private val intent: Inte
                 builder.notifyMessage("カタログ取得失敗", catalogInfo.failedMessage)
                 return
             }
+            // 単語で抽出
+            val filterWords = pref.catalog.filterWords
+            if (filterWords.isNotEmpty()) {
+                val filtered = ArrayList<CatalogItem>()
+                val afters = ArrayList<CatalogItem>()
+                catalogInfo.items.forEach { item ->
+                    val match = filterWords.firstOrNull { it in item.text }
+                    if (match != null) {
+                        item.filtered = true
+                        filtered.add(item)
+                    } else {
+                        afters.add(item)
+                    }
+                }
+                catalogInfo.items.clear()
+                catalogInfo.items.addAll(filtered)
+                catalogInfo.items.addAll(afters)
+            }
+            // キャッシュに保存して終わり
             cache.saveCatalogInfo(catalogInfo)
         }
 
         // 画像読み込み
+        val colorFiltered = context.resourceColor(R.color.filtered)
         val view = RemoteViews(context.packageName, R.layout.notification_catalog)
         val firstIndex = position * cols * rows
         var index = 0
@@ -95,6 +115,10 @@ class CatalogNotification(private val context: Context, private val intent: Inte
             val (bitmap, _) = loadImage(it.img)
             view.setImageViewAny(id, bitmap ?: R.drawable.ic_broken_image)
             view.setViewVisibility(id, VISIBLE)
+            // 監視ワード表示
+            if (it.filtered) {
+                view.setInt(id, "setBackgroundColor", colorFiltered)
+            }
 
             // プログレスバー更新はやらない
             // (notifyしすぎるとAndroidが完了時のnotifyを捨てちゃうのでやめた)

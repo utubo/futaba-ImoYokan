@@ -20,7 +20,11 @@
             app:title="スクロールボタン"
             app:key="catalog_enable_scrolling"
             app:defaultValue="true" />
-
+        <EditTextPreference app:iconSpaceReserved="false"
+            app:title="単語で抽出(カンマ区切り)"
+            app:key="catalog_filter_words"
+            app:defaultValue=""
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="スレッド" app:icon="@drawable/ic_thread">

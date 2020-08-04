@@ -3,6 +3,7 @@
     <!-- UI -->
     <color name="colorAccent">#AADD88</color>
     <color name="topPageIcon">#AADD88</color>
+    <color name="filtered">#AADD88</color>
     <color name="mailIcon">#AADD88</color>
     <!-- Text decoration -->
     <color name="notification">#94B970</color>

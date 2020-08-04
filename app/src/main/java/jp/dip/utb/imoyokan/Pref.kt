@@ -47,6 +47,7 @@ class Pref private constructor(context: Context) {
         var rows: Int by pref.prefValue("catalog_rows", 4)
         var sort: String by pref.prefValue("catalog_sort", "")
         var enableScrolling: Boolean by pref.prefValue("catalog_enable_scrolling", true)
+        var filterWords: List<String> by pref.prefValue("catalog_filter_words", ArrayList<String>())
     }
 
     class Media(pref: Pref) {
@@ -108,6 +109,7 @@ class Pref private constructor(context: Context) {
                 is String -> pref.getString(id, default)
                 is Boolean -> pref.getBoolean(id, default)
                 is Float -> pref.getString(id, default.toString())?.toFloat()
+                is List<*> -> prefValueToStringList(pref.getString(id, default.toString()))
                 else -> default
             }
             cache[id] = value as Any
@@ -135,6 +137,7 @@ class Pref private constructor(context: Context) {
                 is String -> e.putString(it.key, it.value as String)
                 is Boolean -> e.putBoolean(it.key, it.value as Boolean)
                 is Float -> e.putString(it.key, (it.value as Float).toString())
+                is List<*> -> e.putString(it.key, stringListToPrefValue(it.value as List<*>))
                 else -> { }
             }
         }
@@ -142,6 +145,27 @@ class Pref private constructor(context: Context) {
         modified.clear()
     }
 
+    // JSONで保存はできるけど設定画面を作るのが大変なのでCSVで入力してもらうことにする。
+    private fun stringListToPrefValue(list: List<*>): String {
+        return list.joinToString(",")
+        //val json = JSONArray()
+        //list.forEach { json.put(it) }
+        //return json.toString()
+    }
+
+    private fun prefValueToStringList(prefValue: String?): List<String> {
+        if (prefValue == null || prefValue.isBlank()) {
+            return ArrayList<String>()
+        }
+        return prefValue.split("[ 　]*[,，][ 　]*".toRegex())
+        //val json = JSONArray(prefValue)
+        //val list = ArrayList<String>()
+        //val last = json.length() - 1
+        //for (i in 0 .. last) {
+        //    list.add(json.getString(i))
+        //}
+        //return list
+    }
 }
 
 @SuppressLint("SimpleDateFormat")

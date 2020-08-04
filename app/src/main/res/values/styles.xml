@@ -74,12 +74,12 @@
     </style>
 
     <!-- Catalog notification -->
-    <dimen name="catalog_item_size">38dp</dimen>
+    <dimen name="catalog_item_size">40dp</dimen>
     <style name="catalog_item">
         <item name="android:layout_width">@dimen/catalog_item_size</item>
         <item name="android:layout_height">@dimen/catalog_item_size</item>
         <item name="android:visibility">gone</item>
-        <item name="android:layout_margin">1dp</item>
+        <item name="android:padding">1dp</item>
     </style>
     <dimen name="catalog_prev_button_size">28dp</dimen>
     <style name="prev_catalog_button" parent="@style/prev_button">

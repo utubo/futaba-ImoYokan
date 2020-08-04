@@ -33,7 +33,8 @@ data class CatalogItem (
     val img: String?,
     val text: String,
     @Suppress("unused")
-    val count: Int
+    val count: Int,
+    var filtered: Boolean = false // For Imoyokan word filter.
 ) : Serializable
 
 class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, private val rows: Int = 3, private val textLength: Int = 4) {

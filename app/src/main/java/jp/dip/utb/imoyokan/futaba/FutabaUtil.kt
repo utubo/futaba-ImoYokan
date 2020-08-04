@@ -13,6 +13,8 @@ val FUTABA_CHARSET = charset("windows-31j")
 const val SORT_DEFAULT = ""
 const val SORT_NEWER = "1"
 const val SORT_REPLY = "3"
+const val CATALOG_TEXT_LENGTH = 20
+
 val KITAA_REGEX = """ｷﾀ━━+\(ﾟ∀ﾟ\)━━+""".toRegex()
 const val SHORT_KITAA = "ｷﾀ━(ﾟ∀ﾟ)━"
 
