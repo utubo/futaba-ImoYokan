@@ -247,7 +247,7 @@ fun RemoteViews.setOnClickOrInvisible(@IdRes id: Int, b: Boolean, f: () -> Pendi
     }
 }
 
-fun RemoteViews.setImageViewAny(@DrawableRes id: Int, image: Any?) {
+fun RemoteViews.setImageViewAny(@IdRes id: Int, image: Any?) {
     if (image == null) {
         setImageViewBitmap(id, null)
         return
