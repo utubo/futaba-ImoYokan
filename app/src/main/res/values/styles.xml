@@ -103,7 +103,7 @@
 
     <style name="ghost_button">
         <item name="android:background">@drawable/ghost_button</item>
-        <item name="android:backgroundTint">@color/controlColorNormal</item>
+        <item name="android:backgroundTint">@color/textColor</item>
         <item name="android:drawableTint">@color/controlColorNormal</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_width">wrap_content</item>
