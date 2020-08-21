@@ -26,6 +26,7 @@ import androidx.core.app.RemoteInput
 import jp.dip.utb.imoyokan.*
 import jp.dip.utb.imoyokan.futaba.util.getCatalogUrl
 import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.service.NotificationReceiver
 import jp.dip.utb.imoyokan.util.*
 import java.util.*
 import kotlin.collections.HashMap

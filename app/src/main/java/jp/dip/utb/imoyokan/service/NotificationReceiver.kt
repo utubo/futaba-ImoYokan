@@ -1,4 +1,4 @@
-package jp.dip.utb.imoyokan.notification
+package jp.dip.utb.imoyokan.service
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -7,6 +7,7 @@ import androidx.core.app.RemoteInput
 import jp.dip.utb.imoyokan.futaba.presenter.Replier
 import jp.dip.utb.imoyokan.futaba.util.analyseCatalogUrl
 import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.notification.*
 import jp.dip.utb.imoyokan.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

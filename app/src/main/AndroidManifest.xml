@@ -50,7 +50,7 @@
             android:name="jp.dip.utb.imoyokan.activity.LicenseActivity"
             android:label="@string/title_activity_license" />
 
-        <receiver android:name="jp.dip.utb.imoyokan.notification.NotificationReceiver" />
+        <receiver android:name="jp.dip.utb.imoyokan.service.NotificationReceiver" />
         <service
             android:name=".service.QSTileService"
             android:icon="@drawable/ic_stat_imoyokan"
