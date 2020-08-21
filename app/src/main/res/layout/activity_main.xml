@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".activity.MainActivity"
     tools:ignore="HardcodedText">
 
     <LinearLayout
@@ -41,8 +41,8 @@
         <TextView
             style="@style/ghost_button"
             android:onClick="onClickSettings"
-            android:drawableStart="@drawable/ic_settings"
-            android:text="設定"/>
+            app:drawableStartCompat="@drawable/ic_settings"
+            android:text="設定" />
         <TextView
             style="@style/ghost_button"
             android:id="@+id/update_button"

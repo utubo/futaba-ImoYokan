@@ -1,9 +1,15 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.notification
 
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.util.INTENT_ACTION_SET_MAIL
+import jp.dip.utb.imoyokan.util.KEY_EXTRA_ACTION
+import jp.dip.utb.imoyokan.util.KEY_EXTRA_MAIL
+import jp.dip.utb.imoyokan.util.str
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -19,8 +25,14 @@ class MailSettingNotification(private val context: Context, private val intent: 
 
     private fun notifyAsync() {
 
-        val builder = ImoyokanNotificationBuilder(context, intent)
-        val view = RemoteViews(context.packageName, R.layout.notification_mail_setting)
+        val builder =
+            ImoyokanNotificationBuilder(
+                context,
+                intent
+            )
+        val view = RemoteViews(context.packageName,
+            R.layout.notification_mail_setting
+        )
         val mail = intent.str(KEY_EXTRA_MAIL)
 
         view.setTextViewText(R.id.mail, mail.ifBlank { "なし" } )
@@ -32,21 +44,30 @@ class MailSettingNotification(private val context: Context, private val intent: 
             "変更",
             "ﾒｰﾙｱﾄﾞﾚｽを入力してください",
             KEY_EXTRA_MAIL,
-            builder.createImoyokanIntent().putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_SET_MAIL)
+            builder.createImoyokanIntent().putExtra(
+                KEY_EXTRA_ACTION,
+                INTENT_ACTION_SET_MAIL
+            )
         )
 
         // クリアボタン
         if (mail.isNotBlank()) {
             val clearAction = NotificationCompat.Action
-                .Builder(android.R.drawable.ic_menu_delete, "クリア", builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_SET_MAIL, KEY_EXTRA_MAIL to ""))
+                .Builder(android.R.drawable.ic_menu_delete, "クリア", builder.createPendingIntent(
+                    KEY_EXTRA_ACTION to INTENT_ACTION_SET_MAIL, KEY_EXTRA_MAIL to ""))
                 .build()
             builder.addAction(clearAction)
         }
 
         // 復活ボタン
-        if (mail.isBlank() && Pref.getInstance(context).mail.lastNoBlank.isNotBlank()) {
+        if (mail.isBlank() && Pref.getInstance(
+                context
+            ).mail.lastNoBlank.isNotBlank()) {
             val undoAction = NotificationCompat.Action
-                .Builder(android.R.drawable.ic_menu_upload, "復活", builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_SET_MAIL, KEY_EXTRA_MAIL to Pref.getInstance(context).mail.lastNoBlank))
+                .Builder(android.R.drawable.ic_menu_upload, "復活", builder.createPendingIntent(
+                    KEY_EXTRA_ACTION to INTENT_ACTION_SET_MAIL, KEY_EXTRA_MAIL to Pref.getInstance(
+                        context
+                    ).mail.lastNoBlank))
                 .build()
             builder.addAction(undoAction)
         }

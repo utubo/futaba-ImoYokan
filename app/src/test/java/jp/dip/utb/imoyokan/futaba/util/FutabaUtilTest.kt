@@ -1,4 +1,4 @@
-package jp.dip.utb.imoyokan.futaba
+package jp.dip.utb.imoyokan.futaba.util
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

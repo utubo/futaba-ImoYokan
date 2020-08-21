@@ -1,4 +1,4 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.notification
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,7 +11,14 @@ import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.content.ContextCompat.getColor
-import jp.dip.utb.imoyokan.futaba.*
+import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.futaba.model.ResInfo
+import jp.dip.utb.imoyokan.futaba.model.ThreadInfo
+import jp.dip.utb.imoyokan.futaba.presenter.ThreadInfoBuilder
+import jp.dip.utb.imoyokan.futaba.util.*
+import jp.dip.utb.imoyokan.model.Cache
+import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.math.min
@@ -24,7 +31,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         private const val AUTO_SMALL_FONT_LENGTH = 15 * AUTO_SMALL_FONT_LINES
     }
 
-    private val quoteColor = getColor(context, R.color.textColorQuote)
+    private val quoteColor = getColor(context,
+        R.color.textColorQuote
+    )
 
     fun notify(title: String = "", text: String = "") {
         GlobalScope.launch {
@@ -33,7 +42,10 @@ class ThreadNotification(private val context: Context, private val intent: Inten
     }
 
     fun notifyCache(title: String = "", text: String = "") {
-        intent.putExtra(KEY_EXTRA_POSITION, POSITION_KEEP)
+        intent.putExtra(
+            KEY_EXTRA_POSITION,
+            POSITION_KEEP
+        )
         notify(title, text)
     }
 
@@ -47,7 +59,8 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         // キャッシュを使わない or キャッシュが見つからないならインターネットから読み込む
         val pref = Pref.getInstance(context)
         if (threadInfo == null) {
-            val builder = ThreadInfoBuilder().apply {
+            val builder = ThreadInfoBuilder()
+                .apply {
                 this.url = intent.str(KEY_EXTRA_URL).ifBlank { pref.lastThreadUrl }
             }
             threadInfo = builder.build()
@@ -77,17 +90,28 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
         // 「mayのカタログを開く→imgのスレを共有で開く→カタログボタンをタップ」したときもimgのカタログを表示するように頑張る
         val pref = Pref.getInstance(context)
-        val (_, _, sort) = analyseCatalogUrl(pref.lastCatalogUrl) ?: Triple("", "", "") // ソート順は引き継ぐ
-        pref.lastCatalogUrl = getCatalogUrl(threadInfo.url, sort)
+        val (_, _, sort) = analyseCatalogUrl(pref.lastCatalogUrl)
+            ?: Triple("", "", "") // ソート順は引き継ぐ
+        pref.lastCatalogUrl =
+            getCatalogUrl(threadInfo.url, sort)
 
         // フォームデータ
         val formMail = pref.mail.get(threadInfo.url)
 
         // 通知作成開始
-        val builder = ImoyokanNotificationBuilder(context, intent)
+        val builder =
+            ImoyokanNotificationBuilder(
+                context,
+                intent
+            )
 
         // レス入力欄
-        val mailLabel = aroundOrEmpty("@", formMail, "") // "✉"もありかなぁ…
+        val mailLabel =
+            aroundOrEmpty(
+                "@",
+                formMail,
+                ""
+            ) // "✉"もありかなぁ…
         val replyLabel = "返信$mailLabel"
         val replyPlaceHolder = if (formMail.isNotEmpty()) mailLabel else "@ﾒｰﾙｱﾄﾞﾚｽ(半角ｽﾍﾟｰｽ)本文"
         builder.addRemoteInput(
@@ -96,7 +120,10 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             replyPlaceHolder,
             KEY_EXTRA_REPLY_TEXT,
             builder.createImoyokanIntent()
-                .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_REPLY)
+                .putExtra(
+                    KEY_EXTRA_ACTION,
+                    INTENT_ACTION_REPLY
+                )
                 .putExtra(KEY_EXTRA_URL, threadInfo.url)
                 .putExtra(KEY_EXTRA_MAIL, formMail)
                 .putExtra(KEY_EXTRA_PTUA, threadInfo.form.ptua)
@@ -113,7 +140,9 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             .addCatalogAction()
 
         // ここからカスタムView
-        val view = RemoteViews(context.packageName, R.layout.notification_thread)
+        val view = RemoteViews(context.packageName,
+            R.layout.notification_thread
+        )
 
         // スクロール情報
         var position = 0
@@ -137,8 +166,12 @@ class ThreadNotification(private val context: Context, private val intent: Inten
             }
             val showDeleted = pref.thread.showDeleted
             resList =
-                if (gravityTop) threadInfo.replies.filter { position <= it.index && (showDeleted || !it.deleted) }.take(MAX_RES_COUNT)
-                else threadInfo.replies.filter { it.index <= position && (showDeleted || !it.deleted) }.takeLast(MAX_RES_COUNT)
+                if (gravityTop) threadInfo.replies.filter { position <= it.index && (showDeleted || !it.deleted) }.take(
+                    MAX_RES_COUNT
+                )
+                else threadInfo.replies.filter { it.index <= position && (showDeleted || !it.deleted) }.takeLast(
+                    MAX_RES_COUNT
+                )
             resList.forEach {
                 if (it.index == 0) {
                     sb.addResponse(it.number, it.mail, decorateResText(it.text), "\n")
@@ -167,7 +200,11 @@ class ThreadNotification(private val context: Context, private val intent: Inten
 
         // スレ画像
         view.setOnClickOrGone(R.id.large_icon, threadInfo.imageUrls.isNotEmpty()) {
-            val (bitmap, _) = loadImage(toCatalogImageUrl(threadInfo.imageUrls[0]))
+            val (bitmap, _) = loadImage(
+                toCatalogImageUrl(
+                    threadInfo.imageUrls[0]
+                )
+            )
             view.setImageViewAny(R.id.large_icon, bitmap ?: R.drawable.ic_broken_image)
             builder.createViewImageIntent()
         }
@@ -182,9 +219,14 @@ class ThreadNotification(private val context: Context, private val intent: Inten
         view.setOnClickOrGone(R.id.top,    1 < resList.size && !gravityTop) { builder.createThreadIntent(0, KEY_EXTRA_GRAVITY_TOP to true) }
         view.setOnClickOrGone(R.id.bottom, 1 < resList.size && gravityTop ) { builder.createThreadIntent(threadInfo.replies.last().index, KEY_EXTRA_GRAVITY_TOP to false) }
         view.setOnClickPendingIntent(R.id.share, builder.createShareUrlIntent(threadInfo.url))
-        view.setOnClickPendingIntent(R.id.mail,  builder.createPendingIntent(KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
+        view.setOnClickPendingIntent(
+            R.id.mail,  builder.createPendingIntent(
+                KEY_EXTRA_ACTION to INTENT_ACTION_GO_SET_MAIL, KEY_EXTRA_MAIL to formMail))
         if (formMail.isNotBlank()) {
-            view.setInt(R.id.mail, "setColorFilter", getColor(context, R.color.mailIcon))
+            view.setInt(
+                R.id.mail, "setColorFilter", getColor(context,
+                    R.color.mailIcon
+                ))
         }
 
         // 表示するよ！
@@ -250,7 +292,10 @@ class ThreadNotification(private val context: Context, private val intent: Inten
     }
 
     private fun String.shortKitaa(): String {
-        return if (Pref.getInstance(context).thread.shortKitaa) this.replace(KITAA_REGEX, SHORT_KITAA) else this
+        return if (Pref.getInstance(context).thread.shortKitaa) this.replace(
+            KITAA_REGEX,
+            SHORT_KITAA
+        ) else this
     }
 
     private fun Spannable.autoSmallFont(): Spannable {

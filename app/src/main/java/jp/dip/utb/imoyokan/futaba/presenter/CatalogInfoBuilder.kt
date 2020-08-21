@@ -1,41 +1,11 @@
-package jp.dip.utb.imoyokan.futaba
+package jp.dip.utb.imoyokan.futaba.presenter
 
-import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.futaba.util.FUTABA_CHARSET
+import jp.dip.utb.imoyokan.futaba.model.CatalogItem
+import jp.dip.utb.imoyokan.futaba.model.CatalogInfo
+import jp.dip.utb.imoyokan.util.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.Serializable
-import java.util.*
-import kotlin.collections.ArrayList
-
-data class CatalogInfo(val url: String): Serializable {
-    val items: ArrayList<CatalogItem> = ArrayList()
-    val server: String
-    val b: String
-    val sort: String
-    val timestamp = Date()
-    var failedMessage: String = ""
-    val isFailed: Boolean
-        get() { return failedMessage.isNotBlank()}
-
-    init {
-        val m = analyseCatalogUrl(url)
-        this.server = m?.first ?: ""
-        this.b = m?.second ?: ""
-        this.sort = m?.third ?: ""
-        if (m == null) {
-            failedMessage = "URLが変！"
-        }
-    }
-}
-
-data class CatalogItem (
-    val href: String,
-    val img: String?,
-    val text: String,
-    @Suppress("unused")
-    val count: Int,
-    var filtered: Boolean = false // For Imoyokan word filter.
-) : Serializable
 
 class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, private val rows: Int = 3, private val textLength: Int = 4) {
 
@@ -72,7 +42,12 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
                     val img = if (it.has("src")) "${catalogInfo.server}${it.getStringDefault("src")}".toHttps() else null
                     val text = it.getStringDefault("com").removeHtmlTag()
                     val count = it.getInt("cr")
-                    val item = CatalogItem(href, img, text, count)
+                    val item = CatalogItem(
+                        href,
+                        img,
+                        text,
+                        count
+                    )
                     catalogInfo.items.add(item)
                 }
             } else {
@@ -83,7 +58,12 @@ class CatalogInfoBuilder(private val url: String, private val cols: Int = 7, pri
                     val img = "${catalogInfo.server}/${it.groupValues[2]}".toHttps()
                     val text = it.groupValues[3].removeHtmlTag()
                     val count = it.groupValues[4].toInt()
-                    val item = CatalogItem(href, img, text, count)
+                    val item = CatalogItem(
+                        href,
+                        img,
+                        text,
+                        count
+                    )
                     catalogInfo.items.add(item)
                 }
             }

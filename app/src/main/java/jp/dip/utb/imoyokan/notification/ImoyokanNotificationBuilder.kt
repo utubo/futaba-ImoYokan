@@ -1,4 +1,4 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.notification
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
@@ -23,16 +23,22 @@ import androidx.annotation.IdRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
-import jp.dip.utb.imoyokan.futaba.getCatalogUrl
+import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.futaba.util.getCatalogUrl
+import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.util.*
 import java.util.*
 import kotlin.collections.HashMap
 
 class ImoyokanNotificationBuilder(private val context: Context, private val intent: Intent) {
 
     private val pref = Pref.getInstance(context)
-    private val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+    private val builder = NotificationCompat.Builder(context,
+        CHANNEL_ID
+    )
     private val manager = NotificationManagerCompat.from(context)
-    private var requestCode = REQUEST_CODE_RELOAD_URL_MIN
+    private var requestCode =
+        REQUEST_CODE_RELOAD_URL_MIN
     private var isChannelReady = false
     private val uslShareIntents = HashMap<String, PendingIntent>()
 
@@ -84,7 +90,9 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     @TargetApi(Build.VERSION_CODES.O)
     private fun setupNotificationManager() {
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
-            val mChannel = NotificationChannel(CHANNEL_ID, NOTIFY_NAME, NotificationManager.IMPORTANCE_LOW)
+            val mChannel = NotificationChannel(
+                CHANNEL_ID,
+                NOTIFY_NAME, NotificationManager.IMPORTANCE_LOW)
             mChannel.apply {
                 description = NOTIFY_DESCRIPTION
             }
@@ -127,7 +135,11 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
     }
 
     fun addCatalogAction(): ImoyokanNotificationBuilder {
-        val url = pref.lastCatalogUrl.ifBlank { getCatalogUrl(pref.lastThreadUrl) }
+        val url = pref.lastCatalogUrl.ifBlank {
+            getCatalogUrl(
+                pref.lastThreadUrl
+            )
+        }
         addNextPageAction(R.drawable.ic_catalog, "カタログ", url)
         return this
     }
@@ -147,12 +159,17 @@ class ImoyokanNotificationBuilder(private val context: Context, private val inte
         return Intent(context, NotificationReceiver::class.java)
             .putExtra(KEY_EXTRA_POSITION, getExtraThreadPosition())
             .putExtra(KEY_EXTRA_GRAVITY_TOP, getExtraGravityTop())
-            .putExtra(KEY_EXTRA_IMAGE_INDEX, intent.getIntExtra(KEY_EXTRA_IMAGE_INDEX, 0))
+            .putExtra(
+                KEY_EXTRA_IMAGE_INDEX, intent.getIntExtra(
+                    KEY_EXTRA_IMAGE_INDEX, 0))
     }
 
     fun createViewImageIntent(index: Int? = null): PendingIntent {
         val newIntent = createImoyokanIntent()
-            .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_VIEW_IMAGE)
+            .putExtra(
+                KEY_EXTRA_ACTION,
+                INTENT_ACTION_VIEW_IMAGE
+            )
         if (index != null) {
             newIntent.putExtra(KEY_EXTRA_IMAGE_INDEX, index)
         }

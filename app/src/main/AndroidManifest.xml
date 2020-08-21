@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".HiddenActivity"
+            android:name="jp.dip.utb.imoyokan.activity.HiddenActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -36,7 +36,7 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name="jp.dip.utb.imoyokan.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,15 +44,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="jp.dip.utb.imoyokan.activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".LicenseActivity"
+            android:name="jp.dip.utb.imoyokan.activity.LicenseActivity"
             android:label="@string/title_activity_license" />
 
-        <receiver android:name=".NotificationReceiver" />
+        <receiver android:name="jp.dip.utb.imoyokan.notification.NotificationReceiver" />
         <service
-            android:name=".QSTileService"
+            android:name=".service.QSTileService"
             android:icon="@drawable/ic_stat_imoyokan"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">

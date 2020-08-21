@@ -1,10 +1,12 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.notification
 
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -21,8 +23,14 @@ class ReplyConfirmNotification(private val context: Context, private val intent:
 
     private fun notifyAsync(url: String, ptua: String, mail: String, text: String, textForView: String) {
 
-        val builder = ImoyokanNotificationBuilder(context, intent)
-        val view = RemoteViews(context.packageName, R.layout.notification_reply_confirm)
+        val builder =
+            ImoyokanNotificationBuilder(
+                context,
+                intent
+            )
+        val view = RemoteViews(context.packageName,
+            R.layout.notification_reply_confirm
+        )
 
         view.setTextViewText(R.id.mail, mail.ifBlank { "なし" } )
         view.setTextViewText(R.id.text, textForView.ifBlank { "本文がないよ" })
@@ -32,7 +40,10 @@ class ReplyConfirmNotification(private val context: Context, private val intent:
             context,
             REQUEST_CODE_REPLY_MIN + Random().nextInt(10000), // 返信のrequestCodeはかぶらないようにする！,
             builder.createImoyokanIntent()
-                .putExtra(KEY_EXTRA_ACTION, INTENT_ACTION_REPLY)
+                .putExtra(
+                    KEY_EXTRA_ACTION,
+                    INTENT_ACTION_REPLY
+                )
                 .putExtra(KEY_EXTRA_URL, url)
                 .putExtra(KEY_EXTRA_MAIL, mail)
                 .putExtra(KEY_EXTRA_PTUA, ptua)

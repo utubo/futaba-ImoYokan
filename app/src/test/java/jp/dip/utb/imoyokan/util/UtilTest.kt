@@ -1,7 +1,7 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.util
 
-import jp.dip.utb.imoyokan.futaba.FUTABA_CHARSET
-import jp.dip.utb.imoyokan.futaba.USER_AGENT
+import jp.dip.utb.imoyokan.futaba.util.FUTABA_CHARSET
+import jp.dip.utb.imoyokan.futaba.util.USER_AGENT
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -22,13 +22,19 @@ class UtilTest {
 
     @Test
     fun userAgent() {
-        assertTrue("USER_AGENTは「アプリID/バージョン名」であること(${USER_AGENT})", "jp.dip.utb.imoyokan/\\d+\\.\\d+".toRegex().matches(USER_AGENT))
+        assertTrue("USER_AGENTは「アプリID/バージョン名」であること($USER_AGENT)", "jp.dip.utb.imoyokan/\\d+\\.\\d+".toRegex().matches(
+            USER_AGENT
+        ))
     }
 
     @Test
     fun aroundWhenIsNotEmpty() {
-        assertEquals("[A]", aroundOrEmpty("[", "A", "]"))
-        assertEquals("", aroundOrEmpty("[", null, "]"))
+        assertEquals("[A]",
+            aroundOrEmpty("[", "A", "]")
+        )
+        assertEquals("",
+            aroundOrEmpty("[", null, "]")
+        )
         assertEquals("", aroundOrEmpty("[", "", "]"))
     }
 

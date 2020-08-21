@@ -1,10 +1,10 @@
-package jp.dip.utb.imoyokan.futaba
+package jp.dip.utb.imoyokan.futaba.util
 
-import jp.dip.utb.imoyokan.Pref
-import jp.dip.utb.imoyokan.pick
+import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.util.pick
 
 //val SIO_SERVER_REGEX = "http://www\\.nijibox\\d\\.com/".toRegex()
-val SIO_FILE_REGEX = "(f|fu|sa|sp|sq|su|ss)\\d+${IMAGE_EXT}".toRegex()
+val SIO_FILE_REGEX = "(f|fu|sa|sp|sq|su|ss)\\d+$IMAGE_EXT".toRegex()
 const val UP_F_ROOT = "https://dec.2chan.net/up/src/"
 const val UP_FU_ROOT = "https://dec.2chan.net/up2/src/"
 const val SIO_KARA_SA_ROOT = "http://www.nijibox6.com/futabafiles/001/src/"
@@ -30,7 +30,7 @@ fun getSiokaraUrl(filename: String): String {
 fun getSiokaraThumbnailUrl(url: String): String {
     return when {
             // 中間サーバ
-            Pref.instance?.media?.useSioCacheServer ?: false -> "${SIO_CACHE_SERVER_ROOT}${url.pick("([^/]+$)")}.thumb.jpg"
+            Pref.instance?.media?.useSioCacheServer ?: false -> "$SIO_CACHE_SERVER_ROOT${url.pick("([^/]+$)")}.thumb.jpg"
             // 動画はサムネ未対応
             url.contains(".mp4") -> url
             url.contains(".webm") -> url

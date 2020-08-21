@@ -1,11 +1,13 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.notification
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.RemoteInput
-import jp.dip.utb.imoyokan.futaba.Replier
-import jp.dip.utb.imoyokan.futaba.analyseCatalogUrl
+import jp.dip.utb.imoyokan.futaba.presenter.Replier
+import jp.dip.utb.imoyokan.futaba.util.analyseCatalogUrl
+import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -21,32 +23,49 @@ class NotificationReceiver : BroadcastReceiver() {
             pref.apply()
         }
 
-        val action = intent.getIntExtra(KEY_EXTRA_ACTION, INTENT_ACTION_RELOAD_URL)
+        val action = intent.getIntExtra(
+            KEY_EXTRA_ACTION,
+            INTENT_ACTION_RELOAD_URL
+        )
 
         // URL表示
         if (action == INTENT_ACTION_RELOAD_URL) {
             when {
-                analyseCatalogUrl(url) != null -> CatalogNotification(context, intent).notifyThis()
-                else -> ThreadNotification(context, intent).notify()
+                analyseCatalogUrl(url) != null -> CatalogNotification(
+                    context,
+                    intent
+                ).notifyThis()
+                else -> ThreadNotification(
+                    context,
+                    intent
+                ).notify()
             }
             return
         }
 
         // 画像
         if (action == INTENT_ACTION_VIEW_IMAGE) {
-            ImageNotification(context, intent).notifyThis()
+            ImageNotification(
+                context,
+                intent
+            ).notifyThis()
             return
         }
 
         // メアド設定画面表示
         if (action == INTENT_ACTION_GO_SET_MAIL) {
-            MailSettingNotification(context, intent).notifyThis()
+            MailSettingNotification(
+                context,
+                intent
+            ).notifyThis()
             return
         }
 
         // メアド設定
         if (action == INTENT_ACTION_SET_MAIL) {
-            var mail = if (intent.hasExtra(KEY_EXTRA_MAIL)) intent.str(KEY_EXTRA_MAIL) else RemoteInput.getResultsFromIntent(intent).getString(KEY_EXTRA_MAIL, "")
+            var mail = if (intent.hasExtra(KEY_EXTRA_MAIL)) intent.str(
+                KEY_EXTRA_MAIL
+            ) else RemoteInput.getResultsFromIntent(intent).getString(KEY_EXTRA_MAIL, "")
             mail = mail.replace("^[@＠]".toRegex(), "") // 返信欄での直接設定と統一するため先頭＠は削除しておく
             pref.mail.set(mail, pref.lastThreadUrl)
             // スレッドに戻ったほうがタップ回数少ないけど解りづらいかな…
@@ -59,7 +78,10 @@ class NotificationReceiver : BroadcastReceiver() {
             //    }
             //}
             intent.putExtra(KEY_EXTRA_MAIL, mail)
-            MailSettingNotification(context, intent).notifyThis()
+            MailSettingNotification(
+                context,
+                intent
+            ).notifyThis()
             return
         }
 
@@ -79,17 +101,30 @@ class NotificationReceiver : BroadcastReceiver() {
         }
         if (text.isBlank()) {
             // 本文がないときはメールアドレス設定の結果を表示するスペースがある
-            intent.putExtra(KEY_EXTRA_POSITION, POSITION_KEEP)
+            intent.putExtra(
+                KEY_EXTRA_POSITION,
+                POSITION_KEEP
+            )
             intent.putExtra(KEY_EXTRA_USE_CACHE, true)
             when {
                 defaultMail == mail -> {
-                    ThreadNotification(context, intent).notifyCache("本文が無いよ")
+                    ThreadNotification(
+                        context,
+                        intent
+                    ).notifyCache("本文が無いよ")
                 }
                 mail.isBlank() -> {
-                    ThreadNotification(context, intent).notifyCache("メールアドレスをクリアしました")
+                    ThreadNotification(
+                        context,
+                        intent
+                    ).notifyCache("メールアドレスをクリアしました")
                 }
                 else -> {
-                    ThreadNotification(context, intent).notifyCache("メールアドレスをセットしました", mail)
+                    ThreadNotification(
+                        context,
+                        intent
+                    )
+                        .notifyCache("メールアドレスをセットしました", mail)
                 }
             }
             return
@@ -97,18 +132,37 @@ class NotificationReceiver : BroadcastReceiver() {
 
         // 本文があるなら返信するよ
         text = text.addLineBreakForSingleLineInput()
-        intent.putExtra(KEY_EXTRA_POSITION, THREAD_BOTTOM)
+        intent.putExtra(
+            KEY_EXTRA_POSITION,
+            THREAD_BOTTOM
+        )
         when {
             pref.confirmBeforeReply && !isConfirmed -> {
-                ReplyConfirmNotification(context, intent).notifyThis(url, intent.str(KEY_EXTRA_PTUA), mail, inputText, text)
+                ReplyConfirmNotification(
+                    context,
+                    intent
+                ).notifyThis(url, intent.str(
+                    KEY_EXTRA_PTUA
+                ), mail, inputText, text)
             }
             pref.debugMode -> {
-                ThreadNotification(context, intent).notify("Debug - 返信キャンセル", "mail=${mail},text=${text}")
+                ThreadNotification(
+                    context,
+                    intent
+                )
+                    .notify("Debug - 返信キャンセル", "mail=${mail},text=${text}")
             }
             else -> {
                 GlobalScope.launch {
-                    val (title, msg) = Replier().reply(url, text, mail, intent.str(KEY_EXTRA_PTUA))
-                    ThreadNotification(context, intent).notify(title, msg)
+                    val (title, msg) = Replier()
+                        .reply(url, text, mail, intent.str(
+                        KEY_EXTRA_PTUA
+                    ))
+                    ThreadNotification(
+                        context,
+                        intent
+                    )
+                        .notify(title, msg)
                 }
             }
         }

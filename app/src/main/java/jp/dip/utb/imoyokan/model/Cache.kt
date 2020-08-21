@@ -1,9 +1,10 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.model
 
 import android.content.Context
 import android.util.Log
-import jp.dip.utb.imoyokan.futaba.CatalogInfo
-import jp.dip.utb.imoyokan.futaba.ThreadInfo
+import jp.dip.utb.imoyokan.util.NOTIFY_NAME
+import jp.dip.utb.imoyokan.futaba.model.ThreadInfo
+import jp.dip.utb.imoyokan.futaba.model.CatalogInfo
 import java.io.*
 
 class Cache(val context: Context) {
@@ -40,7 +41,9 @@ class Cache(val context: Context) {
     }
 
     fun saveThreadInfo(threadInfo: ThreadInfo) {
-        save(threadInfo, CACHE_FILENAME)
+        save(threadInfo,
+            CACHE_FILENAME
+        )
     }
 
     fun loadCatalogInfo(): CatalogInfo? {
@@ -48,7 +51,9 @@ class Cache(val context: Context) {
     }
 
     fun saveCatalogInfo(catalogInfo: CatalogInfo) {
-        save(catalogInfo, CATALOG_CACHE_FILENAME)
+        save(catalogInfo,
+            CATALOG_CACHE_FILENAME
+        )
     }
 
 }

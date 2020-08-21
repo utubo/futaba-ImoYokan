@@ -1,51 +1,10 @@
-package jp.dip.utb.imoyokan.futaba
+package jp.dip.utb.imoyokan.futaba.presenter
 
-import jp.dip.utb.imoyokan.*
-import java.util.*
+import jp.dip.utb.imoyokan.futaba.model.ResInfo
+import jp.dip.utb.imoyokan.futaba.model.ThreadInfo
+import jp.dip.utb.imoyokan.futaba.util.*
+import jp.dip.utb.imoyokan.util.*
 import kotlin.collections.ArrayList
-import java.io.Serializable
-
-data class ThreadInfo(val url: String) : Serializable {
-    val server: String
-    val b: String
-    val res: String
-    var form = FromParams()
-    var replies = ArrayList<ResInfo>()
-    val timestamp = Date()
-    var lastModified = ""
-    var statusCode = 200
-    var failedMessage = ""
-    var imageUrls = ArrayList<String>()
-    //↓JSONデータはスレ本文がないので使いにくい
-    //val jsonUrl = base + "/futaba.php?mode=json&res=" + res + "&start=" + start + "&" + Math.random()
-
-    init {
-        val m = analyseUrl(url)
-        this.server = m?.first ?: ""
-        this.b = m?.second ?: ""
-        this.res = m?.third ?: ""
-        if (m == null) {
-            failedMessage = "URLが変！"
-        }
-    }
-
-    fun isFailed(): Boolean {
-        return failedMessage.isNotBlank() || replies.isEmpty()
-    }
-
-}
-
-data class FromParams(
-    var ptua: String = ""
-) : Serializable
-
-data class ResInfo(
-    val index: Int,
-    val number: String,
-    val text: String,
-    val mail: String = "",
-    val deleted: Boolean = false
-) : Serializable
 
 class ThreadInfoBuilder {
     var url: String = ""
@@ -77,7 +36,7 @@ class ThreadInfoBuilder {
         val numberRegex = "<span id=\"delcheck(\\d+)".toRegex()
         val mailRegex =  "<a href=\"mailto:([^\"]+)\">".toRegex()
         val textRegex =  "<blockquote[^>]*>(.+)</blockquote>".toRegex()
-        val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+${IMAGE_EXT})".toRegex()
+        val resImageRegex = "<a href=\"/${threadInfo.b}/src/(\\d+$IMAGE_EXT)".toRegex()
         for (line in html.split("\n")) {
             if (isPre) {
                 // フォームデータ
@@ -118,10 +77,22 @@ class ThreadInfoBuilder {
                         threadInfo.imageUrls.put("${threadInfo.server}/${threadInfo.b}/src/${it}")
                     }
                     SIO_FILE_REGEX.findAll(resText).forEach {
-                        threadInfo.imageUrls.put(getSiokaraUrl(it.value))
+                        threadInfo.imageUrls.put(
+                            getSiokaraUrl(
+                                it.value
+                            )
+                        )
                     }
                 }
-                threadInfo.replies.add(ResInfo(index, resNumber, resText.removeHtmlTag(), resMail, resDeleted))
+                threadInfo.replies.add(
+                    ResInfo(
+                        index,
+                        resNumber,
+                        resText.removeHtmlTag(),
+                        resMail,
+                        resDeleted
+                    )
+                )
                 index ++
                 continue
             }

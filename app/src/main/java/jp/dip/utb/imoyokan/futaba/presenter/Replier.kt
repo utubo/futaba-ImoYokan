@@ -1,12 +1,18 @@
-package jp.dip.utb.imoyokan.futaba
+package jp.dip.utb.imoyokan.futaba.presenter
 
-import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.futaba.util.FUTABA_CHARSET
+import jp.dip.utb.imoyokan.futaba.util.RES_INTERVAL
+import jp.dip.utb.imoyokan.futaba.util.URL_CACHEMT
+import jp.dip.utb.imoyokan.futaba.util.analyseUrl
+import jp.dip.utb.imoyokan.util.*
 
 class Replier {
     @ExperimentalUnsignedTypes
     fun reply(url: String, text: String, mail: String, ptua: String): Pair<String, String> {
-        val (server, b, resto) = analyseUrl(url) ?: return Pair("返信失敗", "URLが変！\n${url}")
-        val pthb = HttpRequest("${server}/$URL_CACHEMT".toHttps()).get().bodyString(FUTABA_CHARSET).pick("return \"(\\d+)\"")
+        val (server, b, resto) = analyseUrl(url)
+            ?: return Pair("返信失敗", "URLが変！\n${url}")
+        val pthb = HttpRequest("${server}/$URL_CACHEMT".toHttps())
+            .get().bodyString(FUTABA_CHARSET).pick("return \"(\\d+)\"")
         val params = HashMap<String, String>()
         params["b"] = b
         params["resto"] = resto

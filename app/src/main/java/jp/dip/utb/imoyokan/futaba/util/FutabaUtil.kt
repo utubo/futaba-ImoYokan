@@ -1,9 +1,12 @@
-package jp.dip.utb.imoyokan.futaba
+package jp.dip.utb.imoyokan.futaba.util
 
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.util.aroundOrEmpty
+import jp.dip.utb.imoyokan.util.pick
+import jp.dip.utb.imoyokan.util.toHttps
 
 @Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
 const val RES_INTERVAL = 36100000u
@@ -52,17 +55,22 @@ fun analyseCatalogUrl(url: String): Triple<String, String, String>? {
 
 fun getCatalogUrl(url: String, sort:String = ""): String {
     val root = url.pick("""(^https?://.*\.2chan\.net/[^/]+)""".toRegex())
-    return "$root/futaba.php?mode=cat${aroundOrEmpty("&sort=", sort, "")}"
+    return "$root/futaba.php?mode=cat${aroundOrEmpty(
+        "&sort=",
+        sort,
+        ""
+    )}"
 }
 
 fun toThumbnailUrl(url: String): String {
     return if (SIO_FILE_REGEX.containsMatchIn(url)) {
-            getSiokaraThumbnailUrl(url)
+        getSiokaraThumbnailUrl(url)
         } else {
             url.toHttps().replace("/src/", "/thumb/").replace(IMAGE_EXT_REGEX, "s.jpg")
         }
 }
 
 fun toCatalogImageUrl(url: String): String {
-    return toThumbnailUrl(url).replace("/thumb/", "/cat/")
+    return toThumbnailUrl(url)
+        .replace("/thumb/", "/cat/")
 }

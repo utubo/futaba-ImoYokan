@@ -1,6 +1,6 @@
 @file:Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
 
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.util
 
 import android.content.Context
 import android.content.Intent
@@ -9,6 +9,7 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.squareup.picasso.Picasso
+import jp.dip.utb.imoyokan.R
 import java.nio.charset.Charset
 
 // 通知とextraData

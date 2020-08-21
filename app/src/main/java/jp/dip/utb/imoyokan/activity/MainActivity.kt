@@ -1,4 +1,4 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.activity
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,6 +11,11 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
+import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.util.KEY_EXTRA_URL
+import jp.dip.utb.imoyokan.util.NOTIFY_NAME
+import jp.dip.utb.imoyokan.util.visibleOrGone
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import java.lang.Long.max
@@ -50,9 +55,12 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun refresh() {
-        top_message.visibility = visibleOrGone(pref.lastCatalogUrl.isEmpty() && pref.lastThreadUrl.isEmpty())
-        catalog_button.visibility = visibleOrGone(pref.lastCatalogUrl.isNotEmpty())
-        thread_button.visibility = visibleOrGone(pref.lastThreadUrl.isNotEmpty())
+        top_message.visibility =
+            visibleOrGone(pref.lastCatalogUrl.isEmpty() && pref.lastThreadUrl.isEmpty())
+        catalog_button.visibility =
+            visibleOrGone(pref.lastCatalogUrl.isNotEmpty())
+        thread_button.visibility =
+            visibleOrGone(pref.lastThreadUrl.isNotEmpty())
     }
 
     private fun autoFinish(delayMills: Long = 200L) {

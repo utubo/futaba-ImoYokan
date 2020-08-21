@@ -1,4 +1,4 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.activity
 
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -6,6 +6,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import jp.dip.utb.imoyokan.R
+import jp.dip.utb.imoyokan.model.Pref
 
 
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -16,7 +18,10 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
         pref = Pref.getInstance(this)
-        val fragment = SettingsFragment(pref.debugMode)
+        val fragment =
+            SettingsFragment(
+                pref.debugMode
+            )
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.settings, fragment)

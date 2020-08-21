@@ -1,11 +1,18 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.notification
 
 import android.content.Context
 import android.content.Intent
 import android.text.format.DateFormat
 import android.view.View.VISIBLE
 import android.widget.RemoteViews
-import jp.dip.utb.imoyokan.futaba.*
+import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.futaba.model.CatalogItem
+import jp.dip.utb.imoyokan.model.Cache
+import jp.dip.utb.imoyokan.futaba.model.CatalogInfo
+import jp.dip.utb.imoyokan.futaba.presenter.CatalogInfoBuilder
+import jp.dip.utb.imoyokan.futaba.util.*
+import jp.dip.utb.imoyokan.model.Pref
+import jp.dip.utb.imoyokan.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -25,12 +32,22 @@ class CatalogNotification(private val context: Context, private val intent: Inte
 
     private fun notifyAsync(url: String) {
 
-        val builder = ImoyokanNotificationBuilder(context, intent)
+        val builder =
+            ImoyokanNotificationBuilder(
+                context,
+                intent
+            )
 
         val pref = Pref.getInstance(context)
         val cols = pref.catalog.cols
         val rows = pref.catalog.rows
-        val catalogInfoBuilder = CatalogInfoBuilder(url, cols, if (pref.catalog.enableScrolling) MAX_RAWS else rows, CATALOG_TEXT_LENGTH)
+        val catalogInfoBuilder =
+            CatalogInfoBuilder(
+                url,
+                cols,
+                if (pref.catalog.enableScrolling) MAX_RAWS else rows,
+                CATALOG_TEXT_LENGTH
+            )
         var catalogInfo: CatalogInfo? = null
         val position = intent.getIntExtra(KEY_EXTRA_CATALOG_POSITION, 0)
         var useCache = intent.hasExtra(KEY_EXTRA_CATALOG_POSITION)
@@ -60,9 +77,15 @@ class CatalogNotification(private val context: Context, private val intent: Inte
 
         // URLが取れたならボタンも作れる
         builder
-            .addCatalogAction("カタログ", catalogInfo, SORT_DEFAULT)
-            .addCatalogAction("新順", catalogInfo, SORT_NEWER)
-            .addCatalogAction("多順", catalogInfo, SORT_REPLY)
+            .addCatalogAction("カタログ", catalogInfo,
+                SORT_DEFAULT
+            )
+            .addCatalogAction("新順", catalogInfo,
+                SORT_NEWER
+            )
+            .addCatalogAction("多順", catalogInfo,
+                SORT_REPLY
+            )
 
         // まずはプログレスバーを表示する
         builder
@@ -100,7 +123,9 @@ class CatalogNotification(private val context: Context, private val intent: Inte
 
         // 画像読み込み
         val colorFiltered = context.resourceColor(R.color.filtered)
-        val view = RemoteViews(context.packageName, R.layout.notification_catalog)
+        val view = RemoteViews(context.packageName,
+            R.layout.notification_catalog
+        )
         val firstIndex = position * cols * rows
         var index = 0
         var x = 1
@@ -161,7 +186,9 @@ class CatalogNotification(private val context: Context, private val intent: Inte
         if (catalogInfo.sort == sort) {
             sb.append(DateFormat.format("(HH:mm:ss)", catalogInfo.timestamp))
         }
-        this.addNextPageAction(android.R.drawable.ic_menu_sort_by_size, sb.toString(), getCatalogUrl(catalogInfo.url, sort))
+        this.addNextPageAction(android.R.drawable.ic_menu_sort_by_size, sb.toString(),
+            getCatalogUrl(catalogInfo.url, sort)
+        )
         return this
     }
 }

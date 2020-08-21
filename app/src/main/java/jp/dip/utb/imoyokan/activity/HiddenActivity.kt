@@ -1,11 +1,14 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import jp.dip.utb.imoyokan.futaba.analyseCatalogUrl
-import jp.dip.utb.imoyokan.futaba.analyseUrl
+import jp.dip.utb.imoyokan.util.KEY_EXTRA_URL
+import jp.dip.utb.imoyokan.notification.ThreadNotification
+import jp.dip.utb.imoyokan.futaba.util.analyseCatalogUrl
+import jp.dip.utb.imoyokan.futaba.util.analyseUrl
+import jp.dip.utb.imoyokan.notification.CatalogNotification
 
 class HiddenActivity : AppCompatActivity() {
 
@@ -17,8 +20,14 @@ class HiddenActivity : AppCompatActivity() {
         intent.putExtra(KEY_EXTRA_URL, url)
         when {
             url == null -> { /* なにもしない */ }
-            analyseCatalogUrl(url) != null -> CatalogNotification(this, intent).notifyThis()
-            analyseUrl(url) != null -> ThreadNotification(this, intent).notify()
+            analyseCatalogUrl(url) != null -> CatalogNotification(
+                this,
+                intent
+            ).notifyThis()
+            analyseUrl(url) != null -> ThreadNotification(
+                this,
+                intent
+            ).notify()
             else -> Toast.makeText(applicationContext, "URLが変！ $url", Toast.LENGTH_LONG).show()
         }
         finish()

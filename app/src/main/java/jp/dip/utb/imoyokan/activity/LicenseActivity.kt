@@ -1,8 +1,9 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import jp.dip.utb.imoyokan.R
 
 class LicenseActivity : AppCompatActivity() {
 

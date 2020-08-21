@@ -1,6 +1,6 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.util
 
-import jp.dip.utb.imoyokan.futaba.USER_AGENT
+import jp.dip.utb.imoyokan.futaba.util.USER_AGENT
 import okhttp3.*
 import java.net.URLEncoder
 import java.nio.charset.Charset
@@ -9,8 +9,11 @@ import java.nio.charset.Charset
 class OKHttpSingleton private constructor() {
     companion object {
         private var instance: OKHttpSingleton? = null
-        fun getSingleton() = instance ?: synchronized(this) {
-            instance ?: OKHttpSingleton().also { instance = it }
+        fun getSingleton() = instance
+            ?: synchronized(this) {
+            instance
+                ?: OKHttpSingleton()
+                    .also { instance = it }
         }
     }
     var client: OkHttpClient = OkHttpClient.Builder().build()
@@ -25,7 +28,9 @@ fun Response.bodyString(charset: Charset? = null): String {
 // ↑これだけだと非常に面倒なので↓ユーティリティも定義しておく
 
 class HttpRequest(val url: String) {
-    private val request = Request.Builder().url(url).header("User-Agent", USER_AGENT)
+    private val request = Request.Builder().url(url).header("User-Agent",
+        USER_AGENT
+    )
     fun header(name: String, value: String): HttpRequest {
         request.header(name, value)
         return this

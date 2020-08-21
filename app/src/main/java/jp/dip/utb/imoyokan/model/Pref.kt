@@ -1,8 +1,9 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.model
 
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
+import jp.dip.utb.imoyokan.util.THREAD_BOTTOM
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.properties.ReadWriteProperty
@@ -14,8 +15,11 @@ class Pref private constructor(context: Context) {
     companion object {
         // シングルトン
         var instance: Pref? = null
-        fun getInstance(context: Context) = instance ?: synchronized(this) {
-            instance ?: Pref(context.applicationContext).also { instance = it }
+        fun getInstance(context: Context) = instance
+            ?: synchronized(this) {
+            instance
+                ?: Pref(context.applicationContext)
+                    .also { instance = it }
         }
     }
 
@@ -39,7 +43,9 @@ class Pref private constructor(context: Context) {
         var autoSmallFont: Boolean by pref.prefValue("thread_auto_small_font", false)
         var fontSize: Float by pref.prefValue("thread_font_size", 1.0f)
         var showDeleted: Boolean by pref.prefValue("thread_show_deleted", false)
-        var defaultPosition: Int by pref.prefValue("thread_default_position", THREAD_BOTTOM)
+        var defaultPosition: Int by pref.prefValue("thread_default_position",
+            THREAD_BOTTOM
+        )
     }
 
     class Catalog(pref: Pref) {

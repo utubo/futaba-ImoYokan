@@ -1,4 +1,4 @@
-package jp.dip.utb.imoyokan
+package jp.dip.utb.imoyokan.notification
 
 import android.content.Context
 import android.content.Intent
@@ -9,8 +9,10 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
-import jp.dip.utb.imoyokan.futaba.toThumbnailUrl
+import jp.dip.utb.imoyokan.*
+import jp.dip.utb.imoyokan.futaba.util.toThumbnailUrl
+import jp.dip.utb.imoyokan.model.Cache
+import jp.dip.utb.imoyokan.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -23,7 +25,11 @@ class ImageNotification(private val context: Context, private val intent: Intent
     }
 
     private fun notifyAsync() {
-        val builder = ImoyokanNotificationBuilder(context, intent)
+        val builder =
+            ImoyokanNotificationBuilder(
+                context,
+                intent
+            )
 
         // スレッド情報を取得
         val threadInfo = Cache(context).loadThreadInfo()
@@ -33,7 +39,9 @@ class ImageNotification(private val context: Context, private val intent: Intent
         }
 
         // ここからカスタムview
-        val view = RemoteViews(context.packageName, R.layout.notification_image)
+        val view = RemoteViews(context.packageName,
+            R.layout.notification_image
+        )
         builder
             .setRemoteViews(view)
             .addThreadAction()
@@ -87,7 +95,9 @@ class ImageNotification(private val context: Context, private val intent: Intent
         val beforePostTime = builder.getLastNotification()?.postTime
 
         // 画像をダウンロード
-        val (bitmap, message) = loadImage(toThumbnailUrl(url))
+        val (bitmap, message) = loadImage(
+            toThumbnailUrl(url)
+        )
         view.setImageViewAny(R.id.image, bitmap)
         view.setTextViewText(R.id.message, message)
 
