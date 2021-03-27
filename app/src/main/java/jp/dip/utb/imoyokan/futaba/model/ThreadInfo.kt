@@ -9,7 +9,7 @@ data class ThreadInfo(val url: String) : Serializable {
     val server: String
     val b: String
     val res: String
-    var form = FromParams()
+    var form = FormParams()
     var replies =
         ArrayList<ResInfo>()
     val timestamp = Date()

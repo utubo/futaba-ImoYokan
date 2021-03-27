@@ -2,6 +2,6 @@ package jp.dip.utb.imoyokan.futaba.model
 
 import java.io.Serializable
 
-data class FromParams(
+data class FormParams(
     var ptua: String = ""
 ) : Serializable

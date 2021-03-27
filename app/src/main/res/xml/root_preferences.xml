@@ -93,7 +93,7 @@
 
     <PreferenceCategory app:title="その他" app:icon="@drawable/ic_imoyokan">
         <Preference android:title="ライセンス" app:iconSpaceReserved="false">
-            <intent android:targetPackage="jp.dip.utb.imoyokan" android:targetClass="jp.dip.utb.imoyokan.LicenseActivity"/>
+            <intent android:targetPackage="jp.dip.utb.imoyokan" android:targetClass="jp.dip.utb.imoyokan.activity.LicenseActivity"/>
         </Preference>
         <Preference android:title="配布ページ" app:iconSpaceReserved="false">
             <intent android:action="android.intent.action.VIEW" android:data="@string/home_page_url" />
